@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -56,39 +55,12 @@ var gmData embed.FS
 //go:embed logo.jpg
 var logoJPG embed.FS
 
-//go:embed sav_cli.exe
-var savCliExe embed.FS
-
 //	@SecurityDefinitions.apikey	ApiKeyAuth
 //	@in							header
 //	@name						Authorization
 
 // @license.name	Apache 2.0
 // @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
-// releaseSavCli extracts sav_cli.exe from the embedded FS next to the running
-// executable. Skips extraction if the file already exists with the same size.
-func releaseSavCli() {
-	data, err := savCliExe.ReadFile("sav_cli.exe")
-	if err != nil {
-		logger.Errorf("[releaseSavCli] read embedded sav_cli.exe: %v\n", err)
-		return
-	}
-	execPath, err := os.Executable()
-	if err != nil {
-		logger.Errorf("[releaseSavCli] get executable path: %v\n", err)
-		return
-	}
-	dest := filepath.Join(filepath.Dir(execPath), "sav_cli.exe")
-	if info, err2 := os.Stat(dest); err2 == nil && info.Size() == int64(len(data)) {
-		return // already up to date
-	}
-	if err := os.WriteFile(dest, data, 0755); err != nil {
-		logger.Errorf("[releaseSavCli] write sav_cli.exe: %v\n", err)
-		return
-	}
-	logger.Infof("[releaseSavCli] released sav_cli.exe to %s\n", dest)
-}
 
 func main() {
 	releaseSavCli()

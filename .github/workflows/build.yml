@@ -1,50 +1,208 @@
-name: Build
+name: Build and Release
 
 on:
   push:
     branches: [ main ]
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
+  # ── Quick CI check on every main push ──────────────────────────────────────
+  check:
+    name: Quick build check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version-file: go.mod
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+          node-version: "20"
 
       - name: Build frontend
-        working-directory: web
         run: |
-          pnpm install
-          pnpm build
+          npm install -g pnpm@8.14.0
+          cd web && pnpm install --frozen-lockfile && pnpm build
 
-      - name: Download sav_cli.exe
-        run: |
-          curl -L -o sav_cli.exe https://github.com/bingyouxue/palworld-server-tool-gm/releases/download/sav-cli-v1/sav_cli.exe
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Build Windows exe
+      - name: Build sav_cli (Linux)
+        run: python script/build_sav_cli.py --output build/sav-cli
+
+      - name: Verify Go compiles (Linux)
         env:
-          CGO_ENABLED: '0'
-          GOOS: windows
+          CGO_ENABLED: "0"
+          GOOS: linux
           GOARCH: amd64
-        run: go build -ldflags "-s -w -X main.version=GM-1.0" -o Pst-GM.exe .
+        run: go build -o /dev/null .
 
-      - name: Upload artifact
+  # ── Build shared frontend assets (used by all platforms) ───────────────────
+  prepare-assets:
+    name: Build frontend assets
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build web frontend
+        run: |
+          npm install -g pnpm@8.14.0
+          cd web && pnpm install --frozen-lockfile && pnpm build
+
+      - name: Build pal-conf frontend
+        run: |
+          npm install -g pnpm@10.12.3
+          cd pal-conf && pnpm install --frozen-lockfile && pnpm build
+          mv pal-conf/dist/assets/* assets/
+          mv pal-conf/dist/index.html ./pal-conf.html
+
+      - name: Upload shared assets
         uses: actions/upload-artifact@v4
         with:
-          name: Pst-GM-windows
-          path: Pst-GM.exe
-          retention-days: 30
+          name: shared-assets
+          path: |
+            assets
+            index.html
+            pal-conf.html
+            map
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
+
+  # ── Per-platform build ─────────────────────────────────────────────────────
+  build-release:
+    name: Build ${{ matrix.platform }}
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: prepare-assets
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-x86_64
+            runner: windows-2022
+            goos: windows
+            goarch: amd64
+            sav_cli_path: build/sav-cli/sav_cli.exe
+
+          - platform: linux-x86_64
+            runner: ubuntu-24.04
+            goos: linux
+            goarch: amd64
+            sav_cli_path: build/sav-cli/sav_cli
+
+          - platform: linux-aarch64
+            runner: ubuntu-24.04-arm
+            goos: linux
+            goarch: arm64
+            sav_cli_path: build/sav-cli/sav_cli
+
+          - platform: darwin-aarch64
+            runner: macos-15
+            goos: darwin
+            goarch: arm64
+            sav_cli_path: build/sav-cli/sav_cli
+
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Remove LFS placeholders
+        shell: bash
+        run: rm -rf map assets index.html pal-conf.html
+
+      - name: Download shared assets
+        uses: actions/download-artifact@v4
+        with:
+          name: shared-assets
+          path: .
+
+      - name: Build sav_cli
+        run: python script/build_sav_cli.py --output build/sav-cli
+
+      - name: Copy sav_cli.exe for Windows embed
+        if: matrix.goos == 'windows'
+        shell: bash
+        run: cp build/sav-cli/sav_cli.exe sav_cli.exe
+
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: echo "value=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Package release
+        run: >-
+          python script/package_release.py
+          --version "${{ steps.ver.outputs.value }}"
+          --goos "${{ matrix.goos }}"
+          --goarch "${{ matrix.goarch }}"
+          --sav-cli "${{ matrix.sav_cli_path }}"
+          --output dist/release
+
+      - name: Upload release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.platform }}
+          path: dist/release/*
+          if-no-files-found: error
+          retention-days: 3
+
+  # ── Publish GitHub Release ─────────────────────────────────────────────────
+  publish:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all release files
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release
+          merge-multiple: true
+
+      - name: Generate SHA256 checksums
+        working-directory: release
+        run: sha256sum * > SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
