@@ -31,6 +31,10 @@ jobs:
           pnpm install
           pnpm build
 
+      - name: Download sav_cli.exe
+        run: |
+          curl -L -o sav_cli.exe https://github.com/bingyouxue/palworld-server-tool-gm/releases/download/sav-cli-v1/sav_cli.exe
+
       - name: Build Windows exe
         env:
           CGO_ENABLED: '0'
