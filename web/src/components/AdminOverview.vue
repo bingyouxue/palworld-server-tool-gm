@@ -1,0 +1,736 @@
+<script setup>
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import dayjs from "dayjs";
+import { useI18n } from "vue-i18n";
+import { useMessage } from "naive-ui";
+import ApiService from "@/service/api";
+import PalDefenderConfig from "@/components/PalDefenderConfig.vue";
+
+const props = defineProps({
+  serverInfo: { type: Object, default: () => ({}) },
+  serverMetrics: { type: Object, default: () => ({}) },
+  players: { type: Array, default: () => [] },
+});
+const emit = defineEmits([
+  "open-rcon",
+  "open-backup",
+  "open-broadcast",
+  "open-config",
+  "open-game-config",
+  "refresh-server",
+]);
+const { t } = useI18n();
+const api = new ApiService();
+const message = useMessage();
+const loading = ref(false);
+const onlinePlayers = ref([]);
+const backups = ref([]);
+const tasks = ref([]);
+const asArray = (value) => (Array.isArray(value) ? value : []);
+
+const latestBackup = computed(() =>
+  [...backups.value].sort((a, b) => new Date(b.save_time) - new Date(a.save_time))[0],
+);
+const activeTasks = computed(() => tasks.value.filter((task) => task.enabled));
+const nextTask = computed(() =>
+  activeTasks.value
+    .filter((task) => task.next_run_at)
+    .sort((a, b) => new Date(a.next_run_at) - new Date(b.next_run_at))[0],
+);
+const uptime = computed(() => {
+  const seconds = Number(props.serverMetrics?.uptime || 0);
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  return days > 0
+    ? t("overview.uptimeDays", { days, hours })
+    : t("overview.uptimeHours", { hours });
+});
+const healthType = computed(() => {
+  if (!props.serverInfo?.name) return "warning";
+  const fps = Number(props.serverMetrics?.server_fps || 0);
+  return fps > 0 && fps < 30 ? "warning" : "success";
+});
+
+const loadOverview = async () => {
+  loading.value = true;
+  try {
+    const [onlineResponse, backupResponse, taskResponse] = await Promise.all([
+      api.getOnlinePlayerList(),
+      api.getBackupList({}),
+      api.getRconTasks(),
+    ]);
+    onlinePlayers.value = asArray(onlineResponse.data.value);
+    backups.value = asArray(backupResponse.data.value);
+    tasks.value = asArray(taskResponse.data.value);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const formatTime = (value) =>
+  value ? dayjs(value).format("YYYY-MM-DD HH:mm:ss") : "—";
+
+// ── 服务器管理弹窗 ──────────────────────────────────────
+const showServerMgmt = ref(false);
+const showPdConfig = ref(false);
+// Always reflect the parent prop; can be overridden locally while polling
+const localServerRunning = ref(!!props.serverInfo?.name);
+const serverRunning = computed(() => localServerRunning.value);
+// Watch prop so opening the modal always shows the correct current state
+watch(() => props.serverInfo, (val) => {
+  // Only sync if we're not in the middle of a poll (poll sets it independently)
+  if (!statusPollTimer) {
+    localServerRunning.value = !!(val?.name);
+  }
+}, { deep: true, immediate: true });
+
+const mgmtLoading = ref({ stop: false, start: false, restart: false, paldefender: false, ue4ss: false, serverUpdate: false });
+
+// Plugin install status (checked via /api/server call — if server responds it's running,
+// and we detect paldefender via a test RCON command that only works when PD is installed)
+const pluginStatus = ref({ paldefender: null, ue4ss: null, paldefender_version: null, ue4ss_version: null }); // null=未检测
+const pluginChecking = ref(false);
+
+// DLL version info loaded from /api/paldefender/version
+const pdVersion = ref({ dll_version: '', marker_version: '', latest_version: '', has_update: false, loading: false, error: '' });
+
+const checkPdVersion = async () => {
+  pdVersion.value.loading = true;
+  pdVersion.value.error = '';
+  try {
+    const res = await fetch('/api/paldefender/version');
+    const j = await res.json();
+    if (res.ok) {
+      pdVersion.value.dll_version    = j.dll_version    || '';
+      pdVersion.value.marker_version = j.marker_version || '';
+      pdVersion.value.latest_version = j.latest_version || '';
+      pdVersion.value.has_update     = !!j.has_update;
+      // If the DLL version endpoint found an actual version, the plugin is installed
+      if (j.dll_version && j.dll_version !== 'unknown') {
+        pluginStatus.value.paldefender = true;
+        if (!pluginStatus.value.paldefender_version) {
+          pluginStatus.value.paldefender_version = j.marker_version || j.dll_version;
+        }
+      }
+    } else {
+      pdVersion.value.error = j.error || '查询失败';
+    }
+  } catch (e) {
+    pdVersion.value.error = e.message;
+  } finally {
+    pdVersion.value.loading = false;
+  }
+};
+
+const checkPluginStatus = async () => {
+  pluginChecking.value = true;
+  try {
+    const { data } = await api.getServerPlugins();
+    if (data.value) {
+      pluginStatus.value.paldefender = !!data.value.paldefender;
+      pluginStatus.value.ue4ss = !!data.value.ue4ss;
+      pluginStatus.value.paldefender_version = data.value.paldefender_version || null;
+      pluginStatus.value.ue4ss_version = data.value.ue4ss_version || null;
+    }
+  } catch {
+    pluginStatus.value.paldefender = false;
+    pluginStatus.value.ue4ss = false;
+  } finally {
+    pluginChecking.value = false;
+  }
+  // Always refresh DLL version after plugin status check
+  checkPdVersion();
+  // If pluginStatus is still null after the API call (e.g. server offline),
+  // resolve it so the badge does not stay stuck on "检测中" forever.
+  if (pluginStatus.value.paldefender === null) pluginStatus.value.paldefender = false;
+  if (pluginStatus.value.ue4ss === null) pluginStatus.value.ue4ss = false;
+};
+
+// Poll server status after shutdown/restart until it changes
+let statusPollTimer = null;
+const startStatusPoll = (expectRunning) => {
+  if (statusPollTimer) clearInterval(statusPollTimer);
+  let attempts = 0;
+  statusPollTimer = setInterval(async () => {
+    attempts++;
+    try {
+      const { data } = await api.getServerInfo();
+      const nowRunning = !!(data.value?.name);
+      localServerRunning.value = nowRunning;
+      if (nowRunning === expectRunning || attempts >= 20) {
+        clearInterval(statusPollTimer);
+        statusPollTimer = null;
+      }
+    } catch {
+      localServerRunning.value = false;
+      if (!expectRunning) {
+        clearInterval(statusPollTimer);
+        statusPollTimer = null;
+      }
+    }
+  }, 3000);
+};
+
+const handleStopServer = async () => {
+  mgmtLoading.value.stop = true;
+  try {
+    const cmd = { seconds: 10, message: "Server is shutting down" };
+    console.log("[ServerMgmt] shutdown →", cmd);
+    const { statusCode } = await api.shutdownServer(cmd);
+    console.log("[ServerMgmt] shutdown response statusCode:", statusCode.value);
+    if (statusCode.value === 200) {
+      message.success("关闭命令已发送，服务器将在 10 秒后停止");
+      setTimeout(() => {
+        startStatusPoll(false);
+        setTimeout(() => emit("refresh-server"), 15000);
+      }, 12000);
+    } else {
+      message.error("停止失败");
+    }
+  } catch (e) {
+    console.error("[ServerMgmt] shutdown error:", e);
+    message.error("停止失败: " + e.message);
+  } finally {
+    mgmtLoading.value.stop = false;
+  }
+};
+
+const handleStartServer = async () => {
+  mgmtLoading.value.start = true;
+  try {
+    console.log("[ServerMgmt] start → POST /api/server/start");
+    const { data, statusCode } = await api.startServer();
+    console.log("[ServerMgmt] start response:", statusCode.value, data.value);
+    if (statusCode.value === 200) {
+      message.success("启动命令已发送，等待服务器上线...");
+      startStatusPoll(true);
+      setTimeout(() => emit("refresh-server"), 20000);
+    } else {
+      const err = data.value?.error || "启动失败";
+      message.error(err);
+      console.warn("[ServerMgmt] start failed:", err);
+    }
+  } catch (e) {
+    console.error("[ServerMgmt] start error:", e);
+    message.error("启动失败: " + e.message);
+  } finally {
+    mgmtLoading.value.start = false;
+  }
+};
+
+const handleRestartServer = async () => {
+  mgmtLoading.value.restart = true;
+  try {
+    const cmd = { seconds: 10, message: "Server is restarting" };
+    console.log("[ServerMgmt] restart (shutdown) →", cmd);
+    const { statusCode } = await api.shutdownServer(cmd);
+    console.log("[ServerMgmt] restart shutdown response:", statusCode.value);
+    if (statusCode.value === 200) {
+      message.success("重启命令已发送，服务器将在 10 秒后重启");
+      setTimeout(() => {
+        startStatusPoll(true);
+        setTimeout(() => emit("refresh-server"), 30000);
+      }, 12000);
+    } else {
+      message.error("重启失败");
+    }
+  } catch (e) {
+    console.error("[ServerMgmt] restart error:", e);
+    message.error("重启失败: " + e.message);
+  } finally {
+    mgmtLoading.value.restart = false;
+  }
+};
+
+const handleInstallPalDefender = async () => {
+  await doInstallMod('paldefender');
+};
+
+const handleInstallUE4SS = async () => {
+  await doInstallMod('ue4ss');
+};
+
+const modProgress = ref({ show: false, title: '', lines: [], done: false });
+
+const doInstallMod = async (component) => {
+  const key = component === 'paldefender' ? 'paldefender' : 'ue4ss';
+  mgmtLoading.value[key] = true;
+  modProgress.value = { show: true, title: component === 'paldefender' ? 'PalDefender' : 'UE4SS', lines: [], done: false };
+  try {
+    const res = await fetch('/api/server/mods/install', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('palworld_token') || ''}` },
+      body: JSON.stringify({ component, channel: 'stable' }),
+    });
+    const json = await res.json();
+    if (!res.ok) { message.error(json.error || '启动安装失败'); return; }
+    const installId = json.install_id;
+    const token = localStorage.getItem('palworld_token') || '';
+    const es = new EventSource(`/api/server/mods/install/progress/${installId}?token=${encodeURIComponent(token)}`);
+    es.addEventListener('log', (e) => { modProgress.value.lines.push(e.data); });
+    es.addEventListener('done', () => { modProgress.value.done = true; es.close(); checkPluginStatus(); checkPdVersion(); mgmtLoading.value[key] = false; });
+    es.addEventListener('error', (e) => { modProgress.value.lines.push('[错误] ' + (e.data || '连接断开')); modProgress.value.done = true; es.close(); mgmtLoading.value[key] = false; });
+  } catch (e) {
+    message.error('请求失败: ' + e.message);
+    mgmtLoading.value[key] = false;
+  }
+};
+
+const doServerUpdate = async () => {
+  mgmtLoading.value.serverUpdate = true;
+  modProgress.value = { show: true, title: '幻兽帕鲁服务端更新', lines: [], done: false };
+  try {
+    const res = await fetch('/api/setup/server-update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('palworld_token') || ''}` },
+      body: JSON.stringify({}),
+    });
+    const json = await res.json();
+    if (!res.ok) { message.error(json.error || '启动更新失败'); modProgress.value.done = true; return; }
+    const installId = json.install_id;
+    const es = new EventSource(`/api/setup/install/progress/${installId}`);
+    es.addEventListener('log', (e) => { modProgress.value.lines.push(e.data); });
+    es.addEventListener('done', () => { modProgress.value.done = true; es.close(); mgmtLoading.value.serverUpdate = false; });
+    es.addEventListener('error', (e) => { modProgress.value.lines.push('[错误] ' + (e.data || '连接断开')); modProgress.value.done = true; es.close(); mgmtLoading.value.serverUpdate = false; });
+  } catch (e) {
+    message.error('请求失败: ' + e.message);
+    modProgress.value.done = true;
+    mgmtLoading.value.serverUpdate = false;
+  }
+};
+
+onMounted(() => {
+  loadOverview();
+  checkPluginStatus();
+  checkPdVersion();
+});
+onUnmounted(() => {
+  if (statusPollTimer) clearInterval(statusPollTimer);
+});
+</script>
+<template>
+  <n-scrollbar class="h-full">
+    <div class="p-5 max-w-1400px mx-auto">
+      <n-flex justify="space-between" align="center" class="mb-4">
+        <div>
+          <n-h2 class="m-0">{{ $t("overview.title") }}</n-h2>
+          <n-text depth="3">{{ $t("overview.subtitle") }}</n-text>
+        </div>
+        <n-button secondary :loading="loading" @click="loadOverview(); emit('refresh-server')">
+          {{ $t("overview.refresh") }}
+        </n-button>
+      </n-flex>
+
+      <n-grid cols="1 640:2 1050:4" :x-gap="16" :y-gap="16">
+        <n-gi><n-card size="small">
+          <n-statistic :label="$t('overview.serverStatus')">
+            <n-flex align="center">
+              <n-badge dot :type="healthType" />
+              <n-text strong>{{ serverInfo?.name || $t("status.serverUnavailable") }}</n-text>
+            </n-flex>
+          </n-statistic>
+          <n-text depth="3">{{ serverInfo?.version || "—" }}</n-text>
+        </n-card></n-gi>
+        <n-gi><n-card size="small">
+          <n-statistic :label="$t('overview.onlinePlayers')" :value="serverMetrics?.current_player_num ?? onlinePlayers.length">
+            <template #suffix>/ {{ serverMetrics?.max_player_num ?? "—" }}</template>
+          </n-statistic>
+          <n-text depth="3">{{ $t("overview.totalPlayers", { count: players.length }) }}</n-text>
+        </n-card></n-gi>
+        <n-gi><n-card size="small">
+          <n-statistic :label="$t('item.serverFps')" :value="serverMetrics?.server_fps ?? '—'" />
+          <n-text depth="3">{{ $t("item.serverFrameTime") }}: {{ serverMetrics?.server_frame_time ?? "—" }} ms</n-text>
+        </n-card></n-gi>
+        <n-gi><n-card size="small">
+          <n-statistic :label="$t('item.serverUptime')" :value="uptime" />
+          <n-text depth="3">{{ $t("item.serverDays") }}: {{ serverMetrics?.days ?? "—" }}</n-text>
+        </n-card></n-gi>
+      </n-grid>
+
+      <n-grid cols="1 760:2" :x-gap="16" :y-gap="16" class="mt-4">
+        <n-gi>
+          <n-card :title="$t('overview.operations')">
+            <n-grid cols="2 560:4" :x-gap="12" :y-gap="12">
+              <n-gi><n-button block type="primary" secondary @click="emit('open-rcon')">{{ $t("button.rcon") }}</n-button></n-gi>
+              <n-gi><n-button block type="success" secondary @click="emit('open-backup')">{{ $t("button.backup") }}</n-button></n-gi>
+              <n-gi><n-button block type="warning" secondary @click="emit('open-broadcast')">{{ $t("button.broadcast") }}</n-button></n-gi>
+              <n-gi><n-button block secondary @click="emit('open-config')">{{ $t("configuration.title") }}</n-button></n-gi>
+              <n-gi><n-button block secondary type="info" @click="emit('open-game-config')">{{ $t("button.gameConfig") }}</n-button></n-gi>
+              <n-gi>
+                <n-button block type="error" secondary @click="showServerMgmt = true">{{ $t("button.serverMgmt") }}</n-button>
+              </n-gi>
+            </n-grid>
+          </n-card>
+        </n-gi>
+        <n-gi>
+          <n-card :title="$t('overview.automation')">
+            <n-descriptions :column="1" label-placement="left">
+              <n-descriptions-item :label="$t('overview.activeTasks')">{{ activeTasks.length }}</n-descriptions-item>
+              <n-descriptions-item :label="$t('overview.nextTask')">{{ nextTask?.name || "—" }}</n-descriptions-item>
+              <n-descriptions-item :label="$t('overview.nextRun')">{{ formatTime(nextTask?.next_run_at) }}</n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+        </n-gi>
+      </n-grid>
+
+      <n-grid cols="1 760:2" :x-gap="16" :y-gap="16" class="mt-4">
+        <n-gi>
+          <n-card :title="$t('overview.onlineNow')">
+            <n-empty v-if="onlinePlayers.length === 0" :description="$t('overview.noOnlinePlayers')" />
+            <n-list v-else hoverable>
+              <n-list-item v-for="player in onlinePlayers.slice(0, 6)" :key="player.player_uid">
+                <n-flex justify="space-between">
+                  <n-text>{{ player.nickname }}</n-text>
+                  <n-tag size="small" type="success">Lv.{{ player.level }}</n-tag>
+                </n-flex>
+              </n-list-item>
+            </n-list>
+          </n-card>
+        </n-gi>
+        <n-gi>
+          <n-card :title="$t('overview.backupStatus')">
+            <n-empty v-if="!latestBackup" :description="$t('overview.noBackup')" />
+            <n-descriptions v-else :column="1" label-placement="left">
+              <n-descriptions-item :label="$t('overview.latestBackup')">{{ formatTime(latestBackup.save_time) }}</n-descriptions-item>
+              <n-descriptions-item :label="$t('overview.backupCount')">{{ backups.length }}</n-descriptions-item>
+            </n-descriptions>
+          </n-card>
+        </n-gi>
+      </n-grid>
+      <!-- Credits 区块 -->
+      <div class="credits-block">
+        <div class="credits-inner">
+          <img src="/logo.jpg" alt="logo" class="credits-logo" />
+          <div class="credits-text">
+            <div class="credits-made">
+              <span class="credits-label">{{ $t("credits.madeBy") }}</span>
+              <n-tooltip trigger="hover" placement="top" :delay="300">
+                <template #trigger>
+                  <span class="credits-author">青山原不老</span>
+                </template>
+                QQ：81342543
+              </n-tooltip>
+            </div>
+            <div class="credits-row">
+              <span class="credits-label">{{ $t("credits.poweredBy") }}</span>
+              <a href="https://github.com/zaigie/palworld-server-tool" target="_blank" rel="noopener" class="credits-link">PST</a>
+            </div>
+            <div class="credits-row">
+              <span class="credits-label">{{ $t("credits.thanks") }}</span>
+              <a href="https://github.com/Ultimeit/PalDefender" target="_blank" rel="noopener" class="credits-link">PalDefender</a>
+              <span class="credits-sep">·</span>
+              <a href="https://github.com/io-software-ai/palserver-gui" target="_blank" rel="noopener" class="credits-link">palserver-gui</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </n-scrollbar>
+
+  <!-- 服务器管理弹窗 -->
+  <n-modal v-model:show="showServerMgmt" preset="card" :title="$t('serverMgmt.title')"
+    style="width:90%;max-width:520px" :bordered="false">
+    <div class="server-mgmt">
+      <n-alert type="info" :show-icon="true" size="small" class="mb-3">
+        {{ $t("serverMgmt.currentStatus") }}：
+        <n-tag :type="serverRunning ? 'success' : 'error'" size="small" round style="margin-left:8px">
+          {{ serverRunning ? $t("serverMgmt.running") : $t("serverMgmt.stopped") }}
+        </n-tag>
+      </n-alert>
+
+      <n-card size="small" :title="$t('serverMgmt.serverControl')" class="mb-3">
+        <n-space vertical>
+          <n-flex align="center" justify="space-between">
+            <div>
+              <div class="mgmt-label">{{ serverRunning ? $t("button.stopServer") : $t("button.startServer") }}</div>
+              <n-text depth="3" class="mgmt-desc">
+                {{ serverRunning ? $t("serverMgmt.stopDesc") : $t("serverMgmt.startDesc") }}
+              </n-text>
+            </div>
+            <n-button v-if="serverRunning" type="error" :loading="mgmtLoading.stop"
+              @click="handleStopServer" size="small" round>{{ $t("button.stopServer") }}</n-button>
+            <n-button v-else type="success" :loading="mgmtLoading.start"
+              @click="handleStartServer" size="small" round>{{ $t("button.startServer") }}</n-button>
+          </n-flex>
+          <n-divider style="margin:8px 0" />
+          <n-flex align="center" justify="space-between">
+            <div>
+              <div class="mgmt-label">{{ $t("button.restartServer") }}</div>
+              <n-text depth="3" class="mgmt-desc">{{ $t("serverMgmt.restartDesc") }}</n-text>
+            </div>
+            <n-button type="warning" :loading="mgmtLoading.restart"
+              :disabled="!serverRunning" @click="handleRestartServer" size="small" round>
+              {{ $t("button.restartServer") }}
+            </n-button>
+          </n-flex>
+        </n-space>
+      </n-card>
+
+      <!-- 服务端更新卡片 -->
+      <n-card size="small" class="mb-3">
+        <template #header>
+          <n-flex align="center" justify="space-between">
+            <span>幻兽帕鲁服务端</span>
+          </n-flex>
+        </template>
+        <n-space vertical :size="6">
+          <n-text depth="3" style="font-size:12px">通过 SteamCMD 自动下载最新版本并更新到服务器目录（等同于 app_update 2394010 validate）。更新前请先停止服务器。</n-text>
+          <n-flex :size="6">
+            <n-button size="tiny" type="warning"
+              :disabled="serverRunning" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
+              :loading="mgmtLoading.serverUpdate" @click="doServerUpdate">
+              更新服务端
+            </n-button>
+          </n-flex>
+        </n-space>
+      </n-card>
+
+      <!-- 插件安装状态卡片 -->
+      <n-card size="small" class="mb-3">
+        <template #header>
+          <n-flex align="center" justify="space-between">
+            <span>{{ $t("serverMgmt.pluginMgmt") }}</span>
+            <n-button text size="tiny" :loading="pluginChecking" @click="checkPluginStatus">
+              {{ $t("serverMgmt.redetect") }}
+            </n-button>
+          </n-flex>
+        </template>
+        <n-space vertical :size="10">
+          <!-- PalDefender -->
+          <div class="plugin-card">
+            <n-flex align="flex-start" :wrap="false" :size="10">
+              <svg viewBox="0 0 512 512" class="plugin-icon" fill="currentColor" style="color:#4098fc">
+                <path d="M256 16c25 24 100 72 150 72v96c0 96-75 240-150 312-75-72-150-216-150-312V88c50 0 125-48 150-72z"/>
+              </svg>
+              <div style="flex:1;min-width:0">
+                <n-flex align="center" justify="space-between" :size="8">
+                  <span class="plugin-name">PalDefender 反外挂</span>
+                  <!-- Installed: DLL found by version check OR plugin-status API -->
+                  <span v-if="pdVersion.dll_version && pdVersion.dll_version !== 'unknown' || pluginStatus.paldefender === true"
+                    class="plugin-badge installed">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    {{ $t("serverMgmt.installed") }}
+                    <span v-if="pdVersion.dll_version && pdVersion.dll_version !== 'unknown'" class="plugin-version">DLL {{ pdVersion.dll_version }}</span>
+                    <span v-else-if="pluginStatus.paldefender_version" class="plugin-version">{{ pluginStatus.paldefender_version }}</span>
+                    <!-- update badge inline, only when installed + update available -->
+                    <n-tag v-if="pdVersion.has_update" type="warning" size="tiny" style="margin-left:4px">有新版本 {{ pdVersion.latest_version }}</n-tag>
+                  </span>
+                  <!-- Not installed: both checks done and neither found DLL -->
+                  <span v-else-if="!pdVersion.loading && pluginStatus.paldefender === false" class="plugin-badge not-installed">
+                    {{ $t("serverMgmt.notInstalled") }}
+                  </span>
+                  <!-- Checking: still waiting for at least one check to complete -->
+                  <span v-else class="plugin-badge checking">{{ $t("serverMgmt.detecting") }}</span>
+                </n-flex>
+                <p class="plugin-desc">{{ $t("serverMgmt.paldefenderDesc") }}</p>
+                <n-flex :size="6" class="mt-2" wrap>
+                  <n-button v-if="pluginStatus.paldefender === true" size="tiny" type="primary"
+                    :disabled="serverRunning" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
+                    @click="handleInstallPalDefender" :loading="mgmtLoading.paldefender">
+                    {{ $t("button.update") }}
+                  </n-button>
+                  <n-button v-else size="tiny" type="primary"
+                    :disabled="serverRunning" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
+                    @click="handleInstallPalDefender" :loading="mgmtLoading.paldefender">
+                    {{ $t("button.install") }}
+                  </n-button>
+                </n-flex>
+                <p class="plugin-note">{{ $t("serverMgmt.paldefenderNote") }}</p>
+                <n-button size="tiny" secondary @click="showServerMgmt=false;showPdConfig=true">
+                  配置文件编辑
+                </n-button>
+              </div>
+            </n-flex>
+          </div>
+
+          <n-divider style="margin:6px 0" />
+
+          <!-- UE4SS -->
+          <div class="plugin-card">
+            <n-flex align="flex-start" :wrap="false" :size="10">
+              <svg viewBox="0 0 512 512" class="plugin-icon" fill="currentColor" style="color:#4098fc">
+                <path d="M103.432 17.844c-1.118.005-2.234.032-3.348.08-2.547.11-5.083.334-7.604.678-20.167 2.747-39.158 13.667-52.324 33.67-24.613 37.4 2.194 98.025 56.625 98.025.536 0 1.058-.012 1.583-.022v.704h60.565c-10.758 31.994-30.298 66.596-52.448 101.43-2.162 3.4-4.254 6.878-6.29 10.406l34.878 35.733-56.263 9.423c-32.728 85.966-27.42 182.074 48.277 182.074v-.002l9.31.066c23.83-.57 46.732-4.298 61.325-12.887 4.174-2.458 7.63-5.237 10.467-8.42h-32.446c-20.33 5.95-40.8-6.94-47.396-25.922-8.956-25.77 7.52-52.36 31.867-60.452 5.803-1.93 11.723-2.834 17.565-2.834v-.406h178.33c-.57-44.403 16.35-90.125 49.184-126 23.955-26.176 42.03-60.624 51.3-94.846l-41.225-24.932 38.272-6.906-43.37-25.807h-.005l.002-.002.002.002 52.127-8.85c-5.232-39.134-28.84-68.113-77.37-68.113C341.14 32.26 222.11 35.29 149.34 28.496c-14.888-6.763-30.547-10.723-45.908-10.652z"/>
+              </svg>
+              <div style="flex:1;min-width:0">
+                <n-flex align="center" justify="space-between" :size="8">
+                  <span class="plugin-name">UE4SS 模组加载器</span>
+                  <span v-if="pluginStatus.ue4ss === true" class="plugin-badge installed">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    {{ $t("serverMgmt.installed") }}
+                    <span v-if="pluginStatus.ue4ss_version" class="plugin-version">{{ pluginStatus.ue4ss_version }}</span>
+                  </span>
+                  <span v-else-if="pluginStatus.ue4ss === false" class="plugin-badge not-installed">
+                    {{ $t("serverMgmt.notInstalled") }}
+                  </span>
+                  <span v-else class="plugin-badge checking">{{ $t("serverMgmt.detecting") }}</span>
+                </n-flex>
+                <p class="plugin-desc">{{ $t("serverMgmt.ue4ssDesc") }}</p>
+                <n-flex :size="6" class="mt-2" wrap>
+                  <n-button v-if="pluginStatus.ue4ss === true" size="tiny" type="primary"
+                    :disabled="serverRunning" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
+                    @click="handleInstallUE4SS" :loading="mgmtLoading.ue4ss">
+                    {{ $t("button.update") }}
+                  </n-button>
+                  <n-button v-else size="tiny" type="primary"
+                    :disabled="serverRunning" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
+                    @click="handleInstallUE4SS" :loading="mgmtLoading.ue4ss">
+                    {{ $t("button.install") }}
+                  </n-button>
+                </n-flex>
+              </div>
+            </n-flex>
+          </div>
+        </n-space>
+      </n-card>
+    </div>
+    <template #footer>
+      <div style="text-align:right">
+        <n-button @click="showServerMgmt = false" size="small">{{ $t("serverMgmt.close") }}</n-button>
+      </div>
+    </template>
+  </n-modal>
+
+  <!-- 模组安装进度弹窗 -->
+  <n-modal v-model:show="showPdConfig" preset="card" title="PalDefender 配置编辑器"
+    style="width:min(96vw,780px)" :segmented="true">
+    <pal-defender-config :show="showPdConfig"/>
+    <template #footer>
+      <n-button size="small" @click="showPdConfig=false">关闭</n-button>
+    </template>
+  </n-modal>
+
+  <n-modal v-model:show="modProgress.show" preset="card" :title="'正在安装 ' + modProgress.title"
+    style="width:90%;max-width:500px" :bordered="false" :closable="modProgress.done"
+    :mask-closable="modProgress.done">
+    <div class="mod-progress-log" ref="modLogEl">
+      <div v-for="(line, i) in modProgress.lines" :key="i" class="mod-log-line">{{ line }}</div>
+      <div v-if="!modProgress.done" class="mod-log-spinner">
+        <n-spin size="small" /> 安装中，请稍候...
+      </div>
+      <div v-else class="mod-log-done">✓ ✓ 完成，可以关闭此窗口</div>
+    </div>
+    <template #footer>
+      <div style="text-align:right">
+        <n-button :disabled="!modProgress.done" @click="modProgress.show = false" size="small" type="primary">
+          关闭
+        </n-button>
+      </div>
+    </template>
+  </n-modal>
+</template>
+
+<style scoped lang="less">
+.server-mgmt { display: flex; flex-direction: column; gap: 0; }
+.mgmt-label { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.mgmt-desc { font-size: 11px; }
+
+.plugin-card { padding: 2px 0; }
+.plugin-icon { width: 28px; height: 28px; flex-shrink: 0; margin-top: 2px; }
+.plugin-name { font-size: 13px; font-weight: 700; }
+.plugin-desc { font-size: 12px; opacity: 0.65; margin: 4px 0 0; line-height: 1.4; }
+.plugin-note { font-size: 11px; opacity: 0.5; margin: 5px 0 0; }
+.plugin-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  border: 1.5px solid;
+  &.installed { border-color: rgba(24,160,88,.4); background: rgba(24,160,88,.12); color: #18a058; }
+  &.not-installed { border-color: rgba(208,48,80,.3); background: rgba(208,48,80,.08); color: #d03050; }
+  &.checking { border-color: rgba(64,152,252,.3); background: rgba(64,152,252,.08); color: #4098fc; }
+.plugin-version {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.75;
+  margin-left: 4px;
+}
+}
+
+.credits-block {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-bottom: 8px;
+}
+.credits-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(128,128,128,.06);
+  border: 1px solid rgba(128,128,128,.12);
+  max-width: 420px;
+}
+.credits-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.credits-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.credits-made {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.credits-author {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: default;
+}
+.credits-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.credits-label {
+  font-size: 11px;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+.credits-link {
+  font-size: 11px;
+  opacity: 0.75;
+  color: inherit;
+  text-decoration: none;
+  &:hover { opacity: 1; text-decoration: underline; }
+}
+.credits-sep {
+  opacity: 0.35;
+  font-size: 11px;
+}
+.mod-progress-log {
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(0,0,0,.15);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: monospace;
+  font-size: 12px;
+}
+.mod-log-line {
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.mod-log-spinner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+.mod-log-done {
+  margin-top: 8px;
+  color: #18a058;
+  font-weight: 700;
+}
+</style>
