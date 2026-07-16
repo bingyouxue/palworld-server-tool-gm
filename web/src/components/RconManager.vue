@@ -148,6 +148,9 @@ const BUILTIN_COMMANDS = [
   ]},
 ];
 
+// ── command documentation (from PalDefender wiki) ───────────────────────────
+const CMD_DOCS = {"getrconcmds":{"cmd":"getrconcmds","desc":"返回 RCON 可用的所有命令及其所需参数数量。","syntaxLines":["/getrconcmds"],"params":[],"examples":["/getrconcmds"]},"version":{"cmd":"version","desc":"显示 Palworld 游戏版本和 PalDefender 版本。RCON 返回 JSON 输出。","syntaxLines":["/version"],"params":[],"examples":["/version"]},"reloadcfg":{"cmd":"reloadcfg","desc":"重新加载 Config.json、WhiteList.json 和 PalDefender 封禁数据。","syntaxLines":["/reloadcfg"],"params":[],"examples":["/reloadcfg"]},"addadminip":{"cmd":"addadminip","desc":"将 IP 地址添加到管理员白名单。","syntaxLines":["/addadminip <IP>"],"params":[],"examples":["/addadminip 192.168.1.1"]},"setadmin":{"cmd":"setadmin","desc":"临时授予或撤销玩家的管理员权限。","syntaxLines":["/setadmin <UserId>"],"params":[],"examples":["/setadmin steam_76500000000000000"]},"pgbroadcast":{"cmd":"pgbroadcast","desc":"向服务器上的所有玩家发送消息。","syntaxLines":["/pgbroadcast <Message>"],"params":[],"examples":["/pgbroadcast \"Server will restart soon.\""]},"adminlogin":{"cmd":"adminlogin","desc":"登录管理员模式。需要将管理员密码作为参数。","syntaxLines":["/adminlogin <password>"],"params":[],"examples":["/adminlogin mySecretPassword"]},"adminlogout":{"cmd":"adminlogout","desc":"退出管理员模式。","syntaxLines":["/adminlogout"],"params":[],"examples":["/adminlogout"]},"iwantplayerlist":{"cmd":"iwantplayerlist","desc":"启用游戏内玩家列表叠加层，按 ESC 时可查看每名玩家的 UserId 和 Player UID。适合服务器管理员以及希望在游戏界面中直接查看详细玩家信息的玩家。","syntaxLines":["/iwantplayerlist"],"params":[],"examples":["/iwantplayerlist"]},"getpos":{"cmd":"getpos","desc":"获取你当前的世界坐标，可用于传送、召唤等操作。如果提供 [UserId]，则获取该玩家的位置。","syntaxLines":["/getpos [UserId]"],"params":[],"examples":["/getpos","/getpos steam_76500000000000000"]},"settime":{"cmd":"settime","desc":"更改 Palworld 中的时间。小时可为 0 到 23，也可以是 day 或 night。","syntaxLines":["/settime <hour>"],"params":[],"examples":["/settime 12","/settime night"]},"togglepvp":{"cmd":"togglepvp","desc":"在当前运行会话中开启或关闭服务器 PvP。","syntaxLines":["/togglepvp"],"params":[],"examples":["/togglepvp"]},"alert":{"cmd":"alert","desc":"向服务器上的所有玩家发送警报消息。该消息通常会醒目地显示在屏幕上。","syntaxLines":["/alert <message>"],"params":[],"examples":["/alert Server will restart in 5 minutes!"]},"send":{"cmd":"send","desc":"允许你向指定玩家发送消息或日志消息。","syntaxLines":["/send <type> <UserId> <Message>"],"params":["<UserId>: 接收消息的玩家 ID。","<Message>: 要发送的消息文本。"],"examples":["/send msg steam_76500000000000000 Dont miss out on Qonzer's sale!","/send log steam_76500000000000000 Dont miss out on Qonzer's sale!","/send ilog steam_76500000000000000 Dont miss out on Qonzer's sale!","/send vilog steam_76500000000000000 Dont miss out on Qonzer's sale!"]},"getnearestbase":{"cmd":"getnearestbase","desc":"显示离你角色最近的基地所属公会名称。","syntaxLines":["/getnearestbase [X] [Y] [Z]"],"params":[],"examples":["/getnearestbase 100 200 50"]},"gotonearestbase":{"cmd":"gotonearestbase","desc":"将你传送到当前位置附近最近的基地。","syntaxLines":["/gotonearestbase [X] [Y] [Z]"],"params":[],"examples":["/gotonearestbase 100 200 50"]},"killnearestbase":{"cmd":"killnearestbase","desc":"摧毁最近的基地（","syntaxLines":["/killnearestbase [X] [Y] [Z]"],"params":[],"examples":["/killnearestbase 100 200 50"]},"kick":{"cmd":"kick","desc":"将玩家踢出服务器。","syntaxLines":["/kick <UserId> [Reason=\"Kicked by Admin.\"]"],"params":[],"examples":["/kick steam_76500000000000000 \"Spamming in chat\""]},"ban":{"cmd":"ban","desc":"封禁玩家并将其踢出服务器。","syntaxLines":["/ban <UserId> [Reason=\"Banned by Admin.\"]"],"params":[],"examples":["/ban gdk_25300000000000000 \"Cheating\""]},"ipban":{"cmd":"ipban","desc":"封禁玩家的 IP 地址，然后将其踢出服务器。","syntaxLines":["/ipban <UserId> [Reason=\"Banned by Admin.\"]"],"params":[],"examples":["/ipban steam_76500000000000000"]},"banip":{"cmd":"banip","desc":"封禁一个 IP 地址。","syntaxLines":["/banip <IP>"],"params":[],"examples":["/banip 192.168.1.1"]},"unbanip":{"cmd":"unbanip","desc":"从封禁列表中移除一个 IP 地址。","syntaxLines":["/unbanip <IP>"],"params":[],"examples":["/unbanip 192.168.1.1"]},"unban":{"cmd":"unban","desc":"从 PalDefender 封禁列表中移除一个 UserId。","syntaxLines":["/unban <UserId> [Reason=\"Unbanned by admin.\"]"],"params":[],"examples":["/unban steam_76500000000000000 \"Appeal accepted\""]},"getip":{"cmd":"getip","desc":"显示玩家的 IP 地址。","syntaxLines":["/getip <UserId>"],"params":[],"examples":["/getip gdk_25300000000000000"]},"whitelist_add":{"cmd":"whitelist_add","desc":"将 UserId 添加到白名单。","syntaxLines":["/whitelist_add <UserId>"],"params":[],"examples":["/whitelist_add steam_76500000000000000"]},"whitelist_remove":{"cmd":"whitelist_remove","desc":"从白名单中移除 UserId。","syntaxLines":["/whitelist_remove <UserId>"],"params":[],"examples":["/whitelist_remove gdk_25300000000000000"]},"whitelist_get":{"cmd":"whitelist_get","desc":"显示白名单玩家的完整列表。","syntaxLines":["/whitelist_get"],"params":[],"examples":["/whitelist_get"]},"imcheater":{"cmd":"imcheater","desc":"用于测试服务器如何响应作弊者。","syntaxLines":["/imcheater"],"params":[],"examples":["/imcheater"]},"spectate":{"cmd":"spectate","desc":"开启旁观模式。效果与按下热键 \\ 相同，但该热键并非对所有人都有效，例如主机玩家。","syntaxLines":["/spectate"],"params":[],"examples":["/spectate"]},"tp":{"cmd":"tp","desc":"将你自己或指定玩家传送到另一名玩家、坐标、最近的己方基地或油田目标位置。","syntaxLines":["/tp <UserId>","/tp <UserId1> <UserId2>","/tp <X> <Y>","/tp <X> <Y> <Z>","/tp <UserId> <X> <Y>","/tp <UserId> <X> <Y> <Z>","/tp home","/tp oilrig","/tp oilrig:Lv30","/tp oilrig:Lv55","/tp oilrig:Lv60"],"params":[],"examples":["/tp steam_76500000000000000 gdk_25300000000000000","/tp 100 -250","/tp oilrig:Lv60"]},"give_exp":{"cmd":"give_exp","desc":"给玩家经验值。","syntaxLines":["/give_exp <UserId> <Amount>"],"params":[],"examples":["/give_exp gdk_25300000000000000 1000"]},"giveme_exp":{"cmd":"giveme_exp","desc":"给自己经验值。","syntaxLines":["/giveme_exp <Amount>"],"params":[],"examples":["/giveme_exp 1000"]},"renameplayer":{"cmd":"renameplayer","desc":"修改玩家昵称。","syntaxLines":["/renameplayer <UserId> <NewName>"],"params":[],"examples":["/renameplayer steam_76500000000000000 NewNickname"]},"givestats":{"cmd":"givestats","desc":"给玩家一个或多个未使用属性点；负数会扣除。不会影响已经分配的点数。","syntaxLines":["/givestats <UserId> [Count=1]"],"params":[],"examples":["/givestats steam_76500000000000000 5","/givestats steam_76500000000000000 -2"]},"givemestats":{"cmd":"givemestats","desc":"给自己一个或多个未使用属性点；负数会扣除。不会影响已经分配的点数。","syntaxLines":["/givemestats [Count=1]"],"params":[],"examples":["/givemestats 5","/givemestats -2"]},"godmode":{"cmd":"godmode","desc":"授予无敌，包括免疫状态效果，阻止食物消耗，并在启用时恢复生命值。如果配置允许，也可以一击击杀所有目标。","syntaxLines":["/godmode [on/off]"],"params":[],"examples":["/godmode","/godmode on","/godmode off"]},"setguildleader":{"cmd":"setguildleader","desc":"将目标玩家设为其当前公会的会长。","syntaxLines":["/setguildleader <UserId>"],"params":[],"examples":["/setguildleader gdk_25300000000000000"]},"exportguilds":{"cmd":"exportguilds","desc":"将服务器上的所有公会导出到 Pal/Binaries/Win64/PalDefender/guildexport.json。","syntaxLines":["/exportguilds"],"params":[],"examples":["/exportguilds"]},"give":{"cmd":"give","desc":"给玩家一个物品，并可指定数量。","syntaxLines":["/give <UserId> <ItemId> [Amount=1]"],"params":[],"examples":["/give steam_76500000000000000 Sword 2"]},"giveitems":{"cmd":"giveitems","desc":"在一个命令中给玩家多个物品，可用冒号为每个物品指定数量。","syntaxLines":["/giveitems <UserId> <ItemId>[:<Amount>] ..."],"params":[],"examples":["/giveitems gdk_25300000000000000 Sword:2 Shield:1"]},"giveme":{"cmd":"giveme","desc":"给自己一个物品，并可指定数量。","syntaxLines":["/giveme <ItemId> [Amount=1]"],"params":[],"examples":["/giveme Sword 3"]},"delitem":{"cmd":"delitem","desc":"从玩家身上删除物品，并可指定数量。默认值为 1，只删除一个。使用 all 替代 1 可删除全部。","syntaxLines":["/delitem <UserId> <ItemId> [Amount=1]"],"params":[],"examples":["/delitem steam_76500000000000000 Sword 1","/delitem gdk_25300000000000000 Sword all"]},"give_relic":{"cmd":"give_relic","desc":"给玩家一个或多个指定类型的遗物点数。","syntaxLines":["/give_relic <UserId> <RelicType> [Amount]"],"params":[],"examples":["/give_relic steam_76500000000000000 CapturePower 5"]},"giveme_relic":{"cmd":"giveme_relic","desc":"给自己一个或多个指定类型的遗物点数。","syntaxLines":["/giveme_relic <RelicType> [Amount]"],"params":[],"examples":["/giveme_relic CapturePower 5"]},"delitems":{"cmd":"delitems","desc":"在一个命令中从玩家身上删除多个物品，可用冒号指定每种物品的数量。使用 all 替代 1 可删除全部。","syntaxLines":["/delitems <UserId> <ItemId>[:<Amount>] ..."],"params":[],"examples":["/delitems steam_76500000000000000 Sword:1 Shield:all"]},"clearinv":{"cmd":"clearinv","desc":"清空玩家背包中的指定容器。可用容器包括 items、keyitems、armor、weapons、food、dropslot 或 all。","syntaxLines":["/clearinv <UserId> [Container=items] ..."],"params":[],"examples":["/clearinv steam_76500000000000000 items","/clearinv gdk_25300000000000000 all"]},"givepal":{"cmd":"givepal","desc":"给玩家一只指定等级的帕鲁。","syntaxLines":["/givepal <UserId> <PalId> [Level=1]"],"params":["<UserId>: 玩家的 ID。"],"examples":["/givepal gdk_25300000000000000 WeaselDragon 10"]},"givepal_j":{"cmd":"givepal_j","desc":"给玩家一只由 PalTemplate 文件定义的帕鲁。不再支持内嵌 JSON，只接受文件名。","syntaxLines":["/givepal_j <UserID> <PalTemplate>"],"params":[],"examples":["/givepal_j steam_76500000000000000 MyPalTemplate"]},"givemepal":{"cmd":"givemepal","desc":"给自己一只指定等级的帕鲁。","syntaxLines":["/givemepal <PalId> [Level=1]"],"params":[],"examples":["/givemepal WeaselDragon 10"]},"givemepal_j":{"cmd":"givemepal_j","desc":"给自己一只由 PalTemplate 文件定义的帕鲁。不再支持内嵌 JSON，只接受文件名。","syntaxLines":["/givemepal_j <PalTemplate>"],"params":[],"examples":["/givemepal_j MyPalTemplate"]},"spawnpal":{"cmd":"spawnpal","desc":"按相对或绝对坐标生成一只帕鲁。","syntaxLines":["/spawnpal <PalID>","/spawnpal <PalID> [Level]","/spawnpal <PalID> [x] [y] [z]","/spawnpal <PalID> [x] [y] [z] [Level]"],"params":[],"examples":["/spawnpal Anubis 255"]},"spawnpal_j":{"cmd":"spawnpal_j","desc":"按相对或绝对坐标生成一只帕鲁。","syntaxLines":["/spawnpal_j <PalTemplate>","/spawnpal <PalTemplate> [x] [y] [z]"],"params":[],"examples":["/spawnpal Anubis 255"]},"summon":{"cmd":"summon","desc":"使用指定的 PalSummon 文件生成帕鲁。","syntaxLines":["/summon <PalSummon>"],"params":[],"examples":["/summon PalSummon"]},"giveegg":{"cmd":"giveegg","desc":"给目标用户一个包含指定帕鲁的帕鲁蛋，并可选择调整等级。","syntaxLines":["/giveegg <UserId> <EggId> <PalId> [Level]"],"params":[],"examples":[]},"givemeegg":{"cmd":"givemeegg","desc":"给自己一个包含指定帕鲁的帕鲁蛋，并可选择调整等级。","syntaxLines":["/givemeegg <EggId> <PalId> [Level]"],"params":[],"examples":[]},"giveegg_j":{"cmd":"giveegg_j","desc":"给出一个帕鲁蛋，内部帕鲁由 PalTemplate 文件定义，并可选择调整等级。","syntaxLines":["/giveegg_j <EggId> <PalTemplate> [Level]"],"params":[],"examples":[]},"givemeegg_j":{"cmd":"givemeegg_j","desc":"给自己一个帕鲁蛋，内部帕鲁由 PalTemplate 文件定义，并可选择调整等级。","syntaxLines":["/givemeegg_j <EggId> <PalTemplate> [Level]"],"params":[],"examples":[]},"jetragon":{"cmd":"jetragon","desc":"给你一只管理员空涡龙帕鲁（它飞得太快了……）。","syntaxLines":["/jetragon"],"params":[],"examples":["/jetragon"]},"catwaifu":{"cmd":"catwaifu","desc":"给你一只管理员猫娘帕鲁，用于增强角色属性。","syntaxLines":["/catwaifu"],"params":[],"examples":["/catwaifu"]},"exportpals":{"cmd":"exportpals","desc":"将玩家的每只帕鲁导出为 PalTemplate 文件，位置为 Pal/Binaries/Win64/PalDefender/pals/exported//。","syntaxLines":["/exportpals [UserId]"],"params":[],"examples":["/exportpals steam_76500000000000000","/exportpals"]},"deletepals":{"cmd":"deletepals","desc":"使用高级过滤器删除指定用户的帕鲁。过滤器允许在一个命令中指定多个条件，例如 Pal ID、等级、性别、被动技能等。用于重要数据前请先在安全环境中测试。","syntaxLines":["/deletepals <UserId> <PalFilter>"],"params":[],"examples":[]},"learntech":{"cmd":"learntech","desc":"让玩家学习指定科技。使用 all 可解锁全部。","syntaxLines":["/learntech <UserId> <TechID>"],"params":[],"examples":["/learntech steam_76500000000000000 Tech001","/learntech gdk_25300000000000000 all"]},"unlearntech":{"cmd":"unlearntech","desc":"让玩家遗忘指定科技。使用 all 可移除全部。","syntaxLines":["/unlearntech <UserId> <TechID>"],"params":[],"examples":["/unlearntech gdk_25300000000000000 Tech001","/unlearntech steam_76500000000000000 all"]},"givetechpoints":{"cmd":"givetechpoints","desc":"给目标用户 X 点科技点。","syntaxLines":["/givetechpoints <UserId> [Amount=1]"],"params":[],"examples":["/givetechpoints steam_76500000000000000 10"]},"givebosstechpoints":{"cmd":"givebosstechpoints","desc":"给目标用户 X 点古代科技点。","syntaxLines":["/givebosstechpoints <UserId> [Amount=1]"],"params":[],"examples":["/givebosstechpoints steam_76500000000000000 5"]},"givemetechpoints":{"cmd":"givemetechpoints","desc":"给自己 X 点科技点。","syntaxLines":["/givemetechpoints [Amount=1]"],"params":[],"examples":["/givemetechpoints 10"]},"givemebosstechpoints":{"cmd":"givemebosstechpoints","desc":"给自己 X 点古代科技点。","syntaxLines":["/givemebosstechpoints [Amount=1]"],"params":[],"examples":["/givemebosstechpoints 5"]},"gettechids":{"cmd":"gettechids","desc":"返回所有可用科技 ID 的列表。RCON 会得到 JSON 输出。","syntaxLines":["/gettechids"],"params":[],"examples":["/gettechids"]},"getskinids":{"cmd":"getskinids","desc":"返回所有可用帕鲁皮肤 ID 的列表。RCON 会得到 JSON 输出。","syntaxLines":["/getskinids"],"params":[],"examples":["/getskinids"]}};
+
 const PINNED_CMDS = [
   { cmd: "givepal_j",  desc: "自定义帕鲁（词条/体质/星星）",       star: true },
   { cmd: "giveegg_j",  desc: "自定义帕鲁蛋（词条/体质/星星）",     star: true },
@@ -184,15 +187,76 @@ const filteredGroups = computed(() => {
 // Current command hint shown below input
 const cmdHint = ref('');
 
+// ── command doc card ────────────────────────────────────────────────────────
+const cmdDoc = ref(null);
+
+// ── param panel ──────────────────────────────────────────────────────────────
+// Each slot: { name, type: 'player'|'pal'|'item'|'number'|'text', value, label, optional }
+const paramSlots   = ref([]);
+const paramCmdBase = ref(''); // e.g. "givepal"
+
+const PLAYER_KEYS = ['userid','playerid','player','玩家','steamid','用户'];
+const PAL_KEYS    = ['palid','pal','paltemplate','帕鲁','帕鲁id'];
+const ITEM_KEYS   = ['itemid','item','道具id','道具','eggid'];
+const NUM_KEYS    = ['level','n','数量','秒','count','amount','小时','points','stats'];
+
+function slotType(rawName) {
+  const n = rawName.toLowerCase().replace(/[[\]]/g, '');
+  if (PLAYER_KEYS.some(k => n.includes(k))) return 'player';
+  if (PAL_KEYS.some(k => n.includes(k)))    return 'pal';
+  if (ITEM_KEYS.some(k => n.includes(k)))   return 'item';
+  if (NUM_KEYS.some(k => n.includes(k)))    return 'number';
+  return 'text';
+}
+
+function buildParamSlots(cmdStr) {
+  // Match both {param} and [param] style
+  const re = /\{([^}]+)\}|\[([^\]]+)\]/g;
+  const slots = [];
+  let m;
+  while ((m = re.exec(cmdStr)) !== null) {
+    const raw      = m[1] || m[2];
+    const optional = !!m[2];
+    const type = slotType(raw);
+    // only show panel slots for selectable/numeric params; pure text params are typed directly
+    if (type !== 'text') slots.push({ name: raw, type, value: null, optional });
+  }
+  return slots;
+}
+
+function assembleFromSlots() {
+  const parts = [paramCmdBase.value];
+  for (const s of paramSlots.value) {
+    if (s.value !== null && s.value !== '') parts.push(String(s.value));
+    else if (!s.optional) parts.push('');
+  }
+  consoleInput.value = parts.join(' ').trimEnd() + ' ';
+  onInputChange();
+}
+
 function selectCmd(cmdStr, descStr) {
-  consoleInput.value = cmdStr.replace(/\{[^}]*\}/g, '').trim() + ' ';
-  // Build usage: replace {param} with <param> style
-  const usage = cmdStr.replace(/\{([^}]*)\}/g, '<$1>');
+  // Parse base command (everything before first {)
+  const baseMatch = cmdStr.match(/^([^{[]+)/);
+  paramCmdBase.value = baseMatch ? baseMatch[1].trim() : cmdStr.trim();
+  paramSlots.value   = buildParamSlots(cmdStr);
+
+  if (paramSlots.value.length === 0) {
+    consoleInput.value = paramCmdBase.value + ' ';
+  } else {
+    assembleFromSlots();
+  }
+
+  const usage = cmdStr.replace(/\{([^}]*)\}/g, '<$1>').replace(/\[([^\]]*)\]/g, '[<$1>]');
   cmdHint.value = (descStr ? `${descStr}  ·  ` : '') + `用法: ${usage}`;
+  // show doc card
+  const docKey = paramCmdBase.value.toLowerCase().replace(/^\//, '');
+  cmdDoc.value = CMD_DOCS[docKey] || null;
   onInputChange();
   nextTick(() => {
-    const el = document.getElementById('rcon-console-input');
-    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    if (paramSlots.value.length === 0) {
+      const el = document.getElementById('rcon-console-input');
+      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    }
   });
 }
 
@@ -267,6 +331,21 @@ async function runConsole() {
 const acList      = ref([]);  // current suggestion list
 const acIndex     = ref(-1); // selected index (-1 = none)
 const acShow      = ref(false);
+
+// ── param slot popup state ───────────────────────────────────────────────
+const slotSearch = ref({});
+
+function applySlotValue(idx, value) {
+  if (value === null || value === undefined || String(value).trim() === '') return;
+  const slot = paramSlots.value[idx];
+  if (!slot) return;
+  slot.value = String(value);
+  assembleFromSlots();
+  nextTick(() => {
+    const el = document.getElementById('rcon-console-input');
+    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  });
+}
 
 // Build a flat list of all known param values for the current cmd token
 function buildAcList(input) {
@@ -668,22 +747,27 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
 
           <!-- right: terminal -->
           <div class="terminal-panel">
-            <n-card size="small" style="flex-shrink:0">
-              <n-grid cols="3" :x-gap="8" :y-gap="6">
-                <n-gi>
-                  <n-select v-model:value="selectedPlayerUid" filterable clearable size="small"
-                    :options="playerOptions" :placeholder="$t('input.selectPlayer')" />
-                </n-gi>
-                <n-gi>
-                  <n-select v-model:value="selectedItem" filterable clearable size="small"
-                    :options="itemOptions" :placeholder="$t('input.selectItem')" />
-                </n-gi>
-                <n-gi>
-                  <n-select v-model:value="selectedPal" filterable clearable size="small"
-                    :options="palOptions" :placeholder="$t('input.selectPal')" />
-                </n-gi>
-              </n-grid>
-            </n-card>
+            <!-- command doc card -->
+            <div v-if="cmdDoc" class="cmd-doc-card">
+              <div class="cmd-doc-header">
+                <code class="cmd-doc-name">/{{ cmdDoc.cmd }}</code>
+                <span class="cmd-doc-desc">{{ cmdDoc.desc }}</span>
+                <button class="cmd-doc-close" @click="cmdDoc = null">✕</button>
+              </div>
+              <div v-if="cmdDoc.syntaxLines.length" class="cmd-doc-section">
+                <div class="cmd-doc-section-title">语法</div>
+                <div v-for="s in cmdDoc.syntaxLines" :key="s" class="cmd-doc-syntax">{{ s }}</div>
+              </div>
+              <div v-if="cmdDoc.params.length" class="cmd-doc-section">
+                <div class="cmd-doc-section-title">参数</div>
+                <div v-for="p in cmdDoc.params" :key="p" class="cmd-doc-param">{{ p }}</div>
+              </div>
+              <div v-if="cmdDoc.examples.length" class="cmd-doc-section">
+                <div class="cmd-doc-section-title">示例 <span class="cmd-doc-section-hint">（点击填入）</span></div>
+                <div v-for="e in cmdDoc.examples" :key="e" class="cmd-doc-example"
+                  @click="consoleInput = e.replace(/^\//, '') + ' '; cmdDoc = null; onInputChange()">{{ e }}</div>
+              </div>
+            </div>
 
             <n-scrollbar ref="logEl" class="terminal-log">
               <div v-if="!consoleLog.length" class="terminal-placeholder">
@@ -747,6 +831,54 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
                   @keydown="onInputKeydown"
                   @wheel.passive="onInputWheel"
                   @blur="setTimeout(()=>{ acShow=false }, 150)" />
+                <!-- param slot popup buttons -->
+                <template v-if="paramSlots.length">
+                  <n-popover
+                    v-for="(slot, idx) in paramSlots" :key="idx"
+                    trigger="click" placement="top-end" :show-arrow="false"
+                    :style="{ padding: 0 }"
+                    @update:show="(v) => { if (v) slotSearch[idx] = ''; }"
+                  >
+                    <template #trigger>
+                      <button class="param-slot-btn" :title="slot.name">
+                        <span class="param-slot-btn-name">{{ slot.name }}</span>
+                        <span v-if="slot.optional" class="param-slot-btn-opt">?</span>
+                      </button>
+                    </template>
+                    <div v-if="slot.type === 'player'" class="slot-popup">
+                      <input v-model="slotSearch[idx]" class="slot-popup-search" placeholder="搜索玩家…" @click.stop />
+                      <div class="slot-popup-list">
+                        <div v-for="opt in playerOptions.filter(o => !(slotSearch[idx]||'').trim() || o.label.toLowerCase().includes((slotSearch[idx]||'').toLowerCase()))"
+                          :key="opt.value" class="slot-popup-item"
+                          @mousedown.prevent="applySlotValue(idx, opt.value)">{{ opt.label }}</div>
+                        <div v-if="!playerOptions.filter(o => !(slotSearch[idx]||'').trim() || o.label.toLowerCase().includes((slotSearch[idx]||'').toLowerCase())).length" class="slot-popup-empty">无在线玩家</div>
+                      </div>
+                    </div>
+                    <div v-else-if="slot.type === 'pal'" class="slot-popup">
+                      <input v-model="slotSearch[idx]" class="slot-popup-search" placeholder="搜索帕鲁…" @click.stop />
+                      <div class="slot-popup-list">
+                        <div v-for="opt in palOptions.filter(o => !(slotSearch[idx]||'').trim() || o.label.toLowerCase().includes((slotSearch[idx]||'').toLowerCase()))"
+                          :key="opt.value" class="slot-popup-item"
+                          @mousedown.prevent="applySlotValue(idx, opt.value)">{{ opt.label }}</div>
+                        <div v-if="!palOptions.filter(o => !(slotSearch[idx]||'').trim() || o.label.toLowerCase().includes((slotSearch[idx]||'').toLowerCase())).length" class="slot-popup-empty">无匹配</div>
+                      </div>
+                    </div>
+                    <div v-else-if="slot.type === 'item'" class="slot-popup">
+                      <input v-model="slotSearch[idx]" class="slot-popup-search" placeholder="搜索道具…" @click.stop />
+                      <div class="slot-popup-list">
+                        <div v-for="opt in itemOptions.filter(o => !(slotSearch[idx]||'').trim() || o.label.toLowerCase().includes((slotSearch[idx]||'').toLowerCase()))"
+                          :key="opt.value" class="slot-popup-item"
+                          @mousedown.prevent="applySlotValue(idx, opt.value)">{{ opt.label }}</div>
+                        <div v-if="!itemOptions.filter(o => !(slotSearch[idx]||'').trim() || o.label.toLowerCase().includes((slotSearch[idx]||'').toLowerCase())).length" class="slot-popup-empty">无匹配</div>
+                      </div>
+                    </div>
+                    <div v-else class="slot-popup slot-popup--number">
+                      <span class="slot-popup-label">{{ slot.name }}</span>
+                      <input v-model="slotSearch[idx]" type="number" min="1" class="slot-popup-search" :placeholder="slot.name" @click.stop @keydown.enter.prevent="applySlotValue(idx, slotSearch[idx])" />
+                      <button class="slot-popup-confirm" @mousedown.prevent="applySlotValue(idx, slotSearch[idx])">确认</button>
+                    </div>
+                  </n-popover>
+                </template>
                 <n-button type="primary" size="small" class="terminal-send-btn"
                   :loading="executing" :disabled="!consoleInput.trim()" @click="runConsole">
                   <template #icon>
@@ -1051,7 +1183,7 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
 .terminal-input-wrap { position: relative; flex-shrink: 0; }
 .ac-dropdown {
   position: absolute; bottom: calc(100% + 4px); left: 0; right: 0;
-  background: var(--n-card-color, #1e1e2e); border: 1.5px solid var(--n-border-color);
+  background: var(--n-card-color); border: 1.5px solid var(--n-border-color);
   border-radius: 8px; z-index: 999; max-height: 220px; overflow-y: auto;
   box-shadow: 0 4px 16px rgba(0,0,0,.3); font-family: monospace; font-size: 12px;
 }
@@ -1092,5 +1224,234 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
     grid-template-columns: 1fr;
     grid-template-rows: 170px 1fr;
   }
+}
+
+/* param panel */
+.param-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--n-border-color);
+  border-radius: 8px;
+  background: var(--n-card-color);
+  flex-shrink: 0;
+}
+.param-slot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 200px;
+  flex: 1;
+}
+.param-label {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--n-primary-color);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.param-optional {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.55;
+  margin-left: 3px;
+  font-family: sans-serif;
+}
+.param-input { flex: 1; min-width: 120px; }
+
+/* command doc card */
+.cmd-doc-card {
+  flex-shrink: 0;
+  border: 1.5px solid rgba(64,152,252,.3);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 12px;
+  background: var(--n-card-color);
+  max-height: 240px;
+  overflow-y: auto;
+}
+.cmd-doc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(64,152,252,.08);
+  border-bottom: 1px solid rgba(64,152,252,.12);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.cmd-doc-name {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--n-primary-color);
+  white-space: nowrap;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.cmd-doc-desc {
+  flex: 1;
+  font-size: 11.5px;
+  opacity: .7;
+  min-width: 0;
+}
+.cmd-doc-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  opacity: .35;
+  font-size: 12px;
+  padding: 2px 4px;
+  flex-shrink: 0;
+  line-height: 1;
+  &:hover { opacity: .9; }
+}
+.cmd-doc-section {
+  padding: 5px 12px 6px;
+  border-bottom: 1px solid rgba(128,128,128,.07);
+  &:last-child { border-bottom: none; }
+}
+.cmd-doc-section-title {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  opacity: .35;
+  margin-bottom: 3px;
+}
+.cmd-doc-section-hint {
+  font-size: 9px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  opacity: .6;
+}
+.cmd-doc-syntax {
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--n-primary-color);
+  line-height: 1.6;
+  opacity: .9;
+}
+.cmd-doc-param {
+  font-size: 11.5px;
+  line-height: 1.45;
+  opacity: .7;
+  padding: 1px 0;
+  border-bottom: 1px solid rgba(128,128,128,.05);
+  &:last-child { border-bottom: none; }
+}
+.cmd-doc-example {
+  font-family: monospace;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: rgba(128,128,128,.06);
+  margin: 2px 0;
+  transition: background .1s, color .1s;
+  &:hover {
+    background: rgba(24,160,88,.12);
+    color: #18a058;
+  }
+}
+
+
+/* param slot popup buttons */
+.param-slot-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1.5px solid var(--n-primary-color);
+  background: rgba(64,152,252,.1);
+  color: var(--n-primary-color);
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 1.6;
+  white-space: nowrap;
+  transition: background .15s;
+  &:hover { background: rgba(64,152,252,.22); }
+}
+.param-slot-btn-name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+.param-slot-btn-opt { opacity: .5; font-weight: 400; }
+
+.slot-popup {
+  min-width: 220px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.slot-popup--number {
+  padding: 8px 10px;
+  gap: 6px;
+  min-width: 180px;
+}
+.slot-popup-label {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--n-primary-color);
+}
+.slot-popup-search {
+  border: none;
+  border-bottom: 1.5px solid var(--n-border-color);
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  outline: none;
+  flex-shrink: 0;
+  &:focus { border-color: var(--n-primary-color); }
+}
+.slot-popup-number-input {
+  border: 1.5px solid var(--n-border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  &:focus { border-color: var(--n-primary-color); }
+}
+.slot-popup-list {
+  max-height: 220px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 12px;
+}
+.slot-popup-item {
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid rgba(128,128,128,.07);
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba(64,152,252,.14); color: var(--n-primary-color); }
+}
+.slot-popup-empty {
+  padding: 8px 10px;
+  opacity: .4;
+  font-size: 12px;
+  text-align: center;
+}
+.slot-popup-confirm {
+  background: var(--n-primary-color);
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  &:hover { opacity: .85; }
 }
 </style>

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, inject, onMounted, ref } from "vue";
 import { ContentCopyFilled, PersonSearchSharp } from "@vicons/material";
 import { LogOut, Ban, ShieldCheckmarkOutline } from "@vicons/ionicons5";
@@ -12,6 +12,7 @@ import GmItemPicker from "./GmItemPicker.vue";
 import GmPalPicker from "./GmPalPicker.vue";
 import GmTeleportModal from "./GmTeleportModal.vue";
 import GmCustomPalModal from "./GmCustomPalModal.vue";
+import GmTechPicker from "./GmTechPicker.vue";
 import { useDialog, useMessage, NAvatar, NTag, NButton, NSpace, NInputNumber } from "naive-ui";
 import PalDetail from "./PalDetail.vue";
 import whitelistStore from "@/stores/model/whitelist.js";
@@ -66,6 +67,7 @@ const gmOpsOptions = computed(() => [
   { label: t("button.giveExp"), key: "give_exp" },
   { label: t("button.giveTech"), key: "give_tech" },
   { label: t("button.giveAncientTech"), key: "give_ancient_tech" },
+  { label: t("button.learnTech"), key: "learn_tech" },
   { type: "divider", key: "d2" },
   { label: t("item.palList"), key: "view_pals" },
   { label: t("item.itemList"), key: "view_items" },
@@ -75,6 +77,7 @@ const gmOpsOptions = computed(() => [
 const showGiveExpModal = ref(false);
 const showGiveTechModal = ref(false);
 const showGiveAncientTechModal = ref(false);
+const showLearnTechModal = ref(false);
 const giveExpAmount = ref(1000);
 const giveTechAmount = ref(10);
 const giveAncientTechAmount = ref(5);
@@ -153,6 +156,7 @@ const handleGmOp = async (key) => {
     case "give_exp":       showGiveExpModal.value = true; break;
     case "give_tech":      showGiveTechModal.value = true; break;
     case "give_ancient_tech": showGiveAncientTechModal.value = true; break;
+    case "learn_tech":       showLearnTechModal.value = true; break;
     case "view_pals":      activeTab.value = t("item.palList"); break;
     case "view_items":     activeTab.value = t("item.itemList"); break;
   }
@@ -1295,6 +1299,16 @@ const createPlayerItemsColumns = () => {
         <n-button type="primary" @click="doGiveAncientTech">{{ $t("message.confirmGiveBtn") }}</n-button>
       </n-flex>
     </template>
+  </n-modal>
+
+  <!-- 学习指定科技 modal -->
+  <n-modal v-model:show="showLearnTechModal" preset="card" style="width:96%;max-width:800px"
+    :title="$t('button.learnTech')" :bordered="false" header-style="padding:12px 20px" content-style="padding:12px 20px">
+    <GmTechPicker
+      v-if="showLearnTechModal && playerInfo?.player_uid"
+      :player-uid="playerInfo.player_uid"
+      @done="showLearnTechModal = false"
+    />
   </n-modal>
 
   <!-- 删除物品 modal -->

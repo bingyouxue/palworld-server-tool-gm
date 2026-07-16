@@ -461,6 +461,7 @@ onMounted(async () => {
   if (isLogin.value) currentDisplay.value = "overview";
   loading.value = false;
   setInterval(async () => {
+    await getServerInfo();
     await getPlayerList();
     await getServerMetrics();
   }, 10000);

@@ -101,6 +101,7 @@ func RegisterRouter(r *gin.Engine, onConfigInitialized func()) {
 		authGroup.POST("/player/:player_uid/give_exp", giveExp)
 		authGroup.POST("/player/:player_uid/give_tech_point", giveTechPoint)
 		authGroup.POST("/player/:player_uid/give_ancient_tech_point", giveAncientTechPoint)
+		authGroup.POST("/player/:player_uid/learn_tech", learnTech)
 		authGroup.POST("/player/:player_uid/give_custom_pal", giveCustomPal)
 		authGroup.PUT("/guild", putGuilds)
 		authGroup.POST("/sync", syncData)
