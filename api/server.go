@@ -24,6 +24,8 @@ var palServerProcessNames = []string{
 	"PalServer.exe",
 	"PalServer-Win64-Shipping.exe",
 	"PalServer-Win64-Shipping-Cmd.exe",
+	"PalServer.sh",
+	"PalServer-Linux-Shipping",
 }
 
 // killPalServerProcesses force-kills every surviving PalServer process tree.
@@ -31,11 +33,17 @@ var palServerProcessNames = []string{
 // a process that is already gone.
 func killPalServerProcesses() {
 	for _, name := range palServerProcessNames {
-		out, err := exec.Command("taskkill", "/F", "/IM", name, "/T").CombinedOutput()
+		var out []byte
+		var err error
+		if runtime.GOOS == "windows" {
+			out, err = exec.Command("taskkill", "/F", "/IM", name, "/T").CombinedOutput()
+		} else {
+			out, err = exec.Command("pkill", "-f", name).CombinedOutput()
+		}
 		if err != nil {
 			// "not found" is expected when the process is already gone; log at
 			// debug level so the log isn't noisy during normal stop/start cycles.
-			logger.Infof("[killPalServer] taskkill %s: %s", name, string(out))
+			logger.Infof("[killPalServer] kill %s: %s", name, string(out))
 		} else {
 			logger.Infof("[killPalServer] terminated %s", name)
 		}

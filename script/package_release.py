@@ -72,7 +72,10 @@ def package(version: str, goos: str, goarch: str, sav_cli: Path, output: Path) -
 
     with tempfile.TemporaryDirectory(prefix=f"pst-{platform}-") as temp:
         stage = Path(temp)
-        pst = stage / f"pst{executable_suffix}"
+        if windows:
+            pst = stage / "Pst魔改版-GM.exe"
+        else:
+            pst = stage / "pst"
         build_go(".", pst, version, goos, goarch)
 
         sav_name = f"sav_cli{executable_suffix}"
