@@ -8,6 +8,12 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except AttributeError:
+    pass
 import tarfile
 import tempfile
 import zipfile
@@ -20,7 +26,10 @@ ARCH_NAMES = {"amd64": "x86_64", "arm64": "aarch64"}
 
 
 def run(command: list[str], *, env: dict[str, str]) -> None:
-    print("+", subprocess.list2cmdline(command), flush=True)
+    try:
+        print("+", subprocess.list2cmdline(command), flush=True)
+    except UnicodeEncodeError:
+        print("+", subprocess.list2cmdline(command).encode("utf-8", "replace").decode("utf-8", "replace"), flush=True)
     subprocess.run(command, cwd=ROOT, env=env, check=True)
 
 
