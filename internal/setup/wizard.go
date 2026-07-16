@@ -3,7 +3,9 @@
 package setup
 
 import (
+	"archive/tar"
 	"archive/zip"
+	"compress/gzip"
 	"bufio"
 	"encoding/json"
 	"fmt"
@@ -12,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"regexp"
 	"strconv"
 	"strings"
@@ -113,22 +116,29 @@ func DownloadSteamCMD(destDir string, progressFn func(string)) (string, error) {
 		return "", fmt.Errorf("create dir: %w", err)
 	}
 
-	exePath := filepath.Join(destDir, "steamcmd.exe")
+	exeName := "steamcmd.exe"
+	if runtime.GOOS != "windows" {
+		exeName = "steamcmd.sh"
+	}
+	exePath := filepath.Join(destDir, exeName)
 	if _, err := os.Stat(exePath); err == nil {
 		progress("SteamCMD 已存在，跳过下载。")
 		return exePath, nil
 	}
 
 	progress("正在下载 SteamCMD...")
-	const url = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+	url := "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+	if runtime.GOOS != "windows" {
+		url = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
+	}
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("download steamcmd: %w", err)
 	}
 	defer resp.Body.Close()
 
-	tmpZip := filepath.Join(destDir, "steamcmd.zip")
-	f, err := os.Create(tmpZip)
+	tmpFile := filepath.Join(destDir, "steamcmd_archive")
+	f, err := os.Create(tmpFile)
 	if err != nil {
 		return "", err
 	}
@@ -139,12 +149,65 @@ func DownloadSteamCMD(destDir string, progressFn func(string)) (string, error) {
 	f.Close()
 	progress("下载完成，正在解压...")
 
-	if err := unzip(tmpZip, destDir); err != nil {
-		return "", fmt.Errorf("unzip steamcmd: %w", err)
+	if runtime.GOOS == "windows" {
+		if err := unzip(tmpFile, destDir); err != nil {
+			return "", fmt.Errorf("unzip steamcmd: %w", err)
+		}
+	} else {
+		if err := untarGz(tmpFile, destDir); err != nil {
+			return "", fmt.Errorf("untar steamcmd: %w", err)
+		}
 	}
-	_ = os.Remove(tmpZip)
+	_ = os.Remove(tmpFile)
 	progress("SteamCMD 准备就绪。")
 	return exePath, nil
+}
+
+func untarGz(src, dest string) error {
+	f, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	gzr, err := gzip.NewReader(f)
+	if err != nil {
+		return err
+	}
+	defer gzr.Close()
+
+	tr := tar.NewReader(gzr)
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		fpath := filepath.Join(dest, filepath.Clean(header.Name))
+		switch header.Typeflag {
+		case tar.TypeDir:
+			if err := os.MkdirAll(fpath, 0755); err != nil {
+				return err
+			}
+		case tar.TypeReg:
+			if err := os.MkdirAll(filepath.Dir(fpath), 0755); err != nil {
+				return err
+			}
+			out, err := os.OpenFile(fpath, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+			if err != nil {
+				return err
+			}
+			if _, err := io.Copy(out, tr); err != nil {
+				out.Close()
+				return err
+			}
+			out.Close()
+		}
+	}
+	return nil
 }
 
 // InstallPalServer runs SteamCMD to install Palworld Dedicated Server.

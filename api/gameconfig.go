@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -75,12 +76,21 @@ func resolveGameConfigPath(t string) (string, error) {
 
 	switch strings.ToLower(t) {
 	case "world":
-		return filepath.Join(palDir, "Saved", "Config", "WindowsServer", "PalWorldSettings.ini"), nil
+		if runtime.GOOS == "windows" {
+			return filepath.Join(palDir, "Saved", "Config", "WindowsServer", "PalWorldSettings.ini"), nil
+		}
+		return filepath.Join(palDir, "Saved", "Config", "LinuxServer", "PalWorldSettings.ini"), nil
 	case "engine":
-		return filepath.Join(palDir, "Saved", "Config", "WindowsServer", "Engine.ini"), nil
+		if runtime.GOOS == "windows" {
+			return filepath.Join(palDir, "Saved", "Config", "WindowsServer", "Engine.ini"), nil
+		}
+		return filepath.Join(palDir, "Saved", "Config", "LinuxServer", "Engine.ini"), nil
 	case "paldefender":
 		// PalDefender Config.json lives in Binaries/Win64/PalDefender/Config.json
-		return filepath.Join(palDir, "Binaries", "Win64", "PalDefender", "Config.json"), nil
+		if runtime.GOOS == "windows" {
+			return filepath.Join(palDir, "Binaries", "Win64", "PalDefender", "Config.json"), nil
+		}
+		return filepath.Join(palDir, "Binaries", "Linux", "PalDefender", "Config.json"), nil
 	default:
 		return "", &configPathError{"unknown config type: " + t}
 	}

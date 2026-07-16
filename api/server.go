@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -317,21 +318,22 @@ func deriveBinaryDirs(savePath string) []string {
 	cleanSave := filepath.Clean(savePath)
 
 	// 1. The configured path itself may already be the binary directory
-	//    (user set save.path = …\Pal\Binaries\Win64)
 	add(cleanSave)
 
+	binDir := "Win64"
+	if runtime.GOOS != "windows" {
+		binDir = "Linux"
+	}
+
 	// 2. Walk up the tree; at each ancestor check for a Binaries\Win64 subtree.
-	//    This covers:
-	//      …\Pal\Saved\SaveGames  -> up to …\Pal  -> …\Pal\Binaries\Win64
-	//      …\Pal\Saved            -> up to …\Pal  -> …\Pal\Binaries\Win64
 	cur := cleanSave
 	for i := 0; i < 8; i++ {
 		parent := filepath.Dir(cur)
 		if parent == cur {
 			break
 		}
-		add(filepath.Join(parent, "Binaries", "Win64"))
-		add(filepath.Join(parent, "Pal", "Binaries", "Win64"))
+		add(filepath.Join(parent, "Binaries", binDir))
+		add(filepath.Join(parent, "Pal", "Binaries", binDir))
 		cur = parent
 	}
 
@@ -356,7 +358,7 @@ func startServer(c *gin.Context) {
 	cfg := config.Current()
 	exePath := findServerExe(cfg.Save.Path)
 	if exePath == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "PalServer.exe not found; check save.path configuration"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "PalServer executable not found; check save.path configuration"})
 		return
 	}
 	killPalServerProcesses()
@@ -449,7 +451,7 @@ func findServerExe(savePath string) string {
 	if savePath == "" {
 		return ""
 	}
-	candidates := []string{"PalServer.exe", "PalServer", "PalServer-Win64-Shipping.exe"}
+	candidates := []string{"PalServer.exe", "PalServer.sh", "PalServer", "PalServer-Win64-Shipping.exe", "PalServer-Linux-Shipping"}
 
 	tryDir := func(dir string) string {
 		for _, name := range candidates {
