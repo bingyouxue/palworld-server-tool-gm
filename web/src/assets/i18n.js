@@ -1,4 +1,4 @@
-import { createI18n } from "vue-i18n";
+﻿import { createI18n } from "vue-i18n";
 
 const messages = {
   en: {
@@ -239,6 +239,7 @@ const messages = {
       giveExp: "Give EXP",
       giveTech: "Give Tech Points",
       giveAncientTech: "Give Ancient Tech Points",
+      learnTech: "Learn Specific Tech",
       viewPals: "View Pal List",
       viewItems: "View Item List",
       deletePal: "Delete",
@@ -529,6 +530,18 @@ const messages = {
       noMembers: "No guild members found",
       noBases: "No base location data",
     },
+    techPicker: {
+      searchPlaceholder: "Search name or ID",
+      allLabels: "All categories",
+      colName: "Name",
+      colLevel: "Level",
+      colLabel: "Category",
+      confirmLearn: "Learn This Technology",
+      clickToSelect: "Click a row to select",
+      selectFirst: "Please select a technology first",
+      learnSuccess: "Learned [{name}]: {msg}",
+      learnFail: "Failed to learn tech: {err}",
+    },
     statusPoint: {
       jumpPower: "Jump power",
       staminaConsumptionReduction: "Stamina consumption reduction",
@@ -785,6 +798,7 @@ const messages = {
       giveExp: "给予经验值",
       giveTech: "给予科技点数",
       giveAncientTech: "给予古代科技点数",
+      learnTech: "解锁指定科技",
       viewPals: "查看帕鲁列表",
       viewItems: "查看物品列表",
       deletePal: "删除",
@@ -1067,7 +1081,20 @@ const messages = {
       noMembers: "暂无公会成员",
       noBases: "暂无据点坐标数据",
     },
+    techPicker: {
+      searchPlaceholder: "搜索科技名称或 ID",
+      allLabels: "全部分类",
+      colName: "名称",
+      colLevel: "等级",
+      colLabel: "分类",
+      confirmLearn: "解锁此科技",
+      clickToSelect: "点击一行即可选中",
+      selectFirst: "请先选择一项科技",
+      learnSuccess: "已解锁 [{name}]：{msg}",
+      learnFail: "解锁失败：{err}",
+    },
     statusPoint: {
+
       jumpPower: "跳跃力",
       staminaConsumptionReduction: "耐力消耗降低",
       palSphereHoming: "帕鲁球追踪",
@@ -1315,6 +1342,7 @@ const messages = {
       giveExp: "経験値を渡す",
       giveTech: "テクノロジーポイントを渡す",
       giveAncientTech: "古代テクノロジーポイントを渡す",
+      learnTech: "指定テクノロジーを習得",
       viewPals: "パルリストを表示",
       viewItems: "アイテムリストを表示",
       deletePal: "削除",
@@ -1594,7 +1622,20 @@ const messages = {
       noMembers: "ギルドメンバーがいません",
       noBases: "拠点の座標データがありません",
     },
+    techPicker: {
+      searchPlaceholder: "名前または ID で検索",
+      allLabels: "すべてのカテゴリ",
+      colName: "名前",
+      colLevel: "レベル",
+      colLabel: "カテゴリ",
+      confirmLearn: "このテクノロジーを習得",
+      clickToSelect: "行をクリックして選択",
+      selectFirst: "先にテクノロジーを選択してください",
+      learnSuccess: "[{name}] を習得しました：{msg}",
+      learnFail: "習得失敗：{err}",
+    },
     statusPoint: {
+
       jumpPower: "ジャンプ力",
       staminaConsumptionReduction: "スタミナ消費軽減",
       palSphereHoming: "パルスフィアホーミング",

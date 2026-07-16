@@ -693,6 +693,55 @@ func giveAncientTechPoint(c *gin.Context) {
 }
 
 
+type LearnTechRequest struct {
+	TechID string `json:"tech_id" binding:"required"`
+}
+
+// learnTech godoc
+//
+//	@Summary		Learn specific technology for Player
+//	@Description	Unlock a specific technology for player via RCON /learntech
+//	@Tags			Player
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Param			player_uid	path		string				true	"Player UID"
+//	@Param			body		body		LearnTechRequest	true	"Tech info"
+//	@Success		200			{object}	MessageResponse
+//	@Failure		400			{object}	ErrorResponse
+//	@Failure		401			{object}	ErrorResponse
+//	@Failure		404			{object}	ErrorResponse
+//	@Router			/api/player/{player_uid}/learn_tech [post]
+func learnTech(c *gin.Context) {
+	playerUid := c.Param("player_uid")
+	player, err := service.GetPlayer(database.GetDB(), playerUid)
+	if err != nil {
+		if err == service.ErrNoRecord {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var req LearnTechRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	userId := getPlayerActionUserId(player)
+	if userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Player has no valid user_id"})
+		return
+	}
+	cmd := fmt.Sprintf("learntech %s %s", userId, strings.TrimSpace(req.TechID))
+	response, err := tool.CustomCommand(cmd)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": response})
+}
+
 // ─── Give Custom Pal (givepal_j via PalDefender template) ───────────────────
 
 type GiveCustomPalRequest struct {

@@ -409,6 +409,7 @@ onMounted(async () => {
   if (isLogin.value) currentDisplay.value = "overview";
   loading.value = false;
   refreshTimer = setInterval(() => {
+    getServerInfo();
     getPlayerList(false);
     getServerMetrics();
   }, 60000);

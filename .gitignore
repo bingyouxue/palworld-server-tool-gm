@@ -29,6 +29,43 @@ backups/
 tmp/
 *.tmp
 
+# Ad-hoc debug / extraction scripts dropped in project root
+debug*.py
+detect*.py
+diag*.py
+enc_test*.py
+enc_verify*.py
+extract_tech*.py
+extract_final*.py
+extract_out*.txt
+find_entries.py
+fix_*.py
+gen_tech*.py
+gen_out.txt
+gen_err.txt
+parse_tech*.py
+check_tech.py
+check_out.txt
+map_down.py
+verify_all.py
+verify_utf8.py
+verify_out.txt
+verify_err.txt
+verify_result.txt
+ct_out.txt
+ct_err.txt
+ext7_out.txt
+ext7_err.txt
+
+# Scratch output files
+*.webp
+test_linux
+下载最新构建.ps1
+
+# Local reference / scratch directories
+参考文档/
+打包报错/
+
 # IDE
 .idea/
 .vscode/

@@ -120,6 +120,11 @@ class ApiService extends Service {
     return this.fetch(`/api/player/${playerUid}/give_ancient_tech_point`).post({ point }).json();
   }
 
+  async learnTech(param) {
+    const { playerUid, tech_id } = param;
+    return this.fetch(`/api/player/${playerUid}/learn_tech`).post({ tech_id }).json();
+  }
+
   async giveCustomPal(param) {
     const { playerUid, ...body } = param;
     return this.fetch(`/api/player/${playerUid}/give_custom_pal`).post(body).json();
