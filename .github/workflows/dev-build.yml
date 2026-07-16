@@ -1,0 +1,85 @@
+name: Dev Build (Windows EXE)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: dev-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows-exe:
+    name: Build Windows x86_64 EXE
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build web frontend
+        shell: bash
+        run: |
+          npm install --global pnpm@8.14.0
+          cd web && pnpm install --no-frozen-lockfile && pnpm build
+
+      - name: Build pal-conf frontend
+        shell: bash
+        run: |
+          npm install --global pnpm@10.12.3
+          cd pal-conf && pnpm install --no-frozen-lockfile && pnpm build
+          mv pal-conf/dist/assets/* assets/
+          mv pal-conf/dist/index.html ./pal-conf.html
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build sav_cli.exe
+        shell: bash
+        run: python script/build_sav_cli.py --output build/sav-cli
+
+      - name: Resolve version (short SHA)
+        id: ver
+        shell: bash
+        run: echo "value=dev-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Package Windows release
+        shell: bash
+        run: |
+          python script/package_release.py \
+            --version "${{ steps.ver.outputs.value }}" \
+            --goos windows \
+            --goarch amd64 \
+            --sav-cli build/sav-cli/sav_cli.exe \
+            --output dist/release
+
+      - name: Extract EXE from zip for direct download
+        shell: powershell
+        run: |
+          $zip = Get-ChildItem dist\release\*.zip | Select-Object -First 1
+          Expand-Archive -Path $zip.FullName -DestinationPath dist\exe
+          Write-Host "Extracted: $(Get-ChildItem dist\exe)"
+
+      - name: Upload Windows EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pst-魔改-windows-x86_64
+          path: dist/exe/
+          if-no-files-found: error
+          retention-days: 30
