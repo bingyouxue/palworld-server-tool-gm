@@ -67,10 +67,13 @@ def package(version: str, goos: str, goarch: str, sav_cli: Path, output: Path) -
     platform = f"{goos}_{ARCH_NAMES[goarch]}"
     output.mkdir(parents=True, exist_ok=True)
 
+    if windows:
+        shutil.copy2(sav_cli, ROOT / "sav_cli.exe")
+
     with tempfile.TemporaryDirectory(prefix=f"pst-{platform}-") as temp:
         stage = Path(temp)
         pst = stage / f"pst{executable_suffix}"
-        build_go("main.go", pst, version, goos, goarch)
+        build_go(".", pst, version, goos, goarch)
 
         sav_name = f"sav_cli{executable_suffix}"
         shutil.copy2(sav_cli, stage / sav_name)
