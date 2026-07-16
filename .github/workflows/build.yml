@@ -72,6 +72,7 @@ jobs:
 
       - name: Build pal-conf frontend
         run: |
+          rm -rf pal-conf
           git clone https://github.com/Bluefissure/pal-conf.git pal-conf
           npm install -g pnpm@10.12.3
           cd pal-conf && pnpm install --frozen-lockfile && pnpm build
