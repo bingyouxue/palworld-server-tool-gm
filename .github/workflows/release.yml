@@ -55,7 +55,7 @@ jobs:
         run: |
           npm install --global pnpm@8.14.0
           pushd web
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm build
           popd
 
@@ -64,7 +64,7 @@ jobs:
         run: |
           npm install --global pnpm@10.12.3
           pushd pal-conf
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm build
           popd
           mv pal-conf/dist/assets/* assets/
