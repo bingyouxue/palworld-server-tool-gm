@@ -72,10 +72,11 @@ jobs:
 
       - name: Build pal-conf frontend
         run: |
+          git clone https://github.com/Bluefissure/pal-conf.git pal-conf
           npm install -g pnpm@10.12.3
           cd pal-conf && pnpm install --frozen-lockfile && pnpm build
-          mv pal-conf/dist/assets/* assets/
-          mv pal-conf/dist/index.html ./pal-conf.html
+          mv dist/assets/* ../assets/
+          mv dist/index.html ../pal-conf.html
 
       - name: Upload shared assets
         uses: actions/upload-artifact@v4
