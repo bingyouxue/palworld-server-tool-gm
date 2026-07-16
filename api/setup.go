@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -325,8 +326,12 @@ func putSetupWorldSettings(c *gin.Context) {
 
 	// Determine the ini file path
 	iniPath := ""
+	serverDirName := "WindowsServer"
+	if runtime.GOOS != "windows" {
+		serverDirName = "LinuxServer"
+	}
 	if req.ServerDir != "" {
-		iniPath = filepath.Join(req.ServerDir, "Pal", "Saved", "Config", "WindowsServer", "PalWorldSettings.ini")
+		iniPath = filepath.Join(req.ServerDir, "Pal", "Saved", "Config", serverDirName, "PalWorldSettings.ini")
 	} else {
 		savePath := config.Current().Save.Path
 		if savePath == "" {
@@ -337,7 +342,7 @@ func putSetupWorldSettings(c *gin.Context) {
 		if palDir == "" {
 			palDir = filepath.Clean(savePath)
 		}
-		iniPath = filepath.Join(palDir, "Saved", "Config", "WindowsServer", "PalWorldSettings.ini")
+		iniPath = filepath.Join(palDir, "Saved", "Config", serverDirName, "PalWorldSettings.ini")
 	}
 
 	// Ensure parent directory exists
