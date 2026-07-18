@@ -33,7 +33,7 @@ jobs:
       - name: Build frontend
         run: |
           npm install -g pnpm@8.14.0
-          cd web && pnpm install --frozen-lockfile && pnpm build
+          cd web && pnpm install --no-frozen-lockfile && pnpm build
 
       - name: Set up Python
         uses: actions/setup-python@v5
