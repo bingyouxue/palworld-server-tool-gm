@@ -194,7 +194,7 @@ func getServerMetrics(c *gin.Context) {
 		return
 	}
 	if resources == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "PalServer process is not running", "running": false})
+		c.JSON(http.StatusOK, gin.H{"running": false})
 		return
 	}
 
