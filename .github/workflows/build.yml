@@ -68,14 +68,14 @@ jobs:
       - name: Build web frontend
         run: |
           npm install -g pnpm@8.14.0
-          cd web && pnpm install --frozen-lockfile && pnpm build
+          cd web && pnpm install --no-frozen-lockfile && pnpm build
 
       - name: Build pal-conf frontend
         run: |
           rm -rf pal-conf
           git clone https://github.com/Bluefissure/pal-conf.git pal-conf
           npm install -g pnpm@10.12.3
-          cd pal-conf && pnpm install --frozen-lockfile && pnpm build
+          cd pal-conf && pnpm install --no-frozen-lockfile && pnpm build
           mv dist/assets/* ../assets/
           mv dist/index.html ../pal-conf.html
 
