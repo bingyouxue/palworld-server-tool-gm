@@ -35,7 +35,7 @@ function cleanHashedAssets() {
 // const debugMode = process.env.APP_ENV !== 'prod'
 
 export default defineConfig({
-  base: "./",
+  base: "/",
   build: {
     outDir: "../",
     emptyOutDir: false,

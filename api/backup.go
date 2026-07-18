@@ -214,7 +214,7 @@ func restoreBackup(c *gin.Context) {
 	exePath := findServerExe(savePath)
 	if exePath != "" {
 		logger.Infof("[restore] launching %s", exePath)
-		if err := launchDetached(exePath); err != nil {
+		if _, err := launchServer(exePath, "silent"); err != nil {
 			logger.Errorf("[restore] relaunch failed: %v", err)
 			c.JSON(http.StatusOK, gin.H{
 				"success": true,

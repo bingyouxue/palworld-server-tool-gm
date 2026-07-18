@@ -15,16 +15,18 @@ import (
 
 type RconTaskResponse struct {
 	database.RconTask
-	RconRemark string     `json:"rcon_remark"`
-	NextRunAt  *time.Time `json:"next_run_at,omitempty"`
+	RconRemark  string     `json:"rcon_remark"`
+	RconCommand string     `json:"rcon_command"`
+	NextRunAt   *time.Time `json:"next_run_at,omitempty"`
 }
 
 func buildRconTaskResponse(rconTask database.RconTask) RconTaskResponse {
 	command, _ := service.GetRconCommand(database.GetDB(), rconTask.RconUUID)
 	return RconTaskResponse{
-		RconTask:   rconTask,
-		RconRemark: command.Remark,
-		NextRunAt:  task.NextRconTaskRun(rconTask.UUID),
+		RconTask:    rconTask,
+		RconRemark:  command.Remark,
+		RconCommand: command.Command,
+		NextRunAt:   task.NextRconTaskRun(rconTask.UUID),
 	}
 }
 
@@ -37,6 +39,9 @@ func validateRconTask(rconTask database.RconTask) error {
 	}
 	if _, err := service.GetRconCommand(database.GetDB(), rconTask.RconUUID); err != nil {
 		return errors.New("Rcon command not found")
+	}
+	if rconTask.StartMode != "" && rconTask.StartMode != "silent" && rconTask.StartMode != "cmd" {
+		return errors.New("start_mode must be silent or cmd")
 	}
 	return task.ValidateCronExpression(rconTask.Cron)
 }

@@ -25,9 +25,13 @@ pst-config.yaml
 
 # Logs & temp
 *.log
+*.pyc
+__pycache__/
 backups/
 tmp/
 *.tmp
+pst_out.txt
+structure.json
 
 # Ad-hoc debug / extraction scripts dropped in project root
 debug*.py

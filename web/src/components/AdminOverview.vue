@@ -9,6 +9,7 @@ import PalDefenderConfig from "@/components/PalDefenderConfig.vue";
 const props = defineProps({
   serverInfo: { type: Object, default: () => ({}) },
   serverMetrics: { type: Object, default: () => ({}) },
+  metricsHistory: { type: Array, default: () => [] },
   players: { type: Array, default: () => [] },
 });
 const emit = defineEmits([
@@ -46,7 +47,8 @@ const uptime = computed(() => {
     : t("overview.uptimeHours", { hours });
 });
 const healthType = computed(() => {
-  if (!props.serverInfo?.name) return "warning";
+  if (props.serverInfo?.running !== true && !props.serverInfo?.name) return "warning";
+  if (props.serverInfo?.management_available === false) return "warning";
   const fps = Number(props.serverMetrics?.server_fps || 0);
   return fps > 0 && fps < 30 ? "warning" : "success";
 });
@@ -74,13 +76,14 @@ const formatTime = (value) =>
 const showServerMgmt = ref(false);
 const showPdConfig = ref(false);
 // Always reflect the parent prop; can be overridden locally while polling
-const localServerRunning = ref(!!props.serverInfo?.name);
+const isServerRunning = (info) => info?.running === true || !!info?.name;
+const localServerRunning = ref(isServerRunning(props.serverInfo));
 const serverRunning = computed(() => localServerRunning.value);
 // Watch prop so opening the modal always shows the correct current state
 watch(() => props.serverInfo, (val) => {
   // Only sync if we're not in the middle of a poll (poll sets it independently)
   if (!statusPollTimer) {
-    localServerRunning.value = !!(val?.name);
+    localServerRunning.value = isServerRunning(val);
   }
 }, { deep: true, immediate: true });
 
@@ -155,7 +158,7 @@ const startStatusPoll = (expectRunning) => {
     attempts++;
     try {
       const { data } = await api.getServerInfo();
-      const nowRunning = !!(data.value?.name);
+      const nowRunning = isServerRunning(data.value);
       localServerRunning.value = nowRunning;
       if (nowRunning === expectRunning || attempts >= 20) {
         clearInterval(statusPollTimer);
@@ -176,16 +179,23 @@ const handleStopServer = async () => {
   try {
     const cmd = { seconds: 10, message: "Server is shutting down" };
     console.log("[ServerMgmt] shutdown →", cmd);
-    const { statusCode } = await api.shutdownServer(cmd);
-    console.log("[ServerMgmt] shutdown response statusCode:", statusCode.value);
+    const { data, statusCode } = await api.shutdownServer(cmd);
+    console.log("[ServerMgmt] shutdown response:", statusCode.value, data.value);
     if (statusCode.value === 200) {
-      message.success("关闭命令已发送，服务器将在 10 秒后停止");
-      setTimeout(() => {
+      if (data.value?.forced) {
+        message.warning("REST API 不可用，已通过本机进程树强制停止服务器");
+        localServerRunning.value = false;
         startStatusPoll(false);
-        setTimeout(() => emit("refresh-server"), 15000);
-      }, 12000);
+        setTimeout(() => emit("refresh-server"), 1000);
+      } else {
+        message.success("关闭命令已发送，服务器将在 10 秒后停止");
+        setTimeout(() => {
+          startStatusPoll(false);
+          setTimeout(() => emit("refresh-server"), 15000);
+        }, 12000);
+      }
     } else {
-      message.error("停止失败");
+      message.error(data.value?.error || "停止失败");
     }
   } catch (e) {
     console.error("[ServerMgmt] shutdown error:", e);
@@ -195,14 +205,16 @@ const handleStopServer = async () => {
   }
 };
 
-const handleStartServer = async () => {
+const handleStartServer = async (mode = "silent") => {
   mgmtLoading.value.start = true;
   try {
-    console.log("[ServerMgmt] start → POST /api/server/start");
-    const { data, statusCode } = await api.startServer();
+    console.log("[ServerMgmt] start → POST /api/server/start mode:", mode);
+    const { data, statusCode } = await api.startServer(mode);
     console.log("[ServerMgmt] start response:", statusCode.value, data.value);
     if (statusCode.value === 200) {
-      message.success("启动命令已发送，等待服务器上线...");
+      const modeLabel = mode === "cmd" ? "Cmd 模式" : "静默模式";
+      const logHint = data.value?.log_path ? `\n服务端日志：${data.value.log_path}` : "";
+      message.success(`启动命令已发送（${modeLabel}），等待服务器上线...${logHint}`, { duration: 8000 });
       startStatusPoll(true);
       setTimeout(() => emit("refresh-server"), 20000);
     } else {
@@ -307,6 +319,85 @@ onMounted(() => {
 onUnmounted(() => {
   if (statusPollTimer) clearInterval(statusPollTimer);
 });
+
+// ── 效能分析弹窗 ────────────────────────────────────────────────────────────
+const showPerfModal = ref(false);
+const showCoreModal = ref(false);
+const selectedCore = ref(0);
+
+const fmtUptime = (sec) => {
+  const s = Math.max(0, Math.floor(Number(sec) || 0));
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  if (d > 0) return `${d} 天 ${h} 时`;
+  if (h > 0) return `${h} 时 ${m} 分`;
+  if (m > 0) return `${m} 分`;
+  return `${s} 秒`;
+};
+
+// SVG 走势图：把数值数组渲染成 polyline 坐标串
+const buildTrendPath = (values, W, H, fixedMax = null) => {
+  const known = values.filter((v) => v != null && Number.isFinite(v));
+  if (known.length < 2) return { line: "", area: "", segments: [] };
+  const max = fixedMax ?? Math.max(...known, 1);
+  const pts = values.map((v, i) => {
+    if (v == null || !Number.isFinite(v)) return null;
+    const x = ((i / (values.length - 1)) * W).toFixed(1);
+    const y = (H - Math.max(0, Math.min(v / max, 1)) * (H - 4) - 2).toFixed(1);
+    return `${x},${y}`;
+  });
+  const segments = [];
+  let seg = [];
+  for (const p of pts) {
+    if (p == null) { if (seg.length) segments.push(seg); seg = []; }
+    else seg.push(p);
+  }
+  if (seg.length) segments.push(seg);
+  const validPts = pts.filter(Boolean);
+  const area = validPts.length >= 2
+    ? `0,${H} ${validPts.join(" ")} ${W},${H}`
+    : "";
+  return { segments, area };
+};
+
+const fpsTrend = computed(() => {
+  const vals = props.metricsHistory.map((h) => h.fps != null ? Number(h.fps) : null);
+  return buildTrendPath(vals, 260, 60, Math.max(60, ...vals.filter((v) => v != null)));
+});
+const cpuTrend = computed(() => {
+  const vals = props.metricsHistory.map((h) => h.cpu != null ? Number(h.cpu) : null);
+  const known = vals.filter((v) => v != null && Number.isFinite(v));
+  return buildTrendPath(vals, 260, 60, Math.max(5, ...known.map((v) => v * 1.25)));
+});
+const memTrend = computed(() => {
+  const vals = props.metricsHistory.map((h) => h.memPct != null ? Number(h.memPct) * 100 : null);
+  const known = vals.filter((v) => v != null && Number.isFinite(v));
+  return buildTrendPath(vals, 260, 60, Math.max(5, ...known.map((v) => v * 1.25)));
+});
+
+const latestPerCore = computed(() => Array.isArray(props.serverMetrics?.cpu_per_core) ? props.serverMetrics.cpu_per_core : []);
+const averageCoreLoad = computed(() => latestPerCore.value.length
+  ? latestPerCore.value.reduce((sum, value) => sum + Number(value || 0), 0) / latestPerCore.value.length
+  : 0);
+const coreLoadColor = (value) => {
+  const load = Number(value) || 0;
+  if (load >= 80) return "#e85d75";
+  if (load >= 50) return "#f0a020";
+  if (load >= 20) return "#36ad6a";
+  return "#4098fc";
+};
+const coreTrend = computed(() => buildTrendPath(
+  props.metricsHistory.map((h) => Array.isArray(h.perCore) && h.perCore[selectedCore.value] != null ? Number(h.perCore[selectedCore.value]) : null),
+  260, 80, 100,
+));
+
+const fmtBytes = (n) => {
+  if (!n) return "0 B";
+  if (n >= 1 << 30) return (n / (1 << 30)).toFixed(1) + " GB";
+  if (n >= 1 << 20) return Math.round(n / (1 << 20)) + " MB";
+  return Math.round(n / 1024) + " KB";
+};
 </script>
 <template>
   <n-scrollbar class="h-full">
@@ -326,7 +417,7 @@ onUnmounted(() => {
           <n-statistic :label="$t('overview.serverStatus')">
             <n-flex align="center">
               <n-badge dot :type="healthType" />
-              <n-text strong>{{ serverInfo?.name || $t("status.serverUnavailable") }}</n-text>
+              <n-text strong>{{ serverInfo?.name || (serverInfo?.running ? "服务端已运行（管理接口不可用）" : $t("status.serverUnavailable")) }}</n-text>
             </n-flex>
           </n-statistic>
           <n-text depth="3">{{ serverInfo?.version || "—" }}</n-text>
@@ -337,7 +428,7 @@ onUnmounted(() => {
           </n-statistic>
           <n-text depth="3">{{ $t("overview.totalPlayers", { count: players.length }) }}</n-text>
         </n-card></n-gi>
-        <n-gi><n-card size="small">
+        <n-gi><n-card size="small" style="cursor:pointer" @click="showPerfModal = true">
           <n-statistic :label="$t('item.serverFps')" :value="serverMetrics?.server_fps ?? '—'" />
           <n-text depth="3">{{ $t("item.serverFrameTime") }}: {{ serverMetrics?.server_frame_time ?? "—" }} ms</n-text>
         </n-card></n-gi>
@@ -349,7 +440,7 @@ onUnmounted(() => {
 
       <n-grid cols="1 760:2" :x-gap="16" :y-gap="16" class="mt-4">
         <n-gi>
-          <n-card :title="$t('overview.operations')">
+          <n-card class="overview-panel" :title="$t('overview.operations')">
             <n-grid cols="2 560:4" :x-gap="12" :y-gap="12">
               <n-gi><n-button block type="primary" secondary @click="emit('open-rcon')">{{ $t("button.rcon") }}</n-button></n-gi>
               <n-gi><n-button block type="success" secondary @click="emit('open-backup')">{{ $t("button.backup") }}</n-button></n-gi>
@@ -363,7 +454,7 @@ onUnmounted(() => {
           </n-card>
         </n-gi>
         <n-gi>
-          <n-card :title="$t('overview.automation')">
+          <n-card class="overview-panel" :title="$t('overview.automation')">
             <n-descriptions :column="1" label-placement="left">
               <n-descriptions-item :label="$t('overview.activeTasks')">{{ activeTasks.length }}</n-descriptions-item>
               <n-descriptions-item :label="$t('overview.nextTask')">{{ nextTask?.name || "—" }}</n-descriptions-item>
@@ -375,7 +466,7 @@ onUnmounted(() => {
 
       <n-grid cols="1 760:2" :x-gap="16" :y-gap="16" class="mt-4">
         <n-gi>
-          <n-card :title="$t('overview.onlineNow')">
+          <n-card class="overview-panel overview-panel--online" :title="$t('overview.onlineNow')">
             <n-empty v-if="onlinePlayers.length === 0" :description="$t('overview.noOnlinePlayers')" />
             <n-list v-else hoverable>
               <n-list-item v-for="player in onlinePlayers.slice(0, 6)" :key="player.player_uid">
@@ -388,7 +479,7 @@ onUnmounted(() => {
           </n-card>
         </n-gi>
         <n-gi>
-          <n-card :title="$t('overview.backupStatus')">
+          <n-card class="overview-panel" :title="$t('overview.backupStatus')">
             <n-empty v-if="!latestBackup" :description="$t('overview.noBackup')" />
             <n-descriptions v-else :column="1" label-placement="left">
               <n-descriptions-item :label="$t('overview.latestBackup')">{{ formatTime(latestBackup.save_time) }}</n-descriptions-item>
@@ -439,6 +530,12 @@ onUnmounted(() => {
       </n-alert>
 
       <n-card size="small" :title="$t('serverMgmt.serverControl')" class="mb-3">
+        <n-alert v-if="serverRunning && serverInfo?.management_available === false" type="warning" :show-icon="true" size="small" class="mb-3">
+          游戏服务端正在运行，但官方 Palworld REST API 不可用。PST 管理接口需要官方 REST（当前配置为 8212）；PalDefender 控制台显示的 REST 端口（如 17973）是插件 API，不能替代官方接口。请检查 PalWorldSettings.ini 中 RESTAPIEnabled=True、RESTAPIPort 与 PST 配置一致，并确认 AdminPassword 正确后重启服务端。
+          <div v-if="serverInfo?.management_error" style="margin-top:4px;font-family:monospace;font-size:11px;word-break:break-all">
+            {{ serverInfo.management_error }}
+          </div>
+        </n-alert>
         <n-space vertical>
           <n-flex align="center" justify="space-between">
             <div>
@@ -449,8 +546,16 @@ onUnmounted(() => {
             </div>
             <n-button v-if="serverRunning" type="error" :loading="mgmtLoading.stop"
               @click="handleStopServer" size="small" round>{{ $t("button.stopServer") }}</n-button>
-            <n-button v-else type="success" :loading="mgmtLoading.start"
-              @click="handleStartServer" size="small" round>{{ $t("button.startServer") }}</n-button>
+            <n-flex v-else :size="6">
+              <n-button type="success" :loading="mgmtLoading.start"
+                @click="handleStartServer('silent')" size="small" round>
+                静默启动
+              </n-button>
+              <n-button type="info" :loading="mgmtLoading.start"
+                @click="handleStartServer('cmd')" size="small" round>
+                Cmd 启动
+              </n-button>
+            </n-flex>
           </n-flex>
           <n-divider style="margin:8px 0" />
           <n-flex align="center" justify="space-between">
@@ -496,6 +601,7 @@ onUnmounted(() => {
           </n-flex>
         </template>
         <n-space vertical :size="10">
+          <n-text depth="3" style="font-size:11px;color:#e88080">⚠ 安装和更新前请停止服务器</n-text>
           <!-- PalDefender -->
           <div class="plugin-card">
             <n-flex align="flex-start" :wrap="false" :size="10">
@@ -617,9 +723,172 @@ onUnmounted(() => {
       </div>
     </template>
   </n-modal>
+
+  <!-- 效能分析弹窗 -->
+  <n-modal v-model:show="showPerfModal" preset="card" title="效能分析"
+    style="width:min(94vw,820px);max-height:92vh"
+    content-style="max-height:calc(92vh - 72px);overflow-y:auto;padding-bottom:20px;display:flex;flex-direction:column"
+    :mask-closable="true">
+
+    <!-- 概要数字卡 -->
+    <n-grid :cols="2" :x-gap="12" :y-gap="12" class="mb-4" style="order:1">
+      <n-gi>
+        <n-card size="small">
+          <n-statistic label="CPU 占用" style="cursor:pointer" @click="showCoreModal = true"
+            :value="serverMetrics?.cpu_percent != null ? serverMetrics.cpu_percent.toFixed(1) + '%' : '—'" />
+          <n-text depth="3" style="font-size:11px">
+            共 {{ serverMetrics?.cpu_cores ?? '—' }} 个逻辑核心 · 占总算力 {{ serverMetrics?.cpu_total_percent != null ? serverMetrics.cpu_total_percent.toFixed(1) + '%' : '—' }} · 点击查看
+          </n-text>
+        </n-card>
+      </n-gi>
+      <n-gi>
+        <n-card size="small">
+          <n-statistic label="内存使用"
+            :value="serverMetrics?.memory_bytes ? fmtBytes(serverMetrics.memory_bytes) : '—'" />
+          <n-text depth="3" style="font-size:11px">
+            / {{ serverMetrics?.memory_total_bytes ? fmtBytes(serverMetrics.memory_total_bytes) : '—' }}
+          </n-text>
+        </n-card>
+      </n-gi>
+      <n-gi>
+        <n-card size="small">
+          <n-statistic label="服务器 FPS"
+            :value="serverMetrics?.server_fps ?? '—'" />
+          <n-text depth="3" style="font-size:11px">
+            帧时间: {{ serverMetrics?.server_frame_time ?? '—' }} ms
+          </n-text>
+        </n-card>
+      </n-gi>
+      <n-gi>
+        <n-card size="small">
+          <n-statistic label="总计运行时间"
+            :value="fmtUptime(serverMetrics?.uptime)" />
+          <n-text depth="3" style="font-size:11px">
+            {{ serverMetrics?.days ?? '—' }} 游戏天
+          </n-text>
+        </n-card>
+      </n-gi>
+    </n-grid>
+
+    <!-- 资源占用 -->
+    <n-card size="small" class="mb-4" style="order:3">
+      <n-flex align="center" :size="8" class="mb-3">
+        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
+          stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        <span style="font-size:13px;font-weight:800">资源占用</span>
+      </n-flex>
+
+      <!-- CPU -->
+      <div class="mb-3">
+        <n-flex justify="space-between" class="mb-1">
+          <n-text depth="3" style="font-size:12px">CPU（占总算力）</n-text>
+          <n-text strong style="font-size:12px">
+            {{ serverMetrics?.cpu_total_percent != null ? serverMetrics.cpu_total_percent.toFixed(1) + '%' : '—' }}
+          </n-text>
+        </n-flex>
+        <n-progress
+          :percentage="serverMetrics?.cpu_total_percent != null ? Math.min(100, +serverMetrics.cpu_total_percent.toFixed(1)) : 0"
+          :color="(serverMetrics?.cpu_percent ?? 0) > 80 ? '#e88080' : '#4098fc'"
+          :rail-color="'rgba(128,128,128,0.15)'"
+          :height="8" :border-radius="4" :show-indicator="false"
+        />
+      </div>
+
+      <!-- 内存 -->
+      <div class="mb-3">
+        <n-flex justify="space-between" class="mb-1">
+          <n-text depth="3" style="font-size:12px">内存</n-text>
+          <n-text strong style="font-size:12px">
+            {{ serverMetrics?.memory_bytes && serverMetrics?.memory_total_bytes
+              ? fmtBytes(serverMetrics.memory_bytes) + ' / ' + fmtBytes(serverMetrics.memory_total_bytes)
+              : '—' }}
+          </n-text>
+        </n-flex>
+        <n-progress
+          :percentage="serverMetrics?.memory_bytes && serverMetrics?.memory_total_bytes
+            ? Math.min(100, Math.round(serverMetrics.memory_bytes / serverMetrics.memory_total_bytes * 100))
+            : 0"
+          :color="'#18a058'"
+          :rail-color="'rgba(128,128,128,0.15)'"
+          :height="8" :border-radius="4" :show-indicator="false"
+        />
+      </div>
+
+      <!-- FPS 条 -->
+      <div>
+        <n-flex justify="space-between" class="mb-1">
+          <n-text depth="3" style="font-size:12px">服务器 FPS</n-text>
+          <n-text strong style="font-size:12px">
+            {{ serverMetrics?.server_fps != null ? serverMetrics.server_fps + ' fps' : '—' }}
+          </n-text>
+        </n-flex>
+        <n-progress
+          :percentage="serverMetrics?.server_fps
+            ? Math.min(100, Math.round(serverMetrics.server_fps / 60 * 100))
+            : 0"
+          :color="(serverMetrics?.server_fps ?? 60) < 30 ? '#e88080' : '#18a058'"
+          :rail-color="'rgba(128,128,128,0.15)'"
+          :height="8" :border-radius="4" :show-indicator="false"
+        />
+      </div>
+    </n-card>
+  </n-modal>
+
+  <n-modal v-model:show="showCoreModal" preset="card" title="逻辑核心实时占用"
+    class="core-modal" style="width:min(94vw,860px);max-height:92vh"
+    content-style="max-height:calc(92vh - 70px);overflow-y:auto">
+    <div class="core-summary"><div><div class="core-summary-title">处理器核心概览</div><div class="core-summary-subtitle">每 5 秒刷新 · 点击卡片切换趋势分析</div></div><div class="core-summary-stats"><div class="core-summary-stat"><strong>{{ latestPerCore.length }}</strong><span>逻辑核心</span></div><div class="core-summary-divider"></div><div class="core-summary-stat"><strong>{{ averageCoreLoad.toFixed(1) }}%</strong><span>平均负载</span></div></div></div>
+    <div class="core-grid">
+      <button v-for="(value, index) in latestPerCore" :key="index" type="button" :class="['core-tile', { active: selectedCore === index }]" :style="{ '--core-color': coreLoadColor(value) }" @click="selectedCore = index">
+        <div class="core-tile-head"><span class="core-index"><i></i>核心 {{ index + 1 }}</span><strong>{{ Number(value).toFixed(1) }}%</strong></div>
+        <div class="core-meter"><span :style="{ width: Math.min(100, Number(value) || 0) + '%' }"></span></div>
+      </button>
+    </div>
+    <div class="core-chart-panel">
+      <div class="core-chart-head"><div><div class="core-chart-title">核心 {{ selectedCore + 1 }} 负载趋势</div><div class="core-chart-subtitle">最近约 5 分钟 · 固定 0–100% 量程</div></div><div class="core-current" :style="{ color: coreLoadColor(latestPerCore[selectedCore]) }">{{ Number(latestPerCore[selectedCore] || 0).toFixed(1) }}<small>%</small></div></div>
+      <div class="core-chart-wrap">
+      <svg viewBox="0 0 260 80" preserveAspectRatio="none">
+        <polygon v-if="coreTrend.area" :points="coreTrend.area" fill="#4098fc" opacity="0.12" />
+        <polyline v-for="(seg, idx) in coreTrend.segments" :key="idx" v-show="seg.length > 1" :points="seg.join(' ')" fill="none" stroke="#4098fc" stroke-width="2" />
+      </svg>
+      <n-empty v-if="!coreTrend.segments?.some(s => s.length > 1)" description="正在收集核心数据，请稍候" size="small" />
+      </div>
+    </div>
+  </n-modal>
+
 </template>
 
 <style scoped lang="less">
+.overview-panel { min-height:186px; }
+.core-summary { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:14px 16px; margin-bottom:14px; border-radius:12px; background:linear-gradient(135deg,rgba(64,152,252,.12),rgba(99,125,255,.04)); border:1px solid rgba(64,152,252,.18); }
+.core-summary-title { font-size:14px; font-weight:800; }
+.core-summary-subtitle,.core-chart-subtitle { margin-top:3px; font-size:11px; opacity:.55; }
+.core-summary-stats { display:flex; align-items:center; gap:16px; }
+.core-summary-stat { display:flex; flex-direction:column; align-items:flex-end; min-width:62px; }
+.core-summary-stat strong { font-size:19px; line-height:1.1; color:#4098fc; }
+.core-summary-stat span { margin-top:3px; font-size:10px; opacity:.55; }
+.core-summary-divider { width:1px; height:30px; background:rgba(128,128,128,.2); }
+.core-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(108px,1fr)); gap:8px; max-height:230px; overflow:auto; padding:2px 3px 8px 2px; }
+.core-tile { --core-color:#4098fc; appearance:none; color:inherit; text-align:left; padding:10px 11px; border-radius:9px; border:1px solid rgba(128,128,128,.14); background:rgba(128,128,128,.045); cursor:pointer; transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease; }
+.core-tile:hover { transform:translateY(-1px); border-color:var(--core-color); background:rgba(64,152,252,.08); }
+.core-tile.active { border-color:var(--core-color); background:rgba(64,152,252,.12); box-shadow:0 0 0 2px rgba(64,152,252,.1); }
+.core-tile-head { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:11px; }
+.core-tile-head strong { font-size:12px; font-variant-numeric:tabular-nums; }
+.core-index { display:flex; align-items:center; gap:6px; opacity:.7; white-space:nowrap; }
+.core-index i { width:6px; height:6px; border-radius:50%; background:var(--core-color); box-shadow:0 0 7px var(--core-color); }
+.core-meter { height:4px; margin-top:9px; overflow:hidden; border-radius:8px; background:rgba(128,128,128,.16); }
+.core-meter span { display:block; height:100%; min-width:2px; border-radius:inherit; background:var(--core-color); box-shadow:0 0 8px var(--core-color); transition:width .4s ease; }
+.core-chart-panel { margin-top:14px; padding:14px 16px 10px; border-radius:12px; border:1px solid rgba(128,128,128,.13); background:linear-gradient(180deg,rgba(128,128,128,.045),rgba(128,128,128,.015)); }
+.core-chart-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.core-chart-title { font-size:13px; font-weight:800; }
+.core-current { font-size:24px; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
+.core-current small { margin-left:2px; font-size:12px; }
+.core-chart-wrap { position:relative; min-height:112px; }
+.core-chart-wrap svg { width:100%; height:112px; overflow:visible; }
+@media (max-width:560px) { .core-summary { align-items:flex-start; flex-direction:column; } .core-summary-stats { width:100%; justify-content:flex-end; } .core-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
 .server-mgmt { display: flex; flex-direction: column; gap: 0; }
 .mgmt-label { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 .mgmt-desc { font-size: 11px; }

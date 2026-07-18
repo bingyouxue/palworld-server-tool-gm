@@ -3,36 +3,55 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zaigie/palworld-server-tool/internal/config"
 	"github.com/zaigie/palworld-server-tool/internal/logger"
 	"github.com/zaigie/palworld-server-tool/internal/mods"
+	"github.com/zaigie/palworld-server-tool/internal/system"
+	"github.com/zaigie/palworld-server-tool/internal/task"
 	"github.com/zaigie/palworld-server-tool/internal/tool"
 )
 
-// palServerProcessNames lists every process image name that belongs to a
-// PalWorld dedicated-server session.  taskkill /T kills the whole tree so
-// child processes (the actual game engine binary) are also terminated.
-var palServerProcessNames = []string{
-	"PalServer.exe",
-	"PalServer-Win64-Shipping.exe",
-	"PalServer-Win64-Shipping-Cmd.exe",
-	"PalServer.sh",
-	"PalServer-Linux-Shipping",
+// palServerProcessNames returns process images used by the current platform.
+// taskkill /T kills the whole Windows process tree, including engine children.
+func palServerProcessNames() []string {
+	if runtime.GOOS == "windows" {
+		return []string{
+			"PalServer.exe",
+			"PalServer-Win64-Shipping.exe",
+			"PalServer-Win64-Shipping-Cmd.exe",
+		}
+	}
+	return []string{
+		"PalServer.sh",
+		"PalServer-Linux-Shipping",
+	}
+}
+
+func isPalServerProcessRunning(name string) bool {
+	if runtime.GOOS == "windows" {
+		out, err := exec.Command("tasklist", "/FI", "IMAGENAME eq "+name, "/NH", "/FO", "CSV").Output()
+		return err == nil && strings.Contains(strings.ToLower(string(out)), strings.ToLower(name))
+	}
+	return exec.Command("pgrep", "-f", name).Run() == nil
 }
 
 // killPalServerProcesses force-kills every surviving PalServer process tree.
-// Errors are logged but not returned — the caller should not fail because of
-// a process that is already gone.
 func killPalServerProcesses() {
-	for _, name := range palServerProcessNames {
+	for _, name := range palServerProcessNames() {
+		if !isPalServerProcessRunning(name) {
+			continue
+		}
+
 		var out []byte
 		var err error
 		if runtime.GOOS == "windows" {
@@ -41,27 +60,47 @@ func killPalServerProcesses() {
 			out, err = exec.Command("pkill", "-f", name).CombinedOutput()
 		}
 		if err != nil {
-			// "not found" is expected when the process is already gone; log at
-			// debug level so the log isn't noisy during normal stop/start cycles.
-			logger.Infof("[killPalServer] kill %s: %s", name, string(out))
-		} else {
-			logger.Infof("[killPalServer] terminated %s", name)
+			logger.Warnf("[killPalServer] failed to terminate %s: %v; output=%s", name, err, strings.TrimSpace(string(out)))
+			continue
 		}
+		logger.Infof("[killPalServer] terminated %s", name)
 	}
 }
 
+func isPalServerRunning() bool {
+	for _, name := range palServerProcessNames() {
+		if isPalServerProcessRunning(name) {
+			return true
+		}
+	}
+	return false
+}
+
 type ServerInfo struct {
-	Version string `json:"version"`
-	Name    string `json:"name"`
+	Version             string `json:"version"`
+	Name                string `json:"name"`
+	Running             bool   `json:"running"`
+	ManagementAvailable bool   `json:"management_available"`
+	ManagementError     string `json:"management_error,omitempty"`
 }
 
 type ServerMetrics struct {
-	ServerFps        int     `json:"server_fps"`
-	CurrentPlayerNum int     `json:"current_player_num"`
-	ServerFrameTime  float64 `json:"server_frame_time"`
-	MaxPlayerNum     int     `json:"max_player_num"`
-	Uptime           int     `json:"uptime"`
-	Days             int     `json:"days"`
+	ServerFps           *int      `json:"server_fps"`
+	CurrentPlayerNum    *int      `json:"current_player_num"`
+	ServerFrameTime     *float64  `json:"server_frame_time"`
+	MaxPlayerNum        *int      `json:"max_player_num"`
+	Uptime              *int      `json:"uptime"`
+	Days                *int      `json:"days"`
+	CpuPercent          *float64  `json:"cpu_percent"`
+	CpuTotalPercent     *float64  `json:"cpu_total_percent"`
+	CpuPerCore          []float64 `json:"cpu_per_core"`
+	MemoryBytes         uint64    `json:"memory_bytes"`
+	MemoryTotalBytes    uint64    `json:"memory_total_bytes"`
+	CpuCores            int       `json:"cpu_cores"`
+	ProcessCount        int       `json:"process_count"`
+	ProcessUptime       int64     `json:"process_uptime"`
+	ManagementAvailable bool      `json:"management_available"`
+	ManagementError     string    `json:"management_error,omitempty"`
 }
 
 type BroadcastRequest struct {
@@ -116,13 +155,26 @@ func getServerTool(c *gin.Context) {
 //	@Failure		400	{object}	ErrorResponse
 //	@Router			/api/server [get]
 func getServer(c *gin.Context) {
+	running := isPalServerRunning()
 	info, err := tool.Info()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if running {
+			c.JSON(http.StatusOK, &ServerInfo{
+				Running:             true,
+				ManagementAvailable: false,
+				ManagementError:     err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "running": false})
 		return
 	}
-	// TODO: add system psutil info
-	c.JSON(http.StatusOK, &ServerInfo{info["version"], info["name"]})
+	c.JSON(http.StatusOK, &ServerInfo{
+		Version:             info["version"],
+		Name:                info["name"],
+		Running:             true,
+		ManagementAvailable: true,
+	})
 }
 
 // getServerMetrics godoc
@@ -136,19 +188,46 @@ func getServer(c *gin.Context) {
 //	@Failure		400	{object}	ErrorResponse
 //	@Router			/api/server/metrics [get]
 func getServerMetrics(c *gin.Context) {
-	metrics, err := tool.Metrics()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	resources, resourceErr := system.GetPalServerResourceSnapshot()
+	if resourceErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": resourceErr.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, &ServerMetrics{
-		ServerFps:        metrics["server_fps"].(int),
-		CurrentPlayerNum: metrics["current_player_num"].(int),
-		ServerFrameTime:  metrics["server_frame_time"].(float64),
-		MaxPlayerNum:     metrics["max_player_num"].(int),
-		Uptime:           metrics["uptime"].(int),
-		Days:             metrics["days"].(int),
-	})
+	if resources == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "PalServer process is not running", "running": false})
+		return
+	}
+
+	response := &ServerMetrics{
+		CpuPercent:       resources.CPUPercent,
+		CpuTotalPercent:  resources.CPUTotalPercent,
+		CpuPerCore:       resources.CPUPerCore,
+		MemoryBytes:      resources.MemoryBytes,
+		MemoryTotalBytes: resources.MemoryTotal,
+		CpuCores:         resources.CPUCores,
+		ProcessCount:     resources.ProcessCount,
+		ProcessUptime:    resources.UptimeSeconds,
+	}
+	metrics, err := tool.Metrics()
+	if err != nil {
+		response.ManagementError = err.Error()
+		c.JSON(http.StatusOK, response)
+		return
+	}
+	serverFps := metrics["server_fps"].(int)
+	currentPlayers := metrics["current_player_num"].(int)
+	frameTime := metrics["server_frame_time"].(float64)
+	maxPlayers := metrics["max_player_num"].(int)
+	uptime := metrics["uptime"].(int)
+	days := metrics["days"].(int)
+	response.ServerFps = &serverFps
+	response.CurrentPlayerNum = &currentPlayers
+	response.ServerFrameTime = &frameTime
+	response.MaxPlayerNum = &maxPlayers
+	response.Uptime = &uptime
+	response.Days = &days
+	response.ManagementAvailable = true
+	c.JSON(http.StatusOK, response)
 }
 
 // publishBroadcast godoc
@@ -210,7 +289,29 @@ func shutdownServer(c *gin.Context) {
 		req.Seconds = 60
 	}
 	if err := tool.Shutdown(req.Seconds, req.Message); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		// A locally running PalServer must remain stoppable even when its REST
+		// management endpoint is disabled, still starting, or misconfigured.
+		if !isPalServerRunning() {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "running": false})
+			return
+		}
+		logger.Warnf("[shutdownServer] graceful REST shutdown unavailable, forcing local process-tree stop: %v", err)
+		killPalServerProcesses()
+		time.Sleep(500 * time.Millisecond)
+		if isPalServerRunning() {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error":         "REST shutdown failed and the local PalServer process is still running",
+				"rest_error":    err.Error(),
+				"forced":        true,
+				"still_running": true,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"success":    true,
+			"forced":     true,
+			"rest_error": err.Error(),
+		})
 		return
 	}
 	// After the RCON countdown, force-kill any surviving PalServer processes
@@ -354,63 +455,126 @@ func fileExists(path string) bool {
 }
 
 // startServer launches PalServer.exe derived from the configured save path.
+// An optional JSON body field "mode" controls which binary is launched on Windows:
+//   - "cmd"    → PalServer-Win64-Shipping-Cmd.exe  (console window visible)
+//   - "silent" → PalServer-Win64-Shipping.exe       (no console window, default)
+//
+// On Linux the mode field is ignored and the normal PalServer.sh / PalServer binary is used.
 //
 //	@Summary		Start Server
-//	@Description	Launch PalServer.exe (derived from save.path config)
+//	@Description	Launch PalServer (derived from save.path config). mode: "cmd" or "silent" (Windows only)
 //	@Tags			Server
 //	@Produce		json
 //	@Success		200	{object}	SuccessResponse
 //	@Failure		400	{object}	ErrorResponse
 //	@Router			/api/server/start [post]
 func startServer(c *gin.Context) {
-	cfg := config.Current()
-	exePath := findServerExe(cfg.Save.Path)
-	if exePath == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "PalServer executable not found; check save.path configuration"})
-		return
+	// Parse optional mode field from request body
+	var req struct {
+		Mode string `json:"mode"`
 	}
-	killPalServerProcesses()
-	if err := launchDetached(exePath); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// Best-effort bind; ignore errors (body may be empty)
+	_ = c.ShouldBindJSON(&req)
+	if req.Mode == "" {
+		req.Mode = "silent"
+	}
+
+	if req.Mode != "silent" && req.Mode != "cmd" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("unsupported start mode %q", req.Mode)})
 		return
 	}
 
-	// If a pending world-settings patch exists (written by the wizard), the
-	// server will overwrite PalWorldSettings.ini on its first launch with
-	// default values.  We watch the INI file in a background goroutine: as
-	// soon as the server writes it (mtime changes and size > 100 bytes) we
-	// re-merge our patch on top and clear the pending entry from the DB.
+	cfg := config.Current()
+	exePath := findServerExeByMode(cfg.Save.Path, req.Mode)
+	if exePath == "" {
+		exeName := "PalServer-Win64-Shipping.exe"
+		if req.Mode == "cmd" {
+			exeName = "PalServer-Win64-Shipping-Cmd.exe"
+		}
+		errMessage := fmt.Sprintf("%s not found; configured save.path is %q", exeName, cfg.Save.Path)
+		logger.Errorf("[startServer] %s", errMessage)
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
+		return
+	}
+
+	logger.Infof("[startServer] requested mode=%s save.path=%q executable=%q", req.Mode, cfg.Save.Path, exePath)
+	killPalServerProcesses()
+
 	store := config.CurrentStore()
 	patchData := store.GetKV("pending_world_settings_patch")
 	iniPathRaw := store.GetKV("pending_world_settings_ini")
+	var iniPath string
+	var baselineMtime time.Time
+	var baselineSize int64
 	if len(patchData) > 0 && len(iniPathRaw) > 0 {
-		iniPath := string(iniPathRaw)
-		go watchAndReapplyWorldSettings(iniPath, patchData)
+		iniPath = string(iniPathRaw)
+		if err := applyWorldSettingsPatch(iniPath, patchData); err != nil {
+			logger.Errorf("[startServer] apply world settings before launch: %v", err)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "apply world settings before launch: " + err.Error()})
+			return
+		}
+		if info, statErr := os.Stat(iniPath); statErr == nil {
+			baselineMtime = info.ModTime()
+			baselineSize = info.Size()
+		}
+		logger.Infof("[startServer] applied persisted world settings before launch ini=%q", iniPath)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": true, "path": exePath})
-}
-
-// watchAndReapplyWorldSettings polls iniPath until the server rewrites it,
-// then merges patchData on top and removes the pending patch from the DB.
-// It gives up after 10 minutes (server should have written it well before then).
-func watchAndReapplyWorldSettings(iniPath string, patchData []byte) {
-	var patch map[string]string
-	if err := json.Unmarshal(patchData, &patch); err != nil || len(patch) == 0 {
+	logPath, err := launchServer(exePath, req.Mode)
+	if err != nil {
+		logger.Errorf("[startServer] launch failed: %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "log_path": logPath})
 		return
 	}
+	logger.Infof("[startServer] process started mode=%s executable=%q server_log=%q", req.Mode, exePath, logPath)
 
-	// Record the baseline state of the file before the server starts.
-	baselineMtime := time.Time{}
-	baselineSize := int64(0)
-	if info, err := os.Stat(iniPath); err == nil {
-		baselineMtime = info.ModTime()
-		baselineSize = info.Size()
+	// Keep watching briefly after launch because PalServer may rewrite its INI
+	// during startup. The persisted patch is retained for every future launch.
+	if iniPath != "" {
+		go watchAndReapplyWorldSettings(iniPath, patchData, baselineMtime, baselineSize)
 	}
 
+	c.JSON(http.StatusOK, gin.H{"success": true, "path": exePath, "log_path": logPath})
+}
+
+func applyWorldSettingsPatch(iniPath string, patchData []byte) error {
+	var patch map[string]string
+	if err := json.Unmarshal(patchData, &patch); err != nil {
+		return fmt.Errorf("decode persisted settings: %w", err)
+	}
+	if len(patch) == 0 {
+		return errors.New("persisted world settings are empty")
+	}
+
+	existing, err := os.ReadFile(iniPath)
+	if err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("read %q: %w", iniPath, err)
+	}
+	if len(existing) == 0 {
+		existing = []byte("[/Script/Pal.PalGameWorldSettings]\nOptionSettings=()\n")
+	}
+	if err := os.MkdirAll(filepath.Dir(iniPath), 0755); err != nil {
+		return fmt.Errorf("create config directory: %w", err)
+	}
+	merged := mergeWorldSettings(string(existing), patch)
+	if err := os.WriteFile(iniPath, []byte(merged), 0644); err != nil {
+		return fmt.Errorf("write %q: %w", iniPath, err)
+	}
+	return nil
+}
+
+// watchAndReapplyWorldSettings restores persisted settings if PalServer
+// rewrites its INI during startup. It gives up after 10 minutes.
+func watchAndReapplyWorldSettings(iniPath string, patchData []byte, baselineMtime time.Time, baselineSize int64) {
 	deadline := time.Now().Add(10 * time.Minute)
 	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
+
+	var desired map[string]string
+	if err := json.Unmarshal(patchData, &desired); err != nil || len(desired) == 0 {
+		logger.Warnf("[startServer] cannot monitor world settings patch: %v", err)
+		return
+	}
 
 	for range ticker.C {
 		if time.Now().After(deadline) {
@@ -420,10 +584,9 @@ func watchAndReapplyWorldSettings(iniPath string, patchData []byte) {
 		if err != nil {
 			continue
 		}
-		// The server has rewritten the file when mtime is newer than our
-		// baseline and the file is non-trivially large (>200 bytes).
-		serverWroteIt := info.ModTime().After(baselineMtime) && info.Size() > 200
-		// Also re-apply if the file didn't exist before (size was 0) and now it does.
+		data, readErr := os.ReadFile(iniPath)
+		settingsChanged := readErr == nil && !worldSettingsContainPatch(string(data), desired)
+		serverWroteIt := (info.ModTime().After(baselineMtime) && info.Size() > 200) || settingsChanged
 		if baselineSize == 0 && info.Size() > 200 {
 			serverWroteIt = true
 		}
@@ -434,25 +597,105 @@ func watchAndReapplyWorldSettings(iniPath string, patchData []byte) {
 		// Wait an extra second so the server finishes flushing the file.
 		time.Sleep(1 * time.Second)
 
-		existing, readErr := os.ReadFile(iniPath)
-		if readErr != nil {
+		if err := applyWorldSettingsPatch(iniPath, patchData); err != nil {
+			logger.Warnf("[startServer] restore world settings after server rewrite: %v", err)
 			continue
 		}
-		merged := mergeWorldSettings(string(existing), patch)
-		if writeErr := os.WriteFile(iniPath, []byte(merged), 0644); writeErr != nil {
-			continue
-		}
-
-		// Clear the pending patch so we don't re-apply on subsequent starts.
-		store := config.CurrentStore()
-		store.DeleteKV("pending_world_settings_patch")
-		store.DeleteKV("pending_world_settings_ini")
+		logger.Infof("[startServer] restored persisted world settings after server rewrite ini=%q", iniPath)
 		return
 	}
 }
 
+func worldSettingsContainPatch(ini string, desired map[string]string) bool {
+	actual := parseIniToKV(ini)
+	if len(actual) == 0 {
+		return false
+	}
+	for key, value := range desired {
+		if actual[key] != value {
+			return false
+		}
+	}
+	return true
+}
+
+// findServerExeByMode selects the appropriate PalServer binary based on mode.
+// On Windows:
+//   - "cmd"    → PalServer-Win64-Shipping-Cmd.exe  (console window)
+//   - "silent" → PalServer-Win64-Shipping.exe       (no console window)
+//
+// On Linux the mode is ignored and findServerExe is called directly.
+func findServerExeByMode(savePath, mode string) string {
+	if runtime.GOOS != "windows" {
+		return findServerExe(savePath)
+	}
+	preferred := "PalServer-Win64-Shipping.exe"
+	if mode == "cmd" {
+		preferred = "PalServer-Win64-Shipping-Cmd.exe"
+	}
+
+	tryDir := func(dir string) string {
+		full := filepath.Join(dir, preferred)
+		if fileExists(full) {
+			return full
+		}
+		return ""
+	}
+
+	// Also probe the standard Pal/Binaries/Win64 sub-tree from any ancestor.
+	binSubDir := "Win64"
+	tryDirDeep := func(root string) string {
+		if hit := tryDir(root); hit != "" {
+			return hit
+		}
+		// <root>/Pal/Binaries/Win64
+		if hit := tryDir(filepath.Join(root, "Pal", "Binaries", binSubDir)); hit != "" {
+			return hit
+		}
+		// <root>/Binaries/Win64  (in case root is already the Pal dir)
+		if hit := tryDir(filepath.Join(root, "Binaries", binSubDir)); hit != "" {
+			return hit
+		}
+		return ""
+	}
+
+	// Walk up from savePath
+	cur := filepath.Clean(savePath)
+	for i := 0; i < 10; i++ {
+		if hit := tryDirDeep(cur); hit != "" {
+			return hit
+		}
+		parent := filepath.Dir(cur)
+		if parent == cur {
+			break
+		}
+		cur = parent
+	}
+
+	// Also check steamcmd layout
+	cur = filepath.Clean(savePath)
+	for i := 0; i < 10; i++ {
+		for _, probe := range []string{
+			filepath.Join(cur, "steamcmd", "steamapps", "common", "PalServer"),
+			filepath.Join(filepath.Dir(cur), "steamcmd", "steamapps", "common", "PalServer"),
+		} {
+			if hit := tryDirDeep(probe); hit != "" {
+				return hit
+			}
+		}
+		parent := filepath.Dir(cur)
+		if parent == cur {
+			break
+		}
+		cur = parent
+	}
+	return ""
+}
+
 // findServerExe locates PalServer.exe by:
-//  1. Walking UP from savePath (handles normal layout: SaveGames is inside the server tree)
+//  1. Walking UP from savePath, checking each ancestor dir directly AND its
+//     Pal/Binaries/Win64 (or Linux) sub-tree — this is the standard Steam layout
+//     where the exe lives at <root>/Pal/Binaries/Win64/.
 //  2. Walking UP and then DOWN into steamcmd/steamapps/common/PalServer (handles the
 //     layout produced by our installer where steamcmd sits next to the chosen dir)
 func findServerExe(savePath string) string {
@@ -470,10 +713,30 @@ func findServerExe(savePath string) string {
 		return ""
 	}
 
+	// tryDirDeep checks dir itself plus the standard Pal/Binaries/{Win64,Linux} sub-paths.
+	// This is required for the normal Steam layout where savePath is
+	// <root>/Pal/Saved/SaveGames and the exe is at <root>/Pal/Binaries/Win64/.
+	tryDirDeep := func(root string) string {
+		if hit := tryDir(root); hit != "" {
+			return hit
+		}
+		for _, sub := range []string{
+			filepath.Join(root, "Pal", "Binaries", "Win64"),
+			filepath.Join(root, "Pal", "Binaries", "Linux"),
+			filepath.Join(root, "Binaries", "Win64"),
+			filepath.Join(root, "Binaries", "Linux"),
+		} {
+			if hit := tryDir(sub); hit != "" {
+				return hit
+			}
+		}
+		return ""
+	}
+
 	// Pass 1: walk up the tree (covers "save.path is inside the server dir" layout)
 	cur := filepath.Clean(savePath)
 	for i := 0; i < 10; i++ {
-		if hit := tryDir(cur); hit != "" {
+		if hit := tryDirDeep(cur); hit != "" {
 			return hit
 		}
 		parent := filepath.Dir(cur)
@@ -489,12 +752,12 @@ func findServerExe(savePath string) string {
 	cur = filepath.Clean(savePath)
 	for i := 0; i < 10; i++ {
 		probe := filepath.Join(cur, "steamcmd", "steamapps", "common", "PalServer")
-		if hit := tryDir(probe); hit != "" {
+		if hit := tryDirDeep(probe); hit != "" {
 			return hit
 		}
 		// Also check a sibling "steamcmd" directory (wizard puts steamcmd next to installDir)
 		sibling := filepath.Join(filepath.Dir(cur), "steamcmd", "steamapps", "common", "PalServer")
-		if hit := tryDir(sibling); hit != "" {
+		if hit := tryDirDeep(sibling); hit != "" {
 			return hit
 		}
 		parent := filepath.Dir(cur)
@@ -514,4 +777,26 @@ func serverRootFromSavePath(savePath string) string {
 		return ""
 	}
 	return filepath.Dir(exe)
+}
+
+// InitAutoRestart registers the server restart callback into the task package
+// so that scheduled Shutdown RCON tasks automatically relaunch the server
+// after it stops.  Call this once during startup, after config is loaded.
+func InitAutoRestart() {
+	task.SetRestartFunc(func(mode string) error {
+		cfg := config.Current()
+		exePath := findServerExeByMode(cfg.Save.Path, mode)
+		if exePath == "" {
+			return fmt.Errorf("PalServer executable not found for auto-restart; check save.path configuration")
+		}
+		killPalServerProcesses()
+		if _, err := launchServer(exePath, mode); err != nil {
+			return err
+		}
+		time.Sleep(3 * time.Second)
+		if !isPalServerRunning() {
+			return fmt.Errorf("PalServer process exited within 3 seconds after %s launch", mode)
+		}
+		return nil
+	})
 }

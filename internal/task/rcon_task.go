@@ -20,6 +20,71 @@ const rconTaskTagPrefix = "rcon-task:"
 
 var rconExecutionMu sync.Mutex
 
+// restartServerFunc is injected by the api package at startup.
+// It must kill any surviving server processes and then relaunch the server.
+// mode is "silent" or "cmd".
+var restartServerFunc func(mode string) error
+var restartFuncMu sync.RWMutex
+
+// SetRestartFunc registers the callback that is invoked after a Shutdown RCON
+// task fires, so the server is automatically relaunched.
+func SetRestartFunc(fn func(mode string) error) {
+	restartFuncMu.Lock()
+	defer restartFuncMu.Unlock()
+	restartServerFunc = fn
+}
+
+// isShutdownCommand returns true when the full RCON command begins with
+// "Shutdown" (case-insensitive).
+func isShutdownCommand(cmd string) bool {
+	return strings.HasPrefix(strings.ToUpper(strings.TrimSpace(cmd)), "SHUTDOWN")
+}
+
+// shutdownSeconds parses the countdown from "Shutdown <N> …", defaulting to 60.
+func shutdownSeconds(cmd string) int {
+	parts := strings.Fields(cmd)
+	if len(parts) >= 2 {
+		var n int
+		if _, err := fmt.Sscanf(parts[1], "%d", &n); err == nil && n > 0 {
+			return n
+		}
+	}
+	return 60
+}
+
+func normalizeStartMode(mode string) string {
+	if mode == "cmd" {
+		return "cmd"
+	}
+	return "silent"
+}
+
+// triggerAutoRestart waits for the server to stop, then calls the registered
+// restart function. Runs in its own goroutine so it never blocks the task runner.
+func triggerAutoRestart(shutdownCmd, mode string) {
+	waitSecs := shutdownSeconds(shutdownCmd) + 12
+	if waitSecs < 20 {
+		waitSecs = 20
+	}
+	mode = normalizeStartMode(mode)
+	logger.Infof("[AutoRestart] server shutting down, will restart in %d seconds using %s mode…\n", waitSecs, mode)
+	time.Sleep(time.Duration(waitSecs) * time.Second)
+
+	restartFuncMu.RLock()
+	fn := restartServerFunc
+	restartFuncMu.RUnlock()
+
+	if fn == nil {
+		logger.Warn("[AutoRestart] no restart function registered; server will NOT be restarted automatically\n")
+		return
+	}
+	if err := fn(mode); err != nil {
+		logger.Errorf("[AutoRestart] failed to restart server: %v\n", err)
+		return
+	}
+	logger.Infof("[AutoRestart] server process launched successfully using %s mode\n", mode)
+}
+
 func ValidateCronExpression(expression string) error {
 	expression = strings.TrimSpace(expression)
 	if expression == "" {
@@ -115,5 +180,12 @@ func executeRconTask(db *bbolt.DB, taskUUID string, execute func(string) (string
 		return err
 	}
 	logger.Infof("Scheduled RCON task %s executed successfully\n", taskUUID)
+
+	// If this task sent a Shutdown command, schedule an automatic restart in
+	// a background goroutine after the server has had time to stop.
+	if isShutdownCommand(execCommand) {
+		go triggerAutoRestart(execCommand, rconTask.StartMode)
+	}
+
 	return nil
 }

@@ -1,18 +1,19 @@
 <script setup>
 import { ref, watch, computed } from "vue";
-import { useMessage } from "naive-ui";
+import { useMessage, useDialog } from "naive-ui";
 import ApiService from "@/service/api";
 
 const props = defineProps({ show: { type: Boolean, default: false } });
 const emit = defineEmits(["update:show"]);
 const message = useMessage();
+const dialog = useDialog();
 const api = new ApiService();
 
 const activeTab = ref("world");
 const loading = ref(false);
 const saving = ref(false);
-const rawContent = ref({ world: "", engine: "", paldefender: "" });
-const filePaths = ref({ world: "", engine: "", paldefender: "" });
+const rawContent = ref({ world: "", engine: "", paldefender: "", "paldefender-rest": "" });
+const filePaths = ref({ world: "", engine: "", paldefender: "", "paldefender-rest": "" });
 const rawMode = ref({ world: false, engine: false, paldefender: false });
 const worldCategory = ref("server");
 const wf = ref({
@@ -54,9 +55,9 @@ const wf = ref({
   ServerName: "Default Palworld Server", ServerDescription: "",
   AdminPassword: "", ServerPassword: "",
   bAllowClientMod: true, PublicPort: 8211, PublicIP: "",
-  RCONEnabled: false, RCONPort: 25575, Region: "", bUseAuth: true,
+  RCONEnabled: true, RCONPort: 25575, Region: "", bUseAuth: true,
   BanListURL: "https://b.palworldgame.com/api/banlist.txt",
-  RESTAPIEnabled: false, RESTAPIPort: 8212, bShowPlayerList: false,
+  RESTAPIEnabled: true, RESTAPIPort: 8212, bShowPlayerList: false,
   ChatPostLimitPerMinute: 30,
   CrossplayPlatforms: "(Steam,Xbox,PS5,Mac)",
   bIsUseBackupSaveData: true, LogFormatType: "Text",
@@ -122,17 +123,41 @@ const pd = ref({
   disableRenaming: false, disablePalRenaming: false,
   OilrigGoalBoxLocktime: 300, RCONTimeout: 31, RCONUsePacketIdFix: true,
 });
+function findOptionSettingsBlock(text, from = 0) {
+  const start = text.indexOf("OptionSettings=(", from);
+  if (start < 0) return null;
+  const valueStart = start + "OptionSettings=(".length;
+  let depth = 1, inQuote = false, escaped = false;
+  for (let i = valueStart; i < text.length; i++) {
+    const ch = text[i];
+    if (inQuote && ch === "\\" && !escaped) { escaped = true; continue; }
+    if (ch === '"' && !escaped) inQuote = !inQuote;
+    escaped = false;
+    if (inQuote) continue;
+    if (ch === "(") depth++;
+    else if (ch === ")" && --depth === 0) return { start, end: i + 1, valueStart };
+  }
+  return null;
+}
+
 function parsePalWorldSettings(text) {
-  const m = text.match(/OptionSettings=\(([^]*)\)/);
-  if (!m) return {};
-  const inner = m[1];
+  const block = findOptionSettingsBlock(text);
+  if (!block) return {};
+  const inner = text.slice(block.valueStart, block.end - 1);
   const result = {};
-  let depth = 0, start = 0;
+  let depth = 0, start = 0, inQuote = false, escaped = false;
   for (let i = 0; i <= inner.length; i++) {
     const ch = inner[i];
-    if (ch === "(") depth++;
-    else if (ch === ")") depth--;
-    if ((ch === "," || i === inner.length) && depth === 0) {
+    if (i < inner.length) {
+      if (inQuote && ch === "\\" && !escaped) { escaped = true; continue; }
+      if (ch === '"' && !escaped) inQuote = !inQuote;
+      escaped = false;
+      if (!inQuote) {
+        if (ch === "(") depth++;
+        else if (ch === ")" && depth > 0) depth--;
+      }
+    }
+    if ((ch === "," || i === inner.length) && !inQuote && depth === 0) {
       const pair = inner.slice(start, i);
       const eq = pair.indexOf("=");
       if (eq >= 0) result[pair.slice(0, eq).trim()] = pair.slice(eq + 1).trim();
@@ -158,13 +183,27 @@ function applyWorldIni(text) {
 }
 
 function worldToIni() {
+  const base = rawContent.value.world || "[/Script/Pal.PalGameWorldSettings]\nOptionSettings=()\n";
+  const current = parsePalWorldSettings(base);
   const f = wf.value;
   const pairs = Object.entries(f).map(([k, v]) => {
     if (typeof v === "boolean") return `${k}=${v ? "True" : "False"}`;
     if (typeof v === "number") return `${k}=${v}`;
-    return `${k}="${v}"`;
+    return `${k}="${String(v).replaceAll('"', '\\"')}"`;
   });
-  return `[/Script/Pal.PalGameWorldSettings]\nOptionSettings=(${pairs.join(",")})\n`;
+  const edited = parsePalWorldSettings(`OptionSettings=(${pairs.join(",")})`);
+  Object.assign(current, edited);
+  const newBlock = `OptionSettings=(${Object.entries(current).map(([k, v]) => `${k}=${v}`).join(",")})`;
+  const first = findOptionSettingsBlock(base);
+  if (!first) return `${base.replace(/[\r\n]+$/, "")}\n${newBlock}\n`;
+
+  let content = base.slice(0, first.start) + newBlock + base.slice(first.end);
+  let duplicate = findOptionSettingsBlock(content, first.start + newBlock.length);
+  while (duplicate) {
+    content = content.slice(0, duplicate.start) + content.slice(duplicate.end);
+    duplicate = findOptionSettingsBlock(content, first.start + newBlock.length);
+  }
+  return content;
 }
 
 function applyEngineIni(text) {
@@ -320,6 +359,28 @@ async function loadTab(tab) {
 }
 
 async function saveTab(tab) {
+  // 世界设定：若 RCON 或 REST API 已开启但未设置 AdminPassword，弹窗警告确认
+  if (tab === "world" && !rawMode.value[tab]) {
+    const needsWarn = (wf.value.RCONEnabled || wf.value.RESTAPIEnabled) && !wf.value.AdminPassword.trim();
+    if (needsWarn) {
+      const confirmed = await new Promise((resolve) => {
+        dialog.warning({
+          title: "安全警告",
+          content: "你已启用 RCON 或 REST API，但尚未设置 AdminPassword（管理员密码）。\n\n未设置密码将导致任何人都可以通过 RCON/API 远程控制服务器，存在严重安全风险。\n\n确定要在没有管理员密码的情况下保存吗？",
+          positiveText: "仍然保存",
+          negativeText: "取消，去填写密码",
+          onPositiveClick: () => resolve(true),
+          onNegativeClick: () => resolve(false),
+          onClose: () => resolve(false),
+        });
+      });
+      if (!confirmed) return;
+    }
+  }
+  await doSaveTab(tab);
+}
+
+async function doSaveTab(tab) {
   saving.value = true;
   let content = rawMode.value[tab] ? rawContent.value[tab]
     : tab === "world" ? worldToIni()

@@ -1,11 +1,12 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, h } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMessage } from "naive-ui";
 import ApiService from "@/service/api";
 import techList from "@/assets/tech.json";
+import techI18n from "@/assets/gm/techI18n.json";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const message = useMessage();
 
 const props = defineProps({
@@ -16,27 +17,56 @@ const emit = defineEmits(["done"]);
 const searchVal = ref("");
 const selectedId = ref(null);
 const loading = ref(false);
+const filterLabel = ref("");
 
+/**
+ * 根据当前语言从 techI18n.json 取名称，
+ * 回退顺序：当前语言 → zh → id
+ */
+function getTechName(id) {
+  const entry = techI18n[id];
+  if (!entry) return id;
+  const lang = locale.value;
+  return entry[lang] || entry.zh || id;
+}
+
+/**
+ * 分类选项，label 字段直接来自 techI18n（已是中文），
+ * 切换语言后分类名暂不翻译（op.gg 抓到的 label 就是中文原值）
+ */
 const labelOptions = computed(() => {
   const set = new Set(techList.map((e) => e.label).filter(Boolean));
-  return [{ label: t("techPicker.allLabels"), value: "" }, ...[...set].map((l) => ({ label: l, value: l }))];
+  return [
+    { label: t("techPicker.allLabels"), value: "" },
+    ...[...set].map((l) => ({ label: l, value: l })),
+  ];
 });
-const filterLabel = ref("");
+
+/** 扁平化列表，注入本地化 name 供搜索和排序 */
+const enrichedList = computed(() =>
+  techList.map((e) => ({
+    ...e,
+    _name: getTechName(e.id),
+  }))
+);
 
 const filtered = computed(() => {
   const q = searchVal.value.trim().toLowerCase();
-  return techList.filter((e) => {
+  return enrichedList.value.filter((e) => {
     const matchLabel = !filterLabel.value || e.label === filterLabel.value;
     const matchQ =
       !q ||
-      e.zh.toLowerCase().includes(q) ||
+      e._name.toLowerCase().includes(q) ||
+      (e.zh || "").toLowerCase().includes(q) ||
       e.id.toLowerCase().includes(q) ||
       String(e.level).includes(q);
     return matchLabel && matchQ;
   });
 });
 
-const selectedEntry = computed(() => techList.find((e) => e.id === selectedId.value) || null);
+const selectedEntry = computed(
+  () => enrichedList.value.find((e) => e.id === selectedId.value) || null
+);
 
 const parseRes = (res) => ({
   code: res.statusCode?.value ?? res.statusCode,
@@ -56,10 +86,17 @@ const doLearn = async () => {
     });
     const { code, body } = parseRes(res);
     if (code === 200) {
-      message.success(t("techPicker.learnSuccess", { name: selectedEntry.value?.zh || selectedId.value, msg: body?.message || "OK" }));
+      message.success(
+        t("techPicker.learnSuccess", {
+          name: selectedEntry.value?._name || selectedId.value,
+          msg: body?.message || "OK",
+        })
+      );
       emit("done");
     } else {
-      message.error(t("techPicker.learnFail", { err: body?.error || JSON.stringify(body) || "" }));
+      message.error(
+        t("techPicker.learnFail", { err: body?.error || JSON.stringify(body) || "" })
+      );
     }
   } catch (e) {
     message.error(t("techPicker.learnFail", { err: e.message }));
@@ -68,7 +105,7 @@ const doLearn = async () => {
   }
 };
 
-const columns = [
+const columns = computed(() => [
   {
     title: "",
     key: "icon",
@@ -83,7 +120,7 @@ const columns = [
   },
   {
     title: t("techPicker.colName"),
-    key: "zh",
+    key: "_name",
     ellipsis: { tooltip: true },
   },
   {
@@ -107,7 +144,7 @@ const columns = [
       return h("span", { style: "font-size:11px;font-family:monospace;opacity:.7;" }, row.id);
     },
   },
-];
+]);
 
 const rowProps = (row) => ({
   style: "cursor:pointer;",
@@ -154,7 +191,7 @@ const pagination = { pageSize: 10 };
           style="width:36px;height:36px;object-fit:contain;"
         />
         <div>
-          <div style="font-weight:600;">{{ selectedEntry.zh }}</div>
+          <div style="font-weight:600;">{{ selectedEntry._name }}</div>
           <div style="font-size:12px;opacity:.6;">Lv.{{ selectedEntry.level }} · {{ selectedEntry.label }} · {{ selectedEntry.id }}</div>
         </div>
       </n-space>

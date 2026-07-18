@@ -7,9 +7,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 	"sort"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zaigie/palworld-server-tool/internal/config"
@@ -35,6 +36,123 @@ func getPlayerActionUserId(player database.Player) string {
 		return fmt.Sprintf("steam_%s", player.SteamId)
 	}
 	return ""
+}
+
+var palExportMu sync.Mutex
+
+func exportPlayerPals(c *gin.Context) {
+	player, err := service.GetPlayer(database.GetDB(), c.Param("player_uid"))
+	if err != nil {
+		if err == service.ErrNoRecord {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userID := getPlayerActionUserId(player)
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Player has no valid user_id"})
+		return
+	}
+	if strings.ContainsAny(userID, `/\\`) || userID == "." || userID == ".." {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Player has an invalid user_id"})
+		return
+	}
+
+	pdRoot := palDefenderRoot(config.Current().Save.Path)
+	if pdRoot == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无法定位 PalDefender 目录，请检查存档路径和插件安装状态"})
+		return
+	}
+	exportDir := filepath.Join(pdRoot, "pals", "exported", userID)
+
+	palExportMu.Lock()
+	defer palExportMu.Unlock()
+	if err := os.RemoveAll(exportDir); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "清理旧帕鲁导出失败: " + err.Error()})
+		return
+	}
+	response, err := tool.CustomCommand(fmt.Sprintf("exportpals %s", userID))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "PalDefender 导出失败: " + err.Error()})
+		return
+	}
+
+	files, err := waitForPalExports(exportDir, 8*time.Second)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "response": response})
+		return
+	}
+	pals := make([]json.RawMessage, 0, len(files))
+	for _, path := range files {
+		data, readErr := os.ReadFile(path)
+		if readErr != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "读取帕鲁导出失败: " + readErr.Error()})
+			return
+		}
+		var value any
+		if json.Unmarshal(data, &value) != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("PalDefender 导出了无效 JSON: %s", filepath.Base(path))})
+			return
+		}
+		pals = append(pals, json.RawMessage(data))
+	}
+	c.JSON(http.StatusOK, gin.H{"pals": pals, "count": len(pals), "response": response})
+}
+
+func waitForPalExports(exportDir string, timeout time.Duration) ([]string, error) {
+	deadline := time.Now().Add(timeout)
+	lastSignature := ""
+	stablePolls := 0
+	for time.Now().Before(deadline) {
+		entries, err := os.ReadDir(exportDir)
+		if err != nil && !os.IsNotExist(err) {
+			return nil, fmt.Errorf("读取 PalDefender 导出目录失败: %w", err)
+		}
+		files := make([]string, 0)
+		var signature strings.Builder
+		for _, entry := range entries {
+			if entry.IsDir() || !strings.EqualFold(filepath.Ext(entry.Name()), ".json") {
+				continue
+			}
+			info, infoErr := entry.Info()
+			if infoErr != nil {
+				continue
+			}
+			files = append(files, filepath.Join(exportDir, entry.Name()))
+			fmt.Fprintf(&signature, "%s:%d;", entry.Name(), info.Size())
+		}
+		sort.Strings(files)
+		currentSignature := signature.String()
+		if len(files) == 0 && err == nil {
+			if _, statErr := os.Stat(exportDir); statErr == nil {
+				if currentSignature == lastSignature {
+					stablePolls++
+					if stablePolls >= 2 {
+						return files, nil
+					}
+				} else {
+					stablePolls = 0
+					lastSignature = currentSignature
+				}
+				time.Sleep(200 * time.Millisecond)
+				continue
+			}
+		}
+		if len(files) > 0 && currentSignature == lastSignature {
+			stablePolls++
+			if stablePolls >= 2 {
+				return files, nil
+			}
+		} else {
+			stablePolls = 0
+			lastSignature = currentSignature
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+	return nil, fmt.Errorf("PalDefender 未在 8 秒内生成帕鲁 JSON，请确认插件支持 exportpals 且玩家标识 %q 有效", filepath.Base(exportDir))
 }
 
 // listOnlinePlayers godoc
@@ -692,7 +810,6 @@ func giveAncientTechPoint(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": response})
 }
 
-
 type LearnTechRequest struct {
 	TechID string `json:"tech_id" binding:"required"`
 }
@@ -745,16 +862,16 @@ func learnTech(c *gin.Context) {
 // ─── Give Custom Pal (givepal_j via PalDefender template) ───────────────────
 
 type GiveCustomPalRequest struct {
-	PalID              string            `json:"pal_id" binding:"required"`
-	Nickname           string            `json:"nickname"`
-	Gender             string            `json:"gender"`
-	Level              *int              `json:"level"`
-	IsAwakening        bool              `json:"is_awakening"`
-	PartnerSkillLevel  *int              `json:"partner_skill_level"`
-	Passives           []string          `json:"passives"`
-	Skills             []string          `json:"active_skills"`
-	Stars              *int              `json:"stars"`
-	IVs                struct {
+	PalID             string   `json:"pal_id" binding:"required"`
+	Nickname          string   `json:"nickname"`
+	Gender            string   `json:"gender"`
+	Level             *int     `json:"level"`
+	IsAwakening       bool     `json:"is_awakening"`
+	PartnerSkillLevel *int     `json:"partner_skill_level"`
+	Passives          []string `json:"passives"`
+	Skills            []string `json:"active_skills"`
+	Stars             *int     `json:"stars"`
+	IVs               struct {
 		Health      *int `json:"health"`
 		AttackMelee *int `json:"attack_melee"`
 		AttackShot  *int `json:"attack_shot"`

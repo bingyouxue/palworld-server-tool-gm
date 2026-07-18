@@ -55,10 +55,10 @@ jobs:
         shell: bash
         run: python script/build_sav_cli.py --output build/sav-cli
 
-      - name: Resolve version (short SHA)
+      - name: Resolve version
         id: ver
         shell: bash
-        run: echo "value=dev-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+        run: echo "value=1.13.1" >> "$GITHUB_OUTPUT"
 
       - name: Package Windows release
         shell: bash

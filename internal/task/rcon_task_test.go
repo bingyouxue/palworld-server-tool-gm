@@ -40,6 +40,22 @@ func TestValidateCronExpression(t *testing.T) {
 	}
 }
 
+func TestNormalizeStartMode(t *testing.T) {
+	for _, test := range []struct {
+		input string
+		want  string
+	}{
+		{input: "cmd", want: "cmd"},
+		{input: "silent", want: "silent"},
+		{input: "", want: "silent"},
+		{input: "invalid", want: "silent"},
+	} {
+		if got := normalizeStartMode(test.input); got != test.want {
+			t.Fatalf("normalizeStartMode(%q) = %q, want %q", test.input, got, test.want)
+		}
+	}
+}
+
 func TestExecuteRconTaskPersistsSuccess(t *testing.T) {
 	db := openTaskTestDB(t)
 	if err := service.PutRconCommand(db, "command-1", database.RconCommand{Command: "Broadcast", Remark: "announce"}); err != nil {

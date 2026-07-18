@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -357,6 +358,91 @@ func TestConfigUpdateOnlyRequiresRestartForStartupAndScheduleFields(t *testing.T
 	}
 	if len(wantFields) != 0 {
 		t.Fatalf("missing restart fields: %v; response=%s", wantFields, response.Body.String())
+	}
+}
+
+func TestApplyWorldSettingsPatchBeforeServerLaunch(t *testing.T) {
+	iniPath := filepath.Join(t.TempDir(), "PalWorldSettings.ini")
+	initial := "[/Script/Pal.PalGameWorldSettings]\nOptionSettings=(ServerName=Existing,RCONEnabled=False,RESTAPIEnabled=False)\n"
+	if err := os.WriteFile(iniPath, []byte(initial), 0644); err != nil {
+		t.Fatalf("write initial INI: %v", err)
+	}
+	patch, err := json.Marshal(map[string]string{
+		"RCONEnabled":    "True",
+		"RCONPort":       "25575",
+		"RESTAPIEnabled": "True",
+		"RESTAPIPort":    "8212",
+		"AdminPassword":  "test-secret",
+	})
+	if err != nil {
+		t.Fatalf("encode patch: %v", err)
+	}
+	if err := applyWorldSettingsPatch(iniPath, patch); err != nil {
+		t.Fatalf("apply patch: %v", err)
+	}
+	data, err := os.ReadFile(iniPath)
+	if err != nil {
+		t.Fatalf("read patched INI: %v", err)
+	}
+	content := string(data)
+	for _, expected := range []string{
+		"RCONEnabled=True",
+		"RCONPort=25575",
+		"RESTAPIEnabled=True",
+		"RESTAPIPort=8212",
+		`AdminPassword="test-secret"`,
+	} {
+		if !strings.Contains(content, expected) {
+			t.Fatalf("patched INI does not contain %q: %s", expected, content)
+		}
+	}
+	if strings.Contains(content, "RESTAPIEnabled=False") {
+		t.Fatalf("patched INI retained disabled REST API: %s", content)
+	}
+}
+
+func TestMergeWorldSettingsIsIdempotentWithComplexValues(t *testing.T) {
+	initial := "[/Script/Pal.PalGameWorldSettings]\n" +
+		`OptionSettings=(ServerDescription="Alpha, \"Beta\"",CrossplayPlatforms=(Steam,Xbox,PS5,Mac),RESTAPIEnabled=False,FutureSetting="keep,me")` + "\n"
+	patch := map[string]string{
+		"RESTAPIEnabled": "True",
+		"AdminPassword":  `secret"quote`,
+	}
+
+	first := mergeWorldSettings(initial, patch)
+	second := mergeWorldSettings(first, patch)
+	if second != first {
+		t.Fatalf("repeated merge must be idempotent\nfirst:  %s\nsecond: %s", first, second)
+	}
+	parsed := parseIniToKV(first)
+	want := map[string]string{
+		"ServerDescription":  `Alpha, "Beta"`,
+		"CrossplayPlatforms": "(Steam,Xbox,PS5,Mac)",
+		"RESTAPIEnabled":     "True",
+		"FutureSetting":      "keep,me",
+		"AdminPassword":      `secret"quote`,
+	}
+	for key, value := range want {
+		if parsed[key] != value {
+			t.Fatalf("parsed %s = %q, want %q; INI=%s", key, parsed[key], value, first)
+		}
+	}
+}
+
+func TestWorldSettingsContainPatchDetectsServerRewrite(t *testing.T) {
+	desired := map[string]string{
+		"CrossplayPlatforms": "(Steam,Xbox,PS5,Mac)",
+		"RESTAPIEnabled":     "True",
+		"AdminPassword":      "test-secret",
+	}
+	matching := `[/Script/Pal.PalGameWorldSettings]
+OptionSettings=(CrossplayPlatforms=(Steam,Xbox,PS5,Mac),RESTAPIEnabled=True,AdminPassword="test-secret")`
+	if !worldSettingsContainPatch(matching, desired) {
+		t.Fatal("matching INI must satisfy the persisted patch")
+	}
+	rewritten := strings.Replace(matching, "RESTAPIEnabled=True", "RESTAPIEnabled=False", 1)
+	if worldSettingsContainPatch(rewritten, desired) {
+		t.Fatal("server-rewritten INI must be detected even when timestamps are unchanged")
 	}
 }
 

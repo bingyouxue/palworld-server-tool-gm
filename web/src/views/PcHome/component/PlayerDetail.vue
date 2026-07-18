@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { computed, inject, onMounted, ref } from "vue";
 import { ContentCopyFilled, PersonSearchSharp } from "@vicons/material";
 import { LogOut, Ban, ShieldCheckmarkOutline } from "@vicons/ionicons5";
@@ -8,12 +8,15 @@ import dayjs from "dayjs";
 import { useI18n } from "vue-i18n";
 import palMap from "@/assets/pal.json";
 import skillMap from "@/assets/skill.json";
+import activeSkills from "@/assets/gm/activeSkills.json";
+import passiveSkills from "@/assets/gm/passives.json";
+import passiveI18n from "@/assets/gm/passiveI18n.json";
 import GmItemPicker from "./GmItemPicker.vue";
 import GmPalPicker from "./GmPalPicker.vue";
 import GmTeleportModal from "./GmTeleportModal.vue";
 import GmCustomPalModal from "./GmCustomPalModal.vue";
 import GmTechPicker from "./GmTechPicker.vue";
-import { useDialog, useMessage, NAvatar, NTag, NButton, NSpace, NInputNumber } from "naive-ui";
+import { useDialog, useMessage, NAvatar, NTag, NButton, NSpace, NInputNumber, NTooltip } from "naive-ui";
 import PalDetail from "./PalDetail.vue";
 import whitelistStore from "@/stores/model/whitelist.js";
 import playerToGuildStore from "@/stores/model/playerToGuild.js";
@@ -26,7 +29,12 @@ import {
 
 const { t, locale } = useI18n();
 const PALWORLD_TOKEN = "palworld_token";
-const props = defineProps(["playerInfo", "playerPalsList"]);
+const props = defineProps({
+  playerInfo: Object,
+  playerPalsList: Array,
+  isOnline: Boolean,
+});
+const emit = defineEmits(["refresh-pals"]);
 const playerInfo = computed(() => props.playerInfo);
 const playerPalsList = computed(() => props.playerPalsList);
 
@@ -164,6 +172,56 @@ const handleGmOp = async (key) => {
 
 // 帕鲁列表
 const currentPalsList = ref([]);
+const activeSkillById = new Map(activeSkills.map((skill) => [skill.id, skill]));
+const passiveById = new Map(passiveSkills.map((skill) => [skill.id, skill]));
+const elementMeta = {
+  Normal: ["无", "#8b8f97"], Fire: ["火", "#e85d4a"], Water: ["水", "#4098fc"], Aqua: ["水", "#4098fc"],
+  Ice: ["冰", "#67c8d5"], Leaf: ["草", "#36ad6a"], Earth: ["地", "#b68a5a"], Electric: ["雷", "#e6b422"],
+  Electricity: ["雷", "#e6b422"], Thunder: ["雷", "#e6b422"], Dark: ["暗", "#8b65c2"], Dragon: ["龙", "#6f7de8"],
+};
+const passiveRankColors = { 5: "#e85d75", 4: "#f0a020", 3: "#8a62d3", 2: "#4098fc", 1: "#36ad6a", 0: "#8b8f97", "-1": "#8b8f97", "-2": "#d07836", "-3": "#d03050" };
+const firstDefined = (row, keys, fallback = "—") => {
+  for (const key of keys) if (row?.[key] !== undefined && row[key] !== null && row[key] !== "") return row[key];
+  return fallback;
+};
+const normalizeList = (value) => Array.isArray(value) ? value : typeof value === "string" ? value.split(",").map((item) => item.trim()).filter(Boolean) : [];
+const palType = (row) => firstDefined(row, ["PalID", "pal_id", "type"], "Unknown");
+const palLevel = (row) => Number(firstDefined(row, ["Level", "level"], 0));
+const palGender = (row) => firstDefined(row, ["Gender", "gender"], "");
+const palNickname = (row) => firstDefined(row, ["Nickname", "nickname"], "");
+const palLucky = (row) => Boolean(firstDefined(row, ["Shiny", "is_lucky"], false));
+const palPassives = (row) => normalizeList(firstDefined(row, ["Passives", "passive_skills", "passiveSkills", "passives", "passive_skill_list", "skills"], []));
+const palActiveSkills = (row) => normalizeList(firstDefined(row, ["ActiveSkills", "active_skills", "activeSkills", "active_skill_list", "wazas", "equip_waza", "equipWaza"], []));
+
+const renderTooltipTag = (label, description, tagProps = {}) => h(NTooltip, { trigger: "hover", placement: "top", style: "max-width:360px" }, {
+  trigger: () => h(NTag, { size: "small", ...tagProps }, { default: () => label }), default: () => description || "暂无说明",
+});
+const localizedActiveSkillName = (skillId) => {
+  const detail = activeSkillById.get(skillId);
+  const language = String(locale.value || "zh").toLowerCase();
+  const metadataName = language.startsWith("zh")
+    ? detail?.zh
+    : language.startsWith("ja")
+      ? detail?.ja
+      : detail?.name;
+  const localizedName = localizedSkillName(skillId, locale.value, skillMap);
+  return localizedName === skillId ? metadataName || skillId : localizedName;
+};
+const renderActiveSkill = (skillId) => {
+  const detail = activeSkillById.get(skillId);
+  const localized = skillMap?.[locale.value]?.[skillId] || skillMap?.en?.[skillId];
+  const [label, color] = elementMeta[detail?.element] || elementMeta.Normal;
+  return h("span", { class: "pal-skill-wrap" }, [
+    h("span", { class: "element-icon", style: { "--element-color": color }, title: detail?.element || "Normal" }, label),
+    renderTooltipTag(localizedActiveSkillName(skillId), localized?.desc || skillId, { bordered: true, style: { borderColor: color, color } }),
+  ]);
+};
+const renderPassive = (passiveId) => {
+  const info = passiveById.get(passiveId);
+  const localized = passiveI18n?.[locale.value]?.[passiveId] || passiveI18n?.en?.[passiveId];
+  const color = passiveRankColors[Number(info?.rank || 0)] || passiveRankColors[0];
+  return renderTooltipTag(localized?.name || info?.zh || info?.name || passiveId, localized?.desc || passiveId, { bordered: true, style: { borderColor: color, color } });
+};
 const createPlayerPalsColumns = () => {
   return [
     {
@@ -172,8 +230,8 @@ const createPlayerPalsColumns = () => {
       render(row) {
         return h(NAvatar, {
           size: "small",
-          src: getPalAvatar(row.type),
-          fallbackSrc: getUnknowPalAvatar(row.is_boss),
+          src: getPalAvatar(palType(row)),
+          fallbackSrc: getUnknowPalAvatar(false),
         });
       },
     },
@@ -190,11 +248,11 @@ const createPlayerPalsColumns = () => {
               style: {
                 marginRight: "6px",
               },
-              type: row.gender == "Male" ? "primary" : "error",
+              type: palGender(row) == "Male" ? "primary" : "error",
               bordered: false,
             },
             {
-              default: () => (row.gender == "Male" ? "♂" : "♀"),
+              default: () => (palGender(row) == "Male" ? "♂" : "♀"),
             },
           ),
           h(
@@ -202,12 +260,12 @@ const createPlayerPalsColumns = () => {
             {
               style: {
                 display: "inline-block",
-                color: row.is_lucky ? "darkorange" : getDarkModeColor(),
-                fontWeight: row.is_lucky ? "bold" : "normal",
+                color: palLucky(row) ? "darkorange" : getDarkModeColor(),
+                fontWeight: palLucky(row) ? "bold" : "normal",
               },
             },
             {
-              default: () => getPalName(row.type),
+              default: () => getPalName(palType(row)),
             },
           ),
         ];
@@ -220,57 +278,37 @@ const createPlayerPalsColumns = () => {
       defaultSortOrder: "descend",
       sorter: "default",
       render(row) {
-        return "Lv." + row.level;
+        return "Lv." + palLevel(row);
       },
     },
     {
-      title: t("pal.skills"),
+      title: "主动技能",
       key: "skills",
+      minWidth: 160,
       render(row) {
-        const skills = row.skills.map((skill) => {
-          return h(
-            NTag,
-            {
-              style: {
-                marginRight: "6px",
-              },
-              type: "warning",
-              bordered: false,
-            },
-            {
-              default: () => localizedSkillName(skill, locale.value, skillMap),
-            },
-          );
-        });
-        return skills;
+        return h("div", { class: "pal-tag-list" }, palActiveSkills(row).map(renderActiveSkill));
       },
-      filterOptions: skillTypeList.value.map((value) => ({
-        label: value,
-        value,
-      })),
+      filterOptions: skillTypeList.value.map((value) => ({ label: value, value })),
       filter(value, row) {
-        return row.skills.some((skill) => {
-          return localizedSkillName(skill, locale.value, skillMap).includes(
-            value,
-          );
-        });
+        return palActiveSkills(row).some((skill) => localizedActiveSkillName(skill).includes(value));
+      },
+    },
+    {
+      title: "被动词条",
+      key: "passives",
+      minWidth: 150,
+      render(row) {
+        return h("div", { class: "pal-tag-list" }, palPassives(row).map(renderPassive));
       },
     },
     {
       title: "",
       key: "actions",
-      width: 140,
       render(row) {
-        return h(NSpace, { size: "small" }, {
-          default: () => [
-            h(NButton, { size: "small", onClick: () => showPalDetail(row) },
-              { default: () => t("button.detail") }),
-            h(NButton, {
-              size: "small", type: "error", ghost: true,
-              onClick: () => confirmDeletePal(row),
-            }, { default: () => t("button.deletePal") }),
-          ],
-        });
+        return h(NSpace, { size: "small" }, { default: () => [
+          h(NButton, { size: "small", onClick: () => showPalDetail(row) }, { default: () => t("button.detail") }),
+          h(NButton, { size: "small", type: "error", ghost: true, onClick: () => confirmDeletePal(row) }, { default: () => t("button.deletePal") }),
+        ] });
       },
     },
   ];
@@ -286,16 +324,16 @@ const parseRes = (res) => ({
 const confirmDeletePal = (row) => {
   dialog.warning({
     title: t("message.deletePalTitle"),
-    content: t("message.deletePalConfirm", { name: getPalName(row.type) }),
+    content: t("message.deletePalConfirm", { name: getPalName(palType(row)) }),
     positiveText: t("button.confirm"),
     negativeText: t("button.cancel"),
     onPositiveClick: async () => {
       const payload = {
         playerUid: playerInfo.value.player_uid,
-        pal_type: row.type,
-        level: row.level,
-        gender: row.gender,
-        is_lucky: row.is_lucky,
+        pal_type: palType(row),
+        level: palLevel(row),
+        gender: palGender(row),
+        is_lucky: palLucky(row),
       };
       console.log("[GM] releasePal payload:", payload);
       try {
@@ -305,6 +343,7 @@ const confirmDeletePal = (row) => {
         if (code === 200) {
           message.success(t("message.deletePalSuccess", { msg: body?.message || "OK" }));
           currentPalsList.value = currentPalsList.value.filter(p => p !== row);
+          setTimeout(() => emit("refresh-pals"), 500);
         } else {
           message.error(t("message.deletePalFail", { err: body?.error || JSON.stringify(body) || "" }));
         }
@@ -321,7 +360,7 @@ watch(
   (newVal) => {
     currentPalsList.value = newVal;
     paginationReactive.page = 1;
-    paginationReactive.pageSize = 10;
+    paginationReactive.pageSize = 30;
     searchValue.value = "";
     mergeItems();
   },
@@ -330,9 +369,9 @@ watch(
 // 游戏用户的帕鲁列表分页，搜索
 const paginationReactive = reactive({
   page: 1,
-  pageSize: 10,
+  pageSize: 30,
   showSizePicker: true,
-  pageSizes: [10, 15, 20],
+  pageSizes: [30, 50, 100, 200],
   onChange: (page) => {
     paginationReactive.page = page;
   },
@@ -346,17 +385,17 @@ const searchValue = ref("");
 const clickSearch = () => {
   const pattern = /^\s*$|(\s)\1/;
   if (searchValue.value && !pattern.test(searchValue.value)) {
-    currentPalsList.value = playerInfo?.value.pals.filter((item) => {
+    currentPalsList.value = playerPalsList.value.filter((item) => {
       return (
-        item.skills.some((skill) => {
+        palPassives(item).some((skill) => {
           return localizedSkillName(skill, locale.value, skillMap).includes(
             searchValue.value,
           );
-        }) || getPalName(item.type).includes(searchValue.value)
+        }) || getPalName(palType(item)).includes(searchValue.value)
       );
     });
   } else {
-    currentPalsList.value = JSON.parse(JSON.stringify(playerInfo?.value.pals));
+    currentPalsList.value = [...playerPalsList.value];
   }
   paginationReactive.page = 1;
 };
@@ -580,9 +619,6 @@ const getUnknowPalAvatar = (is_boss = false) => {
     return new URL("@/assets/pals/boss_unknown.png", import.meta.url).href;
   }
   return new URL("@/assets/pals/unknown.png", import.meta.url).href;
-};
-const isPlayerOnline = (last_online) => {
-  return dayjs() - dayjs(last_online) < 80000;
 };
 const getPlatformColor = (userId) => {
   if (!userId) return platformColors.default;
@@ -808,13 +844,13 @@ const createPlayerItemsColumns = () => {
               <n-tag
                 :bordered="false"
                 :type="
-                  isPlayerOnline(playerInfo?.last_online) ? 'success' : 'error'
+                  props.isOnline ? 'success' : 'error'
                 "
                 size="small"
                 round
               >
                 {{
-                  isPlayerOnline(playerInfo?.last_online)
+                  props.isOnline
                     ? $t("status.online")
                     : $t("status.offline")
                 }}
@@ -965,7 +1001,7 @@ const createPlayerItemsColumns = () => {
           }}</n-progress
         >
       </n-space> -->
-      <div class="detail-tabs">
+      <div v-if="isLogin" class="detail-tabs">
         <n-tabs v-model:value="activeTab" type="line" size="large" animated>
           <n-tab-pane :name="$t('item.palList')">
             <div class="w-full mt-5">
@@ -1118,7 +1154,7 @@ const createPlayerItemsColumns = () => {
   <n-modal
     v-model:show="showPalDetailModal"
     preset="card"
-    :style="{ width: '90%', maxWidth: '400px' }"
+    :style="{ width: '94%', maxWidth: '960px' }"
     header-style="padding:12px 20px;"
     content-style="padding:12px 20px;margin:0;"
     size="huge"
@@ -1127,17 +1163,17 @@ const createPlayerItemsColumns = () => {
   >
     <template #header-extra>
       <div class="flex pr-3 space-x-2">
-        <n-tag type="primary" round> Lv.{{ palDetail.level }} </n-tag>
-        <n-tag :type="palDetail.gender === 'Male' ? 'primary' : 'error'" round>
-          {{ palDetail.gender === "Male" ? "♂" : "♀" }}
+        <n-tag type="primary" round> Lv.{{ palLevel(palDetail) }} </n-tag>
+        <n-tag :type="palGender(palDetail) === 'Male' ? 'primary' : 'error'" round>
+          {{ palGender(palDetail) === "Male" ? "♂" : "♀" }}
         </n-tag>
       </div>
     </template>
     <template #header>
       {{
-        palDetail.nickname == ""
-          ? getPalName(palDetail.type)
-          : palDetail.nickname + "(" + getPalName(palDetail.type) + ")"
+        palNickname(palDetail) == ""
+          ? getPalName(palType(palDetail))
+          : palNickname(palDetail) + "(" + getPalName(palType(palDetail)) + ")"
       }}
     </template>
     <pal-detail :palDetail="palDetail"></pal-detail>
@@ -1511,6 +1547,16 @@ const createPlayerItemsColumns = () => {
 .detail-tabs {
   margin-top: 20px;
 }
+
+.pal-tag-list { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; padding: 1px 0; }
+.pal-tag-list :deep(.n-tag) { --n-height: 22px !important; padding: 0 5px; font-size: 11px; }
+.pal-skill-wrap { display: inline-flex; align-items: center; gap: 2px; }
+.element-icon { width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; flex: none; border: 1px solid var(--element-color); border-radius: 50%; background: rgba(64, 152, 252, 0.1); color: var(--element-color); font-size: 10px; font-weight: 700; }
+.pal-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 8px; }
+.pal-stat-grid span { display: flex; justify-content: space-between; gap: 5px; padding: 3px 6px; border-radius: 5px; background: rgba(64, 152, 252, 0.07); }
+.pal-stat-grid small { color: rgba(24, 24, 28, 0.52); }
+.is-dark .pal-stat-grid small { color: rgba(255, 255, 255, 0.52); }
+.pal-stat-grid b { font-variant-numeric: tabular-nums; }
 
 .player-actions {
   position: sticky;

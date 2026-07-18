@@ -1,7 +1,8 @@
 <script setup>
 import { ref, reactive, nextTick, onMounted } from "vue";
-import { useMessage } from "naive-ui";
+import { useMessage, useDialog } from "naive-ui";
 const message = useMessage();
+const dialog = useDialog();
 const TOKEN_KEY = "palworld_token";
 
 const show      = ref(false);
@@ -29,7 +30,7 @@ const WS_DEFAULTS = {
   ServerPlayerMaxNum: '32', CoopPlayerMaxNum: '4', GuildPlayerMaxNum: '20',
   PublicPort: '8211', PublicIP: '', Region: '', bUseAuth: 'True',
   BanListURL: 'https://b.palworldgame.com/api/banlist.txt',
-  RCONEnabled: 'False', RCONPort: '25575', RESTAPIEnabled: 'False', RESTAPIPort: '8212',
+  RCONEnabled: 'True', RCONPort: '25575', RESTAPIEnabled: 'True', RESTAPIPort: '8212',
   bIsMultiplay: 'False', bIsPvP: 'False', bShowPlayerList: 'False',
   bIsShowJoinLeftMessage: 'True', bIsUseBackupSaveData: 'True',
   bAllowClientMod: 'True', CrossplayPlatforms: '(Steam,Xbox,PS5,Mac)',
@@ -95,14 +96,20 @@ const WS_ALIASES = {
   PalStaminaDecreaseRate:    'PalStaminaDecreaceRate',
 };
 function fillWorldSettings(parsed) {
-  if (!parsed || !parsed.world_settings) return;
-  Object.entries(parsed.world_settings).forEach(([k, v]) => {
-    const key = WS_ALIASES[k] || k;
-    if (key in ws) ws[key] = v;
-  });
-  if (parsed.admin_password) ws.AdminPassword = parsed.admin_password;
-  if (parsed.rcon_port)      ws.RCONPort   = String(parsed.rcon_port);
-  if (parsed.rest_port)      ws.RESTAPIPort = String(parsed.rest_port);
+  resetWorldSettings();
+  if (parsed?.world_settings) {
+    Object.entries(parsed.world_settings).forEach(([k, v]) => {
+      const key = WS_ALIASES[k] || k;
+      if (key in ws) ws[key] = v;
+    });
+  }
+  // PST relies on these management interfaces. New/adopted servers default
+  // them to enabled even when an old INI explicitly disabled them.
+  ws.RCONEnabled = 'True';
+  ws.RESTAPIEnabled = 'True';
+  if (parsed?.admin_password) ws.AdminPassword = parsed.admin_password;
+  if (parsed?.rcon_port)      ws.RCONPort = String(parsed.rcon_port);
+  if (parsed?.rest_port)      ws.RESTAPIPort = String(parsed.rest_port);
 }
 
 const WS_GROUPS = [
@@ -165,7 +172,7 @@ const WS_LABELS = {
   bIsStartLocationSelectByMap:'可选出生点', bExistPlayerAfterLogout:'退出后角色保留',
   bEnableDefenseOtherGuildPlayer:'可攻击他会玩家', bInvisibleOtherGuildBaseCampAreaFX:'隐藏他会领地特效',
   bBuildAreaLimit:'限制建筑区域', ServerReplicatePawnCullDistance:'服务器剔除距离',
-  bHardcore:'核心模式', bPalLost:'帕鲁死亡丢失', bCharacterRecreateInHardcore:'核心模式角色重建',
+  bHardcore:'硬核模式', bPalLost:'帕鲁死亡丢失', bCharacterRecreateInHardcore:'硬核模式角色重建',
   bAllowGlobalPalboxExport:'允许全局帕鲁箱导出', bAllowGlobalPalboxImport:'允许全局帕鲁箱导入',
   bAllowEnhanceStat_Health:'允许强化生命', bAllowEnhanceStat_Attack:'允许强化攻击',
   bAllowEnhanceStat_Stamina:'允许强化体力', bAllowEnhanceStat_Weight:'允许强化负重',
@@ -371,6 +378,28 @@ async function doInstall() {
 }
 
 async function saveWorldSettings() {
+  const managementEnabled = boolVal('RCONEnabled') || boolVal('RESTAPIEnabled');
+  if (managementEnabled && !String(ws.AdminPassword || '').trim()) {
+    const confirmed = await new Promise((resolve) => {
+      let settled = false;
+      const finish = (value) => {
+        if (settled) return;
+        settled = true;
+        resolve(value);
+      };
+      dialog.warning({
+        title: "管理员密码未设置",
+        content: "RCON 或 REST API 已启用，但 AdminPassword 为空。控制面板将无法安全认证，远程管理接口也存在安全风险。确定仍要保存吗？",
+        positiveText: "仍然保存",
+        negativeText: "返回填写密码",
+        onPositiveClick: () => finish(true),
+        onNegativeClick: () => finish(false),
+        onClose: () => finish(false),
+      });
+    });
+    if (!confirmed) return;
+  }
+
   worldSaving.value = true;
   try {
     // For install mode, use the server root reported by the backend (installedServerDir).

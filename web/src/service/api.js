@@ -47,8 +47,8 @@ class ApiService extends Service {
   async getServerPlugins() {
     return this.fetch(`/api/server/plugins`).get().json();
   }
-  async startServer() {
-    return this.fetch(`/api/server/start`).post({}).json();
+  async startServer(mode = "silent") {
+    return this.fetch(`/api/server/start`).post({ mode }).json();
   }
   async execRconCommand(command) {
     return this.fetch(`/api/rcon/exec`).post({ command }).json();
@@ -128,6 +128,11 @@ class ApiService extends Service {
   async giveCustomPal(param) {
     const { playerUid, ...body } = param;
     return this.fetch(`/api/player/${playerUid}/give_custom_pal`).post(body).json();
+  }
+
+  async exportPlayerPals(param) {
+    const { playerUid } = param;
+    return this.fetch(`/api/player/${playerUid}/export_pals`).post().json();
   }
 
   async getGuildList() {

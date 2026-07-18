@@ -1,5 +1,6 @@
 <script setup>
-import { computed, inject, nextTick, onMounted, ref, watch } from "vue";
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useMessage } from "naive-ui";
 import ApiService from "@/service/api";
 import pageStore from "@/stores/model/page.js";
 import dayjs from "dayjs";
@@ -7,8 +8,11 @@ import { useI18n } from "vue-i18n";
 import { ChevronForward } from "@vicons/ionicons5";
 import PlayerDetail from "./PlayerDetail.vue";
 import playerToGuildStore from "@/stores/model/playerToGuild";
+import userStore from "@/stores/model/user";
 import whitelistStore from "@/stores/model/whitelist";
 const { t } = useI18n();
+const message = useMessage();
+const PAL_REFRESH_INTERVAL = 20000;
 
 const props = defineProps({
   showWhitelistPlayer: String,
@@ -23,6 +27,11 @@ const smallScreen = computed(() => pageWidth.value < 1024);
 
 const loadingPlayer = ref(false);
 const loadingPlayerDetail = ref(false);
+const refreshingPals = ref(false);
+const palsLastUpdated = ref(null);
+const palsRefreshError = ref("");
+let refreshTimer = null;
+let selectionVersion = 0;
 const playerList = ref([]);
 const playerInfo = ref(null);
 const playerPalsList = ref([]);
@@ -54,12 +63,42 @@ const getPlayerList = async () => {
 };
 
 // 获取玩家详情信息
+const refreshPlayerPals = async ({ silent = false } = {}) => {
+  const playerUid = playerInfo.value?.player_uid;
+  if (!playerUid || refreshingPals.value || !userStore().getLoginInfo().isLogin) return;
+  const requestVersion = selectionVersion;
+  refreshingPals.value = true;
+  palsRefreshError.value = "";
+  try {
+    const exported = await new ApiService().exportPlayerPals({ playerUid });
+    const code = exported.statusCode?.value ?? exported.statusCode;
+    const body = exported.data?.value ?? exported.data;
+    if (code !== 200) throw new Error(body?.error || "PalDefender 帕鲁导出失败");
+    if (requestVersion !== selectionVersion || playerInfo.value?.player_uid !== playerUid) return;
+    playerPalsList.value = Array.isArray(body?.pals) ? body.pals : [];
+    palsLastUpdated.value = new Date();
+    if (!silent) message.success(`已刷新 ${playerPalsList.value.length} 只帕鲁`);
+  } catch (error) {
+    if (requestVersion !== selectionVersion || playerInfo.value?.player_uid !== playerUid) return;
+    palsRefreshError.value = error.message || "PalDefender 帕鲁导出失败";
+    if (!silent) message.error(palsRefreshError.value);
+  } finally {
+    if (requestVersion === selectionVersion) refreshingPals.value = false;
+  }
+};
+
 const getPlayerInfo = async (player_uid) => {
-  const { data } = await new ApiService().getPlayer({ playerUid: player_uid });
+  const requestVersion = ++selectionVersion;
+  const api = new ApiService();
+  const { data } = await api.getPlayer({ playerUid: player_uid });
+  if (requestVersion !== selectionVersion) return;
   playerInfo.value = data.value;
-  playerPalsList.value = playerInfo?.value.pals
-    ? JSON.parse(JSON.stringify(playerInfo?.value.pals))
-    : [];
+  refreshingPals.value = false;
+  playerPalsList.value = [];
+  palsLastUpdated.value = null;
+  palsRefreshError.value = "";
+  await refreshPlayerPals({ silent: true });
+  if (requestVersion !== selectionVersion) return;
   nextTick(() => {
     const playerInfoEL = document.getElementById("player-info");
     if (playerInfoEL) {
@@ -95,7 +134,30 @@ watch(
   { deep: true },
 );
 
-// 白名单
+const selectedPlayerOnline = computed(() => {
+  const selectedUid = playerInfo.value?.player_uid;
+  if (!selectedUid) return false;
+  const currentPlayer = playerList.value.find(
+    (player) => player.player_uid === selectedUid,
+  );
+  return currentPlayer
+    ? isPlayerOnline(currentPlayer.last_online)
+    : isPlayerOnline(playerInfo.value?.last_online);
+});
+
+
+const schedulePalRefresh = () => {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => {
+    if (document.hidden || !selectedPlayerOnline.value || refreshingPals.value) return;
+    refreshPlayerPals({ silent: true });
+  }, PAL_REFRESH_INTERVAL);
+};
+
+const handleVisibilityChange = () => {
+  if (!document.hidden && selectedPlayerOnline.value) refreshPlayerPals({ silent: true });
+};
+
 const whiteList = computed(() => whitelistStore().getWhitelist());
 const isWhite = computed(() => (player) => {
   if (player) {
@@ -112,6 +174,8 @@ const isWhite = computed(() => (player) => {
 });
 
 onMounted(async () => {
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  schedulePalRefresh();
   loadingPlayerDetail.value = true;
   loadingPlayer.value = true;
   await getPlayerList();
@@ -124,6 +188,13 @@ onMounted(async () => {
     playerToGuildStore().setCurrentUid(null);
   }
   loadingPlayerDetail.value = false;
+});
+
+
+onBeforeUnmount(() => {
+  selectionVersion++;
+  if (refreshTimer) clearInterval(refreshTimer);
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
 });
 
 // 其他操作
@@ -338,6 +409,8 @@ const filteredPlayers = computed(() => {
         <player-detail
           :playerInfo="playerInfo"
           :playerPalsList="playerPalsList"
+          @refresh-pals="refreshPlayerPals({ silent: true })"
+          :is-online="selectedPlayerOnline"
         ></player-detail>
         <n-spin
           size="small"

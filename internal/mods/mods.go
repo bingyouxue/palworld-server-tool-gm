@@ -36,9 +36,9 @@ const (
 )
 
 var ghRepos = map[Component]struct {
-	Repo    string
-	Asset   string // substring match
-	EnvURL  string
+	Repo   string
+	Asset  string // substring match
+	EnvURL string
 }{
 	ComponentPalDefender: {
 		Repo:   "Ultimeit/PalDefender",
@@ -58,9 +58,21 @@ type ModsMarker struct {
 	Files       map[string][]string `json:"files,omitempty"`
 }
 
-// Win64Dir returns the Pal/Binaries/Win64 path under serverRoot.
+// Win64Dir accepts either the PalServer installation root or the directory
+// containing PalServer-Win64-Shipping.exe and returns the actual binary dir.
 func Win64Dir(serverRoot string) string {
-	return filepath.Join(serverRoot, "Pal", "Binaries", "Win64")
+	clean := filepath.Clean(serverRoot)
+	if strings.EqualFold(filepath.Base(clean), "Win64") ||
+		fileExists(filepath.Join(clean, "PalServer-Win64-Shipping.exe")) ||
+		fileExists(filepath.Join(clean, "PalServer-Win64-Shipping-Cmd.exe")) {
+		return clean
+	}
+	return filepath.Join(clean, "Pal", "Binaries", "Win64")
+}
+
+func fileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
 }
 
 func markerPath(serverRoot string) string {
@@ -257,7 +269,7 @@ func Install(serverRoot string, component Component, channel Channel, progressFn
 	// Direct GitHub first, then mainland-accessible mirrors.
 	// Override with PALSERVER_GH_DOWNLOAD env var (a single prefix URL).
 	ghDownloadMirrors := []string{
-		"",                           // direct github.com
+		"", // direct github.com
 		"https://ghproxy.com/",
 		"https://mirror.ghproxy.com/",
 		"https://ghproxy.net/",

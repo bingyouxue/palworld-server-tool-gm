@@ -104,6 +104,7 @@ type RconTask struct {
 	RconUUID   string     `json:"rcon_uuid"`
 	Content    string     `json:"content"`
 	Cron       string     `json:"cron"`
+	StartMode  string     `json:"start_mode,omitempty"`
 	Enabled    bool       `json:"enabled"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`

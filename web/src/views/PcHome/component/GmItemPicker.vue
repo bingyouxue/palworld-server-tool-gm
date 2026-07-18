@@ -26,7 +26,7 @@ const CATEGORY_MAP = {
   Essential:"鞍具/道具书",
   Ammo:     "弹药",
   PalSphere:"帕鲁球",
-  Blueprint:"蓝图",
+  Blueprint:"设计图",
   Relic:    "遗迹碎片",
   QuestItem:"任务道具",
   Glider:   "滑翔伞",
@@ -39,11 +39,21 @@ const CATEGORY_MAP = {
   Jewelry:  "票券",
 };
 
-const RARITY_LABELS = { 0: "普通", 1: "少见", 2: "稀有", 3: "史诗", 4: "传奇" };
-const RARITY_COLORS = { 0: "default", 1: "success", 2: "info", 3: "warning", 4: "error" };
+const RARITY_LABELS = { 0: "常见", 1: "少见", 2: "稀有", 3: "史诗", 4: "传奇" };
+const RARITY_COLORS = { 0: "default", 1: "success", 2: "info", 3: "default", 4: "warning" };
+
+// 从 id 后缀推断品质：_Default1/无后缀=0 普通，_2=1 少见，_3=2 稀有，_4=3 史诗，_5=4 传奇
+function getRarityFromId(id = "") {
+  const m = id.match(/_Default(\d)$/) || id.match(/_(\d)$/)
+  if (m) return Math.min(parseInt(m[1]) - 1, 4)
+  return null
+}
 
 // 从icon路径提取分类前缀
-function getCategoryFromIcon(icon = "") {
+function getCategoryFromIcon(icon = "", id = "") {
+  if (icon === "T_itemicon_Material_Blueprint.webp" || id.startsWith("Blueprint_")) {
+    return "设计图";
+  }
   const clean = icon.replace("T_itemicon_", "").replace(/\.webp$/, "");
   const prefix = clean.split("_")[0];
   return CATEGORY_MAP[prefix] || "其他";
@@ -59,11 +69,13 @@ const allItems = computed(() => {
   }
   return gmItemsRaw.map((raw) => {
     const nameEntry = langMap[raw.id?.toLowerCase()];
+    const idRarity = getRarityFromId(raw.id || "");
     return {
       ...raw,
+      rarity: idRarity !== null ? idRarity : (raw.rarity ?? 0),
       label: nameEntry?.name || raw.zh || raw.name || raw.id,
       description: nameEntry?.description || "",
-      category: getCategoryFromIcon(raw.icon || ""),
+      category: getCategoryFromIcon(raw.icon || "", raw.id || ""),
     };
   }).filter((x) => x.label && x.label !== "-");
 });
@@ -76,7 +88,7 @@ const categories = computed(() => {
     map.set(item.category, (map.get(item.category) || 0) + 1);
   }
   map.set("全部", allItems.value.length);
-  const order = ["全部","武器","防具","饰品","食物","帕鲁球","弹药","鞍具/道具书","消耗品","材料","蓝图","强化石","觉醒素材","遗迹碎片","其他"];
+  const order = ["全部","武器","防具","饰品","食物","帕鲁球","弹药","鞍具/道具书","消耗品","材料","设计图","蓝图","强化石","觉醒素材","遗迹碎片","其他"];
   const result = [];
   for (const k of order) {
     if (map.has(k)) result.push({ name: k, count: map.get(k) });
@@ -88,7 +100,7 @@ const categories = computed(() => {
 });
 
 const activeCategory = ref("全部");
-const activeRarity = ref(null); // null = 全部
+const activeRarity = ref(null);
 const searchValue = ref("");
 
 const filteredItems = computed(() => {
@@ -120,6 +132,34 @@ const itemIconMap = computed(() => {
   return m;
 });
 const getItemIcon = (id) => itemIconMap.value[id] || "";
+
+// ── 设计图叠加图标：从 Blueprint_XXX_N 推断出 XXX 对应的物品图标 ──
+const blueprintOverlayMap = computed(() => {
+  // baseId（小写）-> icon url
+  const base2icon = {};
+  for (const raw of gmItemsRaw) {
+    if (!raw.id.startsWith("Blueprint_") && raw.icon && raw.icon !== "T_itemicon_Material_Blueprint.webp") {
+      // 取物品 ID 去掉末尾 _DefaultN 或 _N 后的 base
+      const base = raw.id.replace(/_Default\d$/, "").replace(/_\d$/, "").toLowerCase();
+      if (!base2icon[base]) {
+        base2icon[base] = `/gm-data/items/${raw.icon}`;
+      }
+    }
+  }
+  // 为每个设计图建立 id -> overlay icon
+  const m = {};
+  for (const raw of gmItemsRaw) {
+    if (!raw.id.startsWith("Blueprint_")) continue;
+    const base = raw.id
+      .replace(/^Blueprint_/, "")
+      .replace(/_Default\d$/, "")
+      .replace(/_\d$/, "")
+      .toLowerCase();
+    if (base2icon[base]) m[raw.id] = base2icon[base];
+  }
+  return m;
+});
+const getBlueprintOverlay = (id) => blueprintOverlayMap.value[id] || "";
 
 // ── 选择与给予 ───────────────────────────────────────────
 const selectedItem = ref(null);
@@ -169,7 +209,7 @@ const handleGive = async () => {
         v-for="cat in categories" :key="cat.name"
         class="gm-cat-chip" :class="{ active: activeCategory === cat.name }"
         type="button"
-        @click="activeCategory = cat.name; selectedItem = null"
+        @click="activeCategory = cat.name; selectedItem = null; activeTier = null"
       >
         {{ cat.name }}
         <span v-if="cat.name !== '全部'" class="gm-cat-count">{{ cat.count }}</span>
@@ -200,7 +240,12 @@ const handleGive = async () => {
         @click="selectedItem = item"
       >
         <div class="gm-item-img-wrap">
+          <template v-if="getBlueprintOverlay(item.id)">
+            <img :src="getItemIcon(item.id)" :alt="item.label" class="gm-item-img gm-blueprint-bg" @error="$event.target.style.display='none'" />
+            <img :src="getBlueprintOverlay(item.id)" :alt="item.label" class="gm-item-img gm-blueprint-overlay" @error="$event.target.style.display='none'" />
+          </template>
           <img
+            v-else
             :src="getItemIcon(item.id)"
             :alt="item.label"
             class="gm-item-img"
@@ -209,7 +254,8 @@ const handleGive = async () => {
         </div>
         <div class="gm-item-name">{{ item.label }}</div>
         <div class="gm-item-id">{{ item.id }}</div>
-        <n-tag v-if="item.rarity !== undefined" size="tiny" :type="RARITY_COLORS[item.rarity ?? 0]" :bordered="false" class="gm-item-rarity">
+        <!-- 有等阶时显示等阶标签，否则显示品质标签 -->
+        <n-tag v-if="item.rarity !== undefined" size="tiny" :type="RARITY_COLORS[item.rarity ?? 0]" :bordered="false" :class="['gm-item-rarity', { 'rarity-epic': (item.rarity ?? 0) === 3 }]">
           {{ RARITY_LABELS[item.rarity ?? 0] }}
         </n-tag>
       </div>
@@ -221,11 +267,13 @@ const handleGive = async () => {
     <!-- 选中信息 + 操作区 -->
     <div class="gm-give-bar">
       <div v-if="selectedItem" class="gm-selected-info">
-        <img
-          :src="getItemIcon(selectedItem.id)"
-          class="gm-sel-img"
-          @error="$event.target.style.display='none'"
-        />
+        <div class="gm-sel-img-wrap">
+          <template v-if="getBlueprintOverlay(selectedItem.id)">
+            <img :src="getItemIcon(selectedItem.id)" class="gm-sel-img gm-blueprint-bg" @error="$event.target.style.display='none'" />
+            <img :src="getBlueprintOverlay(selectedItem.id)" class="gm-sel-img gm-sel-blueprint-overlay" @error="$event.target.style.display='none'" />
+          </template>
+          <img v-else :src="getItemIcon(selectedItem.id)" class="gm-sel-img" @error="$event.target.style.display='none'" />
+        </div>
         <div class="gm-sel-text">
           <span class="gm-sel-name">{{ selectedItem.label }}</span>
           <span class="gm-sel-id">{{ selectedItem.id }}</span>
@@ -289,8 +337,14 @@ const handleGive = async () => {
 .gm-rarity-chip {
   &.rarity-1.active { background: #18a058; border-color: #18a058; }
   &.rarity-2.active { background: #4098fc; border-color: #4098fc; }
-  &.rarity-3.active { background: #f0a020; border-color: #f0a020; }
-  &.rarity-4.active { background: #d03050; border-color: #d03050; }
+  &.rarity-3.active { background: #9d60f0; border-color: #9d60f0; color: #fff; }
+  &.rarity-4.active { background: #f0a020; border-color: #f0a020; color: #fff; }
+}
+
+.gm-item-rarity.rarity-epic {
+  background-color: rgba(157, 96, 240, 0.16) !important;
+  color: #b47ef5 !important;
+  border-color: rgba(157, 96, 240, 0.3) !important;
 }
 
 .gm-item-grid {
@@ -323,18 +377,31 @@ const handleGive = async () => {
 }
 .is-dark .gm-item-card { border-color: rgba(255,255,255,0.1); }
 
+.rarity-bg-0 { border-color: rgba(255,255,255,0.24); }
 .rarity-bg-1 { border-color: rgba(24,160,88,0.25); }
 .rarity-bg-2 { border-color: rgba(64,152,252,0.25); }
-.rarity-bg-3 { border-color: rgba(240,160,32,0.3); }
-.rarity-bg-4 { border-color: rgba(208,48,80,0.3); }
+.rarity-bg-3 { border-color: rgba(157,96,240,0.3); }
+.rarity-bg-4 { border-color: rgba(242,160,32,0.3); }
 
 .gm-item-img-wrap {
   width: 48px; height: 48px;
+  position: relative;
   display: flex; align-items: center; justify-content: center;
 }
 .gm-item-img {
   width: 48px; height: 48px;
   object-fit: contain;
+}
+.gm-blueprint-bg {
+  position: absolute; top: 0; left: 0;
+  width: 48px; height: 48px;
+  object-fit: contain;
+}
+.gm-blueprint-overlay {
+  position: absolute; top: 0; left: 0;
+  width: 48px; height: 48px;
+  object-fit: contain;
+  transform: scale(0.64);
 }
 .gm-item-name {
   font-size: 11px; font-weight: 500;
@@ -369,8 +436,17 @@ const handleGive = async () => {
 .gm-selected-info {
   display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
 }
+.gm-sel-img-wrap {
+  position: relative; width: 36px; height: 36px; flex-shrink: 0;
+}
 .gm-sel-img {
   width: 36px; height: 36px; object-fit: contain; flex-shrink: 0;
+}
+.gm-sel-blueprint-overlay {
+  position: absolute; top: 0; left: 0;
+  width: 36px; height: 36px;
+  object-fit: contain;
+  transform: scale(0.64);
 }
 .gm-sel-text {
   display: flex; flex-direction: column; min-width: 0;

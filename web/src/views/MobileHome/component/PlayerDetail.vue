@@ -347,6 +347,7 @@ onMounted(async () => {
             }}</n-progress
           >
         </n-space> -->
+        <template v-if="isLogin">
         <div class="pal-search">
           <n-input
             v-model:value="searchValue"
@@ -406,6 +407,7 @@ onMounted(async () => {
           没有更多了
         </div>
         <div class="h-10"></div>
+        </template>
       </n-card>
     </n-layout>
   </div>

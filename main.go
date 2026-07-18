@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/zaigie/palworld-server-tool/api"
@@ -55,6 +56,9 @@ var gmData embed.FS
 //go:embed logo.jpg
 var logoJPG embed.FS
 
+//go:embed favicon.ico
+var faviconICO embed.FS
+
 //	@SecurityDefinitions.apikey	ApiKeyAuth
 //	@in							header
 //	@name						Authorization
@@ -63,6 +67,13 @@ var logoJPG embed.FS
 // @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
 func main() {
+	logPath, err := logger.EnableFileOutput(logger.DefaultDirectory)
+	if err != nil {
+		logger.Panic(err)
+	}
+	defer logger.Sync()
+	logger.Infof("Control panel log file: %s", logPath)
+
 	releaseSavCli()
 	portOverride, err := startupPortOverride(os.Args[1:], os.LookupEnv, os.Stderr)
 	if err != nil {
@@ -95,6 +106,12 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(func(c *gin.Context) {
+		started := time.Now()
+		c.Next()
+		logger.Infof("[HTTP] %s %s status=%d latency=%s client=%s", c.Request.Method, c.Request.URL.RequestURI(), c.Writer.Status(), time.Since(started), c.ClientIP())
+	})
 	router.Use(func(c *gin.Context) {
 		c.Set("version", version)
 		c.Next()
@@ -103,6 +120,7 @@ func main() {
 		go task.Schedule(db)
 	}
 	api.RegisterRouter(router, startScheduler)
+	api.InitAutoRestart()
 
 	assetsFS, _ := fs.Sub(assets, "assets")
 	router.StaticFS("/assets", http.FS(assetsFS))
@@ -116,6 +134,11 @@ func main() {
 	router.GET("/logo.jpg", func(c *gin.Context) {
 		file, _ := logoJPG.ReadFile("logo.jpg")
 		c.Data(http.StatusOK, "image/jpeg", file)
+	})
+
+	router.GET("/favicon.ico", func(c *gin.Context) {
+		file, _ := faviconICO.ReadFile("favicon.ico")
+		c.Data(http.StatusOK, "image/x-icon", file)
 	})
 
 	router.GET("/", func(c *gin.Context) {

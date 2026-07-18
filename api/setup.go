@@ -85,7 +85,6 @@ func postSetupAdopt(c *gin.Context) {
 		return
 	}
 
-	markSetupDone()
 	c.JSON(http.StatusOK, gin.H{"success": true, "parsed": parsed})
 }
 
@@ -97,9 +96,9 @@ type installRequest struct {
 
 // install progress channels keyed by a simple counter
 var (
-	installMu   sync.Mutex
-	installChs  = map[int]chan string{}
-	installIdx  int
+	installMu  sync.Mutex
+	installChs = map[int]chan string{}
+	installIdx int
 )
 
 // postSetupInstall triggers async download + install of Palworld dedicated server.
@@ -127,7 +126,7 @@ func postSetupInstall(c *gin.Context) {
 
 	steamDir := req.SteamCMDir
 	if steamDir == "" {
-			steamDir = filepath.Join(filepath.Dir(installDirAbs), "steamcmd")
+		steamDir = filepath.Join(filepath.Dir(installDirAbs), "steamcmd")
 	}
 
 	installMu.Lock()
@@ -244,7 +243,7 @@ func postSetupComplete(c *gin.Context) {
 
 // serverUpdateRequest is the body for POST /api/setup/server-update
 type serverUpdateRequest struct {
-	ServerDir  string `json:"server_dir"`  // optional, derived from save.path if empty
+	ServerDir  string `json:"server_dir"`   // optional, derived from save.path if empty
 	SteamCMDir string `json:"steamcmd_dir"` // optional
 }
 
@@ -411,38 +410,46 @@ func putSetupWorldSettings(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "path": iniPath})
 }
 
+func findOptionSettingsBounds(ini string) (int, int) {
+	start := strings.Index(ini, "OptionSettings=(")
+	if start < 0 {
+		return -1, -1
+	}
+	depth := 0
+	inQuote := false
+	escaped := false
+	for i := start + len("OptionSettings=(") - 1; i < len(ini); i++ {
+		ch := ini[i]
+		if inQuote && ch == '\\' && !escaped {
+			escaped = true
+			continue
+		}
+		if ch == '"' && !escaped {
+			inQuote = !inQuote
+		}
+		escaped = false
+		if inQuote {
+			continue
+		}
+		if ch == '(' {
+			depth++
+		} else if ch == ')' {
+			depth--
+			if depth == 0 {
+				return start, i
+			}
+		}
+	}
+	return start, -1
+}
+
 // mergeWorldSettings merges kv pairs into an INI string's OptionSettings block.
 func mergeWorldSettings(ini string, kv map[string]string) string {
 	type pair struct{ k, v string }
 	var pairs []pair
 	seen := map[string]bool{}
 
-	start := strings.Index(ini, "OptionSettings=(")
-	end := -1
-	if start >= 0 {
-		// Find the matching closing ')' — we must skip ')' that appear inside
-		// quoted strings (e.g. CrossplayPlatforms="(Steam,Xbox)").
-		depth := 0
-		inQuote := false
-		for i := start + len("OptionSettings=(") - 1; i < len(ini); i++ {
-			ch := ini[i]
-			if ch == '"' {
-				inQuote = !inQuote
-			}
-			if inQuote {
-				continue
-			}
-			if ch == '(' {
-				depth++
-			} else if ch == ')' {
-				depth--
-				if depth == 0 {
-					end = i
-					break
-				}
-			}
-		}
-	}
+	start, end := findOptionSettingsBounds(ini)
 
 	if start >= 0 && end > start {
 		inner := ini[start+len("OptionSettings=(") : end]
@@ -454,7 +461,7 @@ func mergeWorldSettings(ini string, kv map[string]string) string {
 			}
 			k := strings.TrimSpace(seg[:eq])
 			v := strings.TrimSpace(seg[eq+1:])
-			v = strings.Trim(v, `"`)
+			v = unquoteWorldSettingValue(v)
 			if k != "" {
 				pairs = append(pairs, pair{k, v})
 				seen[k] = true
@@ -494,19 +501,45 @@ func mergeWorldSettings(ini string, kv map[string]string) string {
 	return strings.TrimRight(ini, "\r\n") + "\n" + newBlock + "\n"
 }
 
+func unquoteWorldSettingValue(value string) string {
+	if len(value) >= 2 && value[0] == '"' && value[len(value)-1] == '"' {
+		value = value[1 : len(value)-1]
+		value = strings.ReplaceAll(value, `\"`, `"`)
+	}
+	return value
+}
+
 func splitOptionPairs(s string) []string {
 	var segs []string
 	inQuote := false
+	escaped := false
+	depth := 0
 	start := 0
 	for i := 0; i < len(s); i++ {
 		ch := s[i]
-		if ch == '"' {
-			inQuote = !inQuote
+		if inQuote && ch == '\\' && !escaped {
+			escaped = true
 			continue
 		}
-		if ch == ',' && !inQuote {
-			segs = append(segs, strings.TrimSpace(s[start:i]))
-			start = i + 1
+		if ch == '"' && !escaped {
+			inQuote = !inQuote
+		}
+		escaped = false
+		if inQuote {
+			continue
+		}
+		switch ch {
+		case '(':
+			depth++
+		case ')':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				segs = append(segs, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
 		}
 	}
 	if start < len(s) {

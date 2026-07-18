@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from pathlib import Path
 import shutil
@@ -23,6 +24,26 @@ from verify_map import verify_map
 
 ROOT = Path(__file__).resolve().parents[1]
 ARCH_NAMES = {"amd64": "x86_64", "arm64": "aarch64"}
+WINDOWS_RESOURCE = ROOT / "resource_windows_amd64.syso"
+def windows_file_version() -> str:
+    with (ROOT / "versioninfo.json").open(encoding="utf-8") as version_file:
+        version_info = json.load(version_file)
+    return version_info["StringFileInfo"]["FileVersion"]
+
+
+def prepare_windows_resource(env: dict[str, str]) -> None:
+    print(f"Embedding Windows EXE file version {windows_file_version()}", flush=True)
+    run(
+        [
+            "go",
+            "run",
+            "github.com/josephspurrier/goversioninfo/cmd/goversioninfo@v1.4.0",
+            "-64",
+            "-o",
+            str(WINDOWS_RESOURCE),
+        ],
+        env=env,
+    )
 
 
 def run(command: list[str], *, env: dict[str, str]) -> None:
@@ -46,10 +67,17 @@ def build_go(
     ldflags = "-s -w"
     if version is not None:
         ldflags += f" -X main.version={version}"
-    run(
-        ["go", "build", "-trimpath", "-ldflags", ldflags, "-o", str(destination), source],
-        env=env,
-    )
+    generated_resource = goos == "windows" and goarch == "amd64" and source == "."
+    if generated_resource:
+        prepare_windows_resource(env)
+    try:
+        run(
+            ["go", "build", "-trimpath", "-ldflags", ldflags, "-o", str(destination), source],
+            env=env,
+        )
+    finally:
+        if generated_resource:
+            WINDOWS_RESOURCE.unlink(missing_ok=True)
 
 
 def archive_directory(source: Path, destination: Path, windows: bool) -> None:

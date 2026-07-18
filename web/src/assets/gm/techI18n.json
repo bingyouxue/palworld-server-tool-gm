@@ -1,0 +1,4706 @@
+{
+  "Workbench": {
+    "zh": "原始的作业台",
+    "en": "Primitive Workbench",
+    "ja": "原始的な作業台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WorkBench.webp",
+    "level": 1,
+    "label": "建筑"
+  },
+  "Product_Axe_Grade_01": {
+    "zh": "石头斧",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Axe_Default.webp",
+    "level": 1,
+    "label": "科技"
+  },
+  "Product_Pickaxe_Grade_01": {
+    "zh": "石制十字镐",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Pickaxe_Default.webp",
+    "level": 1,
+    "label": "科技"
+  },
+  "HandTorch": {
+    "zh": "携带火把",
+    "en": "Hand-Held Torch",
+    "ja": "携帯たいまつ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Torch.webp",
+    "level": 1,
+    "label": "科技"
+  },
+  "Battle_MeleeWeapon_Bat": {
+    "zh": "木棒",
+    "en": "Wooden Club",
+    "ja": "木のこん棒",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bat.webp",
+    "level": 1,
+    "label": "科技"
+  },
+  "PalBox": {
+    "zh": "帕鲁终端",
+    "en": "Palbox",
+    "ja": "パルボックス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalBoxV2.webp",
+    "level": 2,
+    "label": "科技"
+  },
+  "Special_PalSphere_Grade_01": {
+    "zh": "帕鲁球",
+    "en": "Pal Sphere",
+    "ja": "パルスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CapturePrism.webp",
+    "level": 2,
+    "label": "科技"
+  },
+  "Product_Cooking_Grade_01": {
+    "zh": "篝火",
+    "en": "Campfire",
+    "ja": "キャンプファイア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Campfire.webp",
+    "level": 2,
+    "label": "科技"
+  },
+  "Infra_ItemChest_Grade_01": {
+    "zh": "木箱",
+    "en": "Wooden Chest",
+    "ja": "木のチェスト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Chest.webp",
+    "level": 2,
+    "label": "科技"
+  },
+  "RepairBench": {
+    "zh": "修理台",
+    "en": "Repair Bench",
+    "ja": "修理台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/RepairBench.webp",
+    "level": 2,
+    "label": "建筑"
+  },
+  "Wooden_houseset": {
+    "zh": "木质建筑套组",
+    "en": "Wooden Structure Set",
+    "ja": "木の建築セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Wooden_foundation.webp",
+    "level": 2,
+    "label": "科技"
+  },
+  "SkinChange": {
+    "zh": "帕鲁装扮机",
+    "en": "Pal Dressing Facility",
+    "ja": "パルおめかし装置",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkinChange.webp",
+    "level": 2,
+    "label": "建筑"
+  },
+  "Battle_RangeWeapon_Bow1": {
+    "zh": "陈旧的弓",
+    "en": "Old Bow",
+    "ja": "古びた弓",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bow.webp",
+    "level": 3,
+    "label": "科技"
+  },
+  "Arrow": {
+    "zh": "箭",
+    "en": "Arrow",
+    "ja": "矢",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Arrow.webp",
+    "level": 3,
+    "label": "道具"
+  },
+  "Spear": {
+    "zh": "石头长矛",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spear.webp",
+    "level": 3,
+    "label": "道具"
+  },
+  "Infra_PlayerBed_Grade_01": {
+    "zh": "劣质的床",
+    "en": "Shoddy Bed",
+    "ja": "低質なベッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlayerBed_02.webp",
+    "level": 3,
+    "label": "科技"
+  },
+  "Infra_PalBed_Grade_01": {
+    "zh": "稻草帕鲁床",
+    "en": "Straw Pal Bed",
+    "ja": "わらのパルベッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicalPalBed_02.webp",
+    "level": 3,
+    "label": "科技"
+  },
+  "GlobalPalStorage": {
+    "zh": "跨界帕鲁终端",
+    "en": "Global Palbox",
+    "ja": "グローバルパルボックス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GlobalPalStorage.webp",
+    "level": 3,
+    "label": "建筑"
+  },
+  "Shield_01": {
+    "zh": "普通护盾",
+    "en": "Common Shield",
+    "ja": "ノーマルシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_01.webp",
+    "level": 4,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_01_Cloth": {
+    "zh": "布衣服",
+    "en": "Cloth Outfit",
+    "ja": "布の服",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LeatherClothing.webp",
+    "level": 4,
+    "label": "科技"
+  },
+  "Battle_Cloth": {
+    "zh": "布",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cloth.webp",
+    "level": 4,
+    "label": "科技"
+  },
+  "PalFoodBox": {
+    "zh": "饲料箱",
+    "en": "Feed Box",
+    "ja": "エサ箱",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalFoodBox.webp",
+    "level": 4,
+    "label": "建筑"
+  },
+  "Product_Farm_Berries": {
+    "zh": "野莓园",
+    "en": "Berry Plantation",
+    "ja": "ベリー農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_Berries.webp",
+    "level": 5,
+    "label": "科技"
+  },
+  "MonsterFarm": {
+    "zh": "家畜牧场",
+    "en": "Ranch",
+    "ja": "家畜牧場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MonsterFarm.webp",
+    "level": 5,
+    "label": "建筑"
+  },
+  "Battle_Glider_Grade_01": {
+    "zh": "普通滑翔伞",
+    "en": "Normal Parachute",
+    "ja": "ノーマルパラシュート",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Glider_Old.webp",
+    "level": 5,
+    "label": "科技"
+  },
+  "Product_WorkBench_SkillUnlock": {
+    "zh": "帕鲁装备制作台",
+    "en": "Pal Gear Workbench",
+    "ja": "パルギア製作台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WorkBench_SkillUnlock.webp",
+    "level": 6,
+    "label": "科技"
+  },
+  "Arrow_Fire": {
+    "zh": "火箭",
+    "en": "Fire Arrow",
+    "ja": "火矢",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Arrow_Fire.webp",
+    "level": 6,
+    "label": "道具"
+  },
+  "Torch": {
+    "zh": "固定式火把",
+    "en": "Mounted Torch",
+    "ja": "設置たいまつ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TorchStand.webp",
+    "level": 6,
+    "label": "建筑"
+  },
+  "Signboard": {
+    "zh": "告示牌",
+    "en": "Sign",
+    "ja": "看板",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Signboard.webp",
+    "level": 6,
+    "label": "建筑"
+  },
+  "WallSignboard": {
+    "zh": "壁挂看板",
+    "en": "Wall-Mounted Sign",
+    "ja": "壁掛け看板",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WallSignboard.webp",
+    "level": 6,
+    "label": "建筑"
+  },
+  "SkillUnlock_Boar": {
+    "zh": "草莽猪的鞍具",
+    "en": "Rushoar Saddle",
+    "ja": "イノボウのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Boar.webp",
+    "level": 6,
+    "label": "道具"
+  },
+  "SkillUnlock_Kitsunebi": {
+    "zh": "火绒狐的背带",
+    "en": "Foxparks&#x27; Harness",
+    "ja": "キツネビのハーネス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Kitsunebi.webp",
+    "level": 6,
+    "label": "道具"
+  },
+  "BaseCampWorkHard": {
+    "zh": "监控台",
+    "en": "Monitoring Stand",
+    "ja": "監視台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BaseCampWorkHard.webp",
+    "level": 7,
+    "label": "建筑"
+  },
+  "Battle_MeleeWeapon_Bat2": {
+    "zh": "棒球棒",
+    "en": "Bat",
+    "ja": "バット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bat2.webp",
+    "level": 7,
+    "label": "科技"
+  },
+  "Product_StationDeforest": {
+    "zh": "伐木场",
+    "en": "Logging Site",
+    "ja": "伐採場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StationDeforest2.webp",
+    "level": 7,
+    "label": "科技"
+  },
+  "Product_StonePit": {
+    "zh": "采石场",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stone.webp",
+    "level": 7,
+    "label": "科技"
+  },
+  "DefenseWait": {
+    "zh": "沙袋",
+    "en": "Sandbag",
+    "ja": "土嚢",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseWait.webp",
+    "level": 7,
+    "label": "建筑"
+  },
+  "BaseCampBattleDirector": {
+    "zh": "警钟",
+    "en": "Alarm Bell",
+    "ja": "警鐘",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BaseCampBattleDirector.webp",
+    "level": 7,
+    "label": "建筑"
+  },
+  "SkillUnlock_Alpaca": {
+    "zh": "美露帕的鞍具",
+    "en": "Melpaca Saddle",
+    "ja": "メルパカのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Alpaca.webp",
+    "level": 7,
+    "label": "道具"
+  },
+  "Crusher": {
+    "zh": "粉碎机",
+    "en": "Crusher",
+    "ja": "粉砕機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Crusher.webp",
+    "level": 8,
+    "label": "建筑"
+  },
+  "Arrow_Poison": {
+    "zh": "毒箭",
+    "en": "Poison Arrow",
+    "ja": "毒矢",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Arrow_Poison.webp",
+    "level": 8,
+    "label": "道具"
+  },
+  "DefenseWall_Wood": {
+    "zh": "木制防御墙",
+    "en": "Wooden Defensive Wall",
+    "ja": "木の防壁",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseWall_Wood.webp",
+    "level": 8,
+    "label": "建筑"
+  },
+  "Wood_Gate": {
+    "zh": "木制大门",
+    "en": "Wooden Gate",
+    "ja": "木の門",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Wood_Gate.webp",
+    "level": 8,
+    "label": "建筑"
+  },
+  "Trap_Noose": {
+    "zh": "套索陷阱",
+    "en": "Hanging Trap",
+    "ja": "宙吊り罠",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Trap_Noose.webp",
+    "level": 8,
+    "label": "建筑"
+  },
+  "BuildableGoddessStatue": {
+    "zh": "力量石像",
+    "en": "Statue of Power",
+    "ja": "力の石像",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BuildableGoddessStatue.webp",
+    "level": 9,
+    "label": "建筑"
+  },
+  "AutoMealPouch_Tier1": {
+    "zh": "小饲料袋",
+    "en": "Small Feed Bag",
+    "ja": "小さなエサぶくろ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AutoMealPouch_Tier1.webp",
+    "level": 9,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_01_Cloth_Heat": {
+    "zh": "热带地区民族服饰",
+    "en": "Tropical Outfit",
+    "ja": "熱帯地の民族服",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ClothArmorHeat.webp",
+    "level": 9,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_01_Cloth_Cold": {
+    "zh": "寒冷地区民族服饰",
+    "en": "Tundra Outfit",
+    "ja": "寒冷地の民族服",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ClothArmorCold.webp",
+    "level": 9,
+    "label": "科技"
+  },
+  "Spa": {
+    "zh": "温泉",
+    "en": "Hot Spring",
+    "ja": "温泉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spa.webp",
+    "level": 9,
+    "label": "建筑"
+  },
+  "SkillUnlock_Garm": {
+    "zh": "猎狼的挽具鞍具组合",
+    "en": "Direhowl&#x27;s Saddled Harness",
+    "ja": "ガウルフのサドル付きハーネス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Garm.webp",
+    "level": 9,
+    "label": "道具"
+  },
+  "Product_Ingot_Grade_01_Copper": {
+    "zh": "原始的炉子",
+    "en": "Primitive Furnace",
+    "ja": "原始的な炉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlastFurnace.webp",
+    "level": 10,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_Bow3": {
+    "zh": "三连弓",
+    "en": "Three Shot Bow",
+    "ja": "三連弓",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bow3.webp",
+    "level": 10,
+    "label": "科技"
+  },
+  "Battle_Helm_Grade_02_Fur": {
+    "zh": "羽毛发饰",
+    "en": "Feathered Hair Band",
+    "ja": "羽根の髪飾り",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurHelmet.webp",
+    "level": 10,
+    "label": "科技"
+  },
+  "Infra_MachineParts": {
+    "zh": "钉子",
+    "en": "Nail",
+    "ja": "釘",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MachineParts.webp",
+    "level": 10,
+    "label": "科技"
+  },
+  "Wooden_ladder": {
+    "zh": "梯子",
+    "en": "Ladder",
+    "ja": "はしご",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Wooden_ladder.webp",
+    "level": 10,
+    "label": "建筑"
+  },
+  "Trap_LegHold": {
+    "zh": "捕兽夹（小）",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Trap_LegHold.webp",
+    "level": 10,
+    "label": "建筑"
+  },
+  "Special_HatchingPalEgg": {
+    "zh": "帕鲁蛋孵化器",
+    "en": "Egg Incubator",
+    "ja": "タマゴ孵化器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HatchingPalEgg.webp",
+    "level": 10,
+    "label": "科技"
+  },
+  "Product_Axe_Grade_02": {
+    "zh": "金属斧头",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Axe_Default.webp",
+    "level": 11,
+    "label": "科技"
+  },
+  "Product_Pickaxe_Grade_02": {
+    "zh": "金属十字镐",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Pickaxe_Default.webp",
+    "level": 11,
+    "label": "科技"
+  },
+  "Product_Factory_Hard_Grade_01": {
+    "zh": "优质作业台",
+    "en": "High-Quality Workbench",
+    "ja": "上質な作業台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Factory_Hard_01.webp",
+    "level": 11,
+    "label": "科技"
+  },
+  "HunterFlagSet": {
+    "zh": "盗猎团旗帜套组",
+    "en": "Rayne Syndicate Flag Set",
+    "ja": "密猟団の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Hunter_Flag.webp",
+    "level": 11,
+    "label": "科技"
+  },
+  "SkillUnlock_WeaselDragon": {
+    "zh": "疾旋鼬的鞍具",
+    "en": "Chillet Saddle",
+    "ja": "オコチョのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WeaselDragon.webp",
+    "level": 11,
+    "label": "道具"
+  },
+  "SkillUnlock_Carbunclo": {
+    "zh": "翠叶鼠的冲锋枪",
+    "en": "Lifmunk&#x27;s Submachine Gun",
+    "ja": "クルリスのサブマシンガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Carbunclo.webp",
+    "level": 11,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_02_Fur": {
+    "zh": "毛皮盔甲",
+    "en": "Pelt Armor",
+    "ja": "毛皮アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurArmor.webp",
+    "level": 12,
+    "label": "科技"
+  },
+  "MeatCutterKnife": {
+    "zh": "切肉刀",
+    "en": "Meat Cleaver",
+    "ja": "肉切り包丁",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MeatCutterKnife.webp",
+    "level": 12,
+    "label": "道具"
+  },
+  "Product_Medicine_Grade_01": {
+    "zh": "中世纪制药台",
+    "en": "Medieval Medicine Workbench",
+    "ja": "中世の製薬台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicineFacility_01.webp",
+    "level": 12,
+    "label": "科技"
+  },
+  "SkillUnlock_Monkey": {
+    "zh": "新叶猿的突击步枪",
+    "en": "Tanzee&#x27;s Assault Rifle",
+    "ja": "エテッパのアサルトライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Monkey.webp",
+    "level": 12,
+    "label": "道具"
+  },
+  "SkillUnlock_Deer": {
+    "zh": "紫霞鹿的鞍具",
+    "en": "Eikthyrdeer Saddle",
+    "ja": "ツノガミのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Deer.webp",
+    "level": 12,
+    "label": "道具"
+  },
+  "GrapplingGun": {
+    "zh": "爪钩枪",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrapplingGun.webp",
+    "level": 12,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_BowGun": {
+    "zh": "十字弓",
+    "en": "Crossbow",
+    "ja": "クロスボウ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BowGun.webp",
+    "level": 13,
+    "label": "科技"
+  },
+  "Spear_2": {
+    "zh": "金属长矛",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spear.webp",
+    "level": 13,
+    "label": "道具"
+  },
+  "Infra_ItemChest_Grade_02": {
+    "zh": "金属箱",
+    "en": "Metal Chest",
+    "ja": "金属のチェスト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Chest2.webp",
+    "level": 13,
+    "label": "科技"
+  },
+  "CoolerBox": {
+    "zh": "保冷箱",
+    "en": "Cooler Box",
+    "ja": "クーラーボックス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CoolerBox.webp",
+    "level": 13,
+    "label": "建筑"
+  },
+  "DamagedScarecrow": {
+    "zh": "受损的稻草人",
+    "en": "Training Dummy",
+    "ja": "ダメージかかし",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DamagedScarecrow.webp",
+    "level": 13,
+    "label": "建筑"
+  },
+  "SkillUnlock_Monkey_Fire": {
+    "zh": "秋叶猿的突击步枪",
+    "en": "Tanzee Ignis&#x27;s Assault Rifle",
+    "ja": "カレッパのアサルトライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Monkey_Fire.webp",
+    "level": 13,
+    "label": "道具"
+  },
+  "Special_PalSphere_Grade_02": {
+    "zh": "高级帕鲁球",
+    "en": "Mega Sphere",
+    "ja": "メガスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Mega.webp",
+    "level": 14,
+    "label": "科技"
+  },
+  "Special_SphereFactory_Black_Grade_01": {
+    "zh": "帕鲁球制作台",
+    "en": "Sphere Workbench",
+    "ja": "スフィア製作台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereFactory_Black_01.webp",
+    "level": 14,
+    "label": "科技"
+  },
+  "AutoMealPouch_Tier2": {
+    "zh": "普通饲料袋",
+    "en": "Average Feed Bag",
+    "ja": "それなりのエサぶくろ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AutoMealPouch_Tier2.webp",
+    "level": 14,
+    "label": "道具"
+  },
+  "WallTorch": {
+    "zh": "壁挂火把",
+    "en": "Wall Torch",
+    "ja": "壁掛けたいまつ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WallTorch.webp",
+    "level": 14,
+    "label": "建筑"
+  },
+  "SkillUnlock_Kirin": {
+    "zh": "雷角马的鞍具",
+    "en": "Univolt Saddle",
+    "ja": "ライコーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Kirin.webp",
+    "level": 14,
+    "label": "道具"
+  },
+  "Special_PalRankUp": {
+    "zh": "帕鲁浓缩机",
+    "en": "Pal Essence Condenser",
+    "ja": "パル濃縮ポッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CharacterRankUp.webp",
+    "level": 14,
+    "label": "科技"
+  },
+  "FishingSet1": {
+    "zh": "初级垂钓套组",
+    "en": "Beginner Fishing Set",
+    "ja": "初級釣りセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingRod_1.webp",
+    "level": 15,
+    "label": "科技"
+  },
+  "Product_Farm_wheat": {
+    "zh": "小麦园",
+    "en": "Wheat Plantation",
+    "ja": "小麦農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_wheet.webp",
+    "level": 15,
+    "label": "科技"
+  },
+  "FlourMill": {
+    "zh": "磨粉机",
+    "en": "Mill",
+    "ja": "製粉機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlourMill.webp",
+    "level": 15,
+    "label": "建筑"
+  },
+  "Processed_Wood": {
+    "zh": "木板",
+    "en": "Wooden Board",
+    "ja": "木板",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Processed_Wood.webp",
+    "level": 15,
+    "label": "道具"
+  },
+  "DisplayCharacter": {
+    "zh": "观赏笼",
+    "en": "Viewing Cage",
+    "ja": "鑑賞用ケージ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DisplayCharacter.webp",
+    "level": 15,
+    "label": "建筑"
+  },
+  "SkillUnlock_FlameBuffalo": {
+    "zh": "炽焰牛的鞍具",
+    "en": "Arsox Saddle",
+    "ja": "ブルフェルノのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlameBuffalo.webp",
+    "level": 15,
+    "label": "道具"
+  },
+  "SkillUnlock_HawkBird": {
+    "zh": "疾风隼的鞍具",
+    "en": "Nitewing Saddle",
+    "ja": "ホークウィンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HawkBird.webp",
+    "level": 15,
+    "label": "道具"
+  },
+  "Lantern": {
+    "zh": "腰挂提灯",
+    "en": "Hip Lantern",
+    "ja": "腰付けランタン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Lantern.webp",
+    "level": 15,
+    "label": "道具"
+  },
+  "Shield_02": {
+    "zh": "高级护盾",
+    "en": "Mega Shield",
+    "ja": "メガシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_02.webp",
+    "level": 16,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_02_Fur_Heat": {
+    "zh": "耐热毛皮盔甲",
+    "en": "Heat Resistant Pelt Armor",
+    "ja": "耐熱毛皮アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurArmorHeat.webp",
+    "level": 16,
+    "label": "科技"
+  },
+  "SkillUnlock_Serpent": {
+    "zh": "滑水蛇的鞍具",
+    "en": "Surfent Saddle",
+    "ja": "シーペントのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Serpent.webp",
+    "level": 16,
+    "label": "道具"
+  },
+  "Unlock_Picking_Tier1": {
+    "zh": "简易开锁工具",
+    "en": "Lockpicking Tool v1",
+    "ja": "簡素なピッキングツール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Unlock_Picking.webp",
+    "level": 16,
+    "label": "道具"
+  },
+  "BronzeSword": {
+    "zh": "原始的剑",
+    "en": "Primitive Sword",
+    "ja": "原始的な剣",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BronzeSword.webp",
+    "level": 17,
+    "label": "道具"
+  },
+  "Product_Cooking_Grade_02": {
+    "zh": "料理锅",
+    "en": "Cooking Pot",
+    "ja": "調理鍋",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CookingStove.webp",
+    "level": 17,
+    "label": "科技"
+  },
+  "Heater": {
+    "zh": "取暖器",
+    "en": "Heater",
+    "ja": "炎のヒーター",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Heater.webp",
+    "level": 17,
+    "label": "建筑"
+  },
+  "Headstone": {
+    "zh": "墓碑",
+    "en": "Tombstone",
+    "ja": "墓石",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Headstone.webp",
+    "level": 17,
+    "label": "建筑"
+  },
+  "SkillUnlock_Penguin": {
+    "zh": "企丸丸的火箭发射器",
+    "en": "Pengullet Rocket Launcher",
+    "ja": "ペンタマのロケットランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Penguin.webp",
+    "level": 17,
+    "label": "道具"
+  },
+  "GrapplingGun2": {
+    "zh": "高级爪钩枪",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrapplingGun.webp",
+    "level": 17,
+    "label": "道具"
+  },
+  "Battle_Glider_Grade_02": {
+    "zh": "高级滑翔伞",
+    "en": "Mega Glider",
+    "ja": "メガグライダー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Glider_Good.webp",
+    "level": 18,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_02_Fur_Cold": {
+    "zh": "耐寒毛皮盔甲",
+    "en": "Cold Resistant Pelt Armor",
+    "ja": "耐寒毛皮アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurArmorCold.webp",
+    "level": 18,
+    "label": "科技"
+  },
+  "Cooler": {
+    "zh": "降温器",
+    "en": "Cooler",
+    "ja": "氷のクーラー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cooler.webp",
+    "level": 18,
+    "label": "建筑"
+  },
+  "SkillUnlock_ColorfulBird": {
+    "zh": "炸蛋鸟的手套",
+    "en": "Tocotoco&#x27;s Gloves",
+    "ja": "クルットリの手袋",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ColorfulBird.webp",
+    "level": 18,
+    "label": "道具"
+  },
+  "SkillUnlock_Penguin_Electric": {
+    "zh": "闪丸丸的火箭发射器",
+    "en": "Pengullet Lux&#x27;s Rocket Launcher",
+    "ja": "デンタマのロケットランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Penguin_Electric.webp",
+    "level": 18,
+    "label": "道具"
+  },
+  "Accessory_Nonkilling": {
+    "zh": "慈悲戒指",
+    "en": "Ring of Mercy",
+    "ja": "手加減の指輪",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_Nonkilling.webp",
+    "level": 18,
+    "label": "道具"
+  },
+  "BreedFarm": {
+    "zh": "配种牧场",
+    "en": "Breeding Farm",
+    "ja": "配合牧場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BreedFarm.webp",
+    "level": 19,
+    "label": "建筑"
+  },
+  "Lab": {
+    "zh": "帕鲁工作研究所",
+    "en": "Pal Labor Research Lab",
+    "ja": "パル作業研究所",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Lab.webp",
+    "level": 19,
+    "label": "建筑"
+  },
+  "SphereModule_Heavy": {
+    "zh": "重量模块",
+    "en": "Heavy Weight Module",
+    "ja": "ヘヴィウェイトモジュール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereModule_Heavy.webp",
+    "level": 19,
+    "label": "道具"
+  },
+  "Cement": {
+    "zh": "水泥",
+    "en": "Cement",
+    "ja": "セメント",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cement.webp",
+    "level": 19,
+    "label": "道具"
+  },
+  "Stone_houseset": {
+    "zh": "石头建筑套组",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stone.webp",
+    "level": 19,
+    "label": "科技"
+  },
+  "DefenseWall": {
+    "zh": "石制防御墙",
+    "en": "Stone Defensive Wall",
+    "ja": "石の防壁",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseWall.webp",
+    "level": 19,
+    "label": "建筑"
+  },
+  "Stone_Gate": {
+    "zh": "石制大门",
+    "en": "Stone Gate",
+    "ja": "石の門",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stone_Gate.webp",
+    "level": 19,
+    "label": "建筑"
+  },
+  "SkillUnlock_NaughtyCat": {
+    "zh": "笑魇猫的鞍具",
+    "en": "Grintale Saddle",
+    "ja": "ニャンギマリのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/NaughtyCat.webp",
+    "level": 19,
+    "label": "道具"
+  },
+  "Special_PalSphere_Grade_03": {
+    "zh": "优质帕鲁球",
+    "en": "Giga Sphere",
+    "ja": "ギガスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Giga.webp",
+    "level": 20,
+    "label": "科技"
+  },
+  "Product_WeaponFactory_Dirty_Grade_01": {
+    "zh": "武器制作台",
+    "en": "Weapon Workbench",
+    "ja": "武器製作台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WeaponFactory_Dirty_01.webp",
+    "level": 20,
+    "label": "科技"
+  },
+  "ToolBoxV1": {
+    "zh": "大型工具箱",
+    "en": "Large Toolbox",
+    "ja": "大きな工具箱",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ToolBoxV1.webp",
+    "level": 20,
+    "label": "建筑"
+  },
+  "BelieverFlagSet": {
+    "zh": "帕鲁保护团体旗帜套组",
+    "en": "Free Pal Alliance Flag Set",
+    "ja": "パル愛護団体の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Believer_Flag.webp",
+    "level": 20,
+    "label": "科技"
+  },
+  "SkillUnlock_FairyDragon": {
+    "zh": "精灵龙的鞍具",
+    "en": "Elphidran Saddle",
+    "ja": "シルフィアのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FairyDragon.webp",
+    "level": 20,
+    "label": "道具"
+  },
+  "SkillUnlock_PurpleSpider": {
+    "zh": "桃蛛娘的鞍具",
+    "en": "Tarantriss Saddle",
+    "ja": "モモンチュラのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PurpleSpider.webp",
+    "level": 20,
+    "label": "道具"
+  },
+  "SkillUnlock_MopKing": {
+    "zh": "毛老爹的鞍具",
+    "en": "Sweepa Saddle",
+    "ja": "ドンモップのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MopKing.webp",
+    "level": 20,
+    "label": "道具"
+  },
+  "DimensionPalStorage": {
+    "zh": "帕鲁次元仓库",
+    "en": "Dimensional Pal Storage",
+    "ja": "パル次元ストレージ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DimensionPalStorage.webp",
+    "level": 20,
+    "label": "建筑"
+  },
+  "Musket": {
+    "zh": "鸟枪",
+    "en": "Musket",
+    "ja": "マスケット銃",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Musket.webp",
+    "level": 21,
+    "label": "道具"
+  },
+  "Battle_GunPowder_Grade_02": {
+    "zh": "火药",
+    "en": "Gunpowder",
+    "ja": "火薬",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GunPowder2.webp",
+    "level": 21,
+    "label": "科技"
+  },
+  "RoughBullet": {
+    "zh": "劣质弹药",
+    "en": "Coarse Ammo",
+    "ja": "粗悪な弾薬",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/RoughBullet.webp",
+    "level": 21,
+    "label": "道具"
+  },
+  "Product_Farm_tomato": {
+    "zh": "番茄园",
+    "en": "Tomato Plantation",
+    "ja": "トマト農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_tomato.webp",
+    "level": 21,
+    "label": "科技"
+  },
+  "OlympicCauldron": {
+    "zh": "圣火台",
+    "en": "Flame Cauldron",
+    "ja": "聖火台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OlympicCauldron.webp",
+    "level": 21,
+    "label": "建筑"
+  },
+  "Trap_LegHold_Big": {
+    "zh": "捕兽夹（大）",
+    "en": "Bear Trap (Large)",
+    "ja": "とらばさみ(大)",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Trap_LegHold.webp",
+    "level": 21,
+    "label": "建筑"
+  },
+  "SkillUnlock_BirdDragon": {
+    "zh": "烽歌龙的鞍具",
+    "en": "Vanwyrm Saddle",
+    "ja": "カバネドリのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BirdDragon.webp",
+    "level": 21,
+    "label": "道具"
+  },
+  "SkillUnlock_Deer_Ground": {
+    "zh": "祇岳鹿的鞍具",
+    "en": "Eikthyrdeer Terra Saddle",
+    "ja": "ヤマガミのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Deer_Ground.webp",
+    "level": 21,
+    "label": "道具"
+  },
+  "TableDresser01_Stone": {
+    "zh": "古典式化妆台",
+    "en": "Antique Dresser",
+    "ja": "アンティークなドレッサー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TableDresser01_Stone.webp",
+    "level": 21,
+    "label": "建筑"
+  },
+  "Expedition": {
+    "zh": "帕鲁远征所",
+    "en": "Pal Expedition Station",
+    "ja": "パル遠征所",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Expedition.webp",
+    "level": 22,
+    "label": "建筑"
+  },
+  "ElecBaton": {
+    "zh": "电棍",
+    "en": "Stun Baton",
+    "ja": "スタンバトン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElecBaton.webp",
+    "level": 22,
+    "label": "道具"
+  },
+  "FishingBait_2": {
+    "zh": "优质钓饵",
+    "en": "High Quality Bait",
+    "ja": "上質な釣りエサ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingBait_2.webp",
+    "level": 22,
+    "label": "道具"
+  },
+  "ItemBooth": {
+    "zh": "跳蚤市场（道具）",
+    "en": "Flea Market (Items)",
+    "ja": "フリーマーケット（アイテム）",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ItemBooth.webp",
+    "level": 22,
+    "label": "建筑"
+  },
+  "PalBooth": {
+    "zh": "跳蚤市场（帕鲁）",
+    "en": "Flea Market (Pals)",
+    "ja": "フリーマーケット（パル）",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalBooth.webp",
+    "level": 22,
+    "label": "建筑"
+  },
+  "SkillUnlock_BirdDragon_Ice": {
+    "zh": "霜歌龙的鞍具",
+    "en": "Vanwyrm Cryst Saddle",
+    "ja": "シロカバネのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BirdDragon_Ice.webp",
+    "level": 22,
+    "label": "道具"
+  },
+  "Homeward": {
+    "zh": "归途雷云",
+    "en": "Homeward Thundercloud",
+    "ja": "帰還の雷雲",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Homeward.webp",
+    "level": 22,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_03_Copper": {
+    "zh": "金属盔甲",
+    "en": "Metal Armor",
+    "ja": "金属アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CopperArmor.webp",
+    "level": 23,
+    "label": "科技"
+  },
+  "Battle_Helm_Grade_03_Copper": {
+    "zh": "金属头盔",
+    "en": "Metal Helm",
+    "ja": "金属ヘルム",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CopperHelmet.webp",
+    "level": 23,
+    "label": "科技"
+  },
+  "SphereModule_Curve": {
+    "zh": "曲线模块",
+    "en": "Curve Module",
+    "ja": "カーブモジュール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereModule_Curve.webp",
+    "level": 23,
+    "label": "道具"
+  },
+  "AutoMealPouch_Tier3": {
+    "zh": "大饲料袋",
+    "en": "Large Feed Bag",
+    "ja": "大きなエサぶくろ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AutoMealPouch_Tier3.webp",
+    "level": 23,
+    "label": "道具"
+  },
+  "Fountain": {
+    "zh": "喷泉",
+    "en": "Water Fountain",
+    "ja": "噴水",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Fountain.webp",
+    "level": 23,
+    "label": "建筑"
+  },
+  "SkillUnlock_KingAlpaca": {
+    "zh": "君王美露帕的鞍具",
+    "en": "Kingpaca Saddle",
+    "ja": "アルパオーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/KingAlpaca.webp",
+    "level": 23,
+    "label": "道具"
+  },
+  "MakeshiftHandgun": {
+    "zh": "劣质手枪",
+    "en": "Makeshift Handgun",
+    "ja": "ジャンクハンドガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MakeshiftHandgun.webp",
+    "level": 24,
+    "label": "道具"
+  },
+  "Infra_PalBed_Grade_02": {
+    "zh": "松软帕鲁床",
+    "en": "Fluffy Pal Bed",
+    "ja": "ふかふかパルベッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicalPalBed_03.webp",
+    "level": 24,
+    "label": "科技"
+  },
+  "PalMedicineBox": {
+    "zh": "药品柜",
+    "en": "Medicine Rack",
+    "ja": "薬棚",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalMedicineBox.webp",
+    "level": 24,
+    "label": "建筑"
+  },
+  "Clinic": {
+    "zh": "诊疗所",
+    "en": "Clinic",
+    "ja": "診療所",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Clinic.webp",
+    "level": 24,
+    "label": "建筑"
+  },
+  "FlowerBed": {
+    "zh": "花坛",
+    "en": "Flower Bed",
+    "ja": "花壇",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlowerBed.webp",
+    "level": 24,
+    "label": "建筑"
+  },
+  "SkillUnlock_Kitsunebi_Ice": {
+    "zh": "雪绒狐的背带",
+    "en": "Foxparks Cryst&#x27;s Harness",
+    "ja": "ユキツネのハーネス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Kitsunebi_Ice.webp",
+    "level": 24,
+    "label": "道具"
+  },
+  "SkillUnlock_BlueDragon": {
+    "zh": "碧海龙的鞍具",
+    "en": "Azurobe Saddle",
+    "ja": "アズレーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlueDragon.webp",
+    "level": 24,
+    "label": "道具"
+  },
+  "SkillUnlock_FlowerDinosaur": {
+    "zh": "花冠龙的鞍具",
+    "en": "Dinossom Saddle",
+    "ja": "アロアリューのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlowerDinosaur.webp",
+    "level": 24,
+    "label": "道具"
+  },
+  "Product_CopperPit": {
+    "zh": "金属采矿场",
+    "en": "Ore Mining Site",
+    "ja": "金属採掘場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CopperPit.webp",
+    "level": 24,
+    "label": "科技"
+  },
+  "PalDopingShot": {
+    "zh": "强化枪",
+    "en": "Boost Gun",
+    "ja": "ブーストガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalDopingShot.webp",
+    "level": 25,
+    "label": "道具"
+  },
+  "PalDopingShotBullet": {
+    "zh": "强化枪子弹",
+    "en": "Boost Gun Ammo",
+    "ja": "ブーストガンの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalDopingShotBullet.webp",
+    "level": 25,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_03_Copper_Heat": {
+    "zh": "耐热金属盔甲",
+    "en": "Heat Resistant Metal Armor",
+    "ja": "耐熱金属アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CopperArmorHeat.webp",
+    "level": 25,
+    "label": "科技"
+  },
+  "Product_Farm_Lettuce": {
+    "zh": "生菜园",
+    "en": "Lettuce Plantation",
+    "ja": "レタス農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_Lettuce.webp",
+    "level": 25,
+    "label": "科技"
+  },
+  "Silo": {
+    "zh": "筒仓",
+    "en": "Silo",
+    "ja": "サイロ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Silo.webp",
+    "level": 25,
+    "label": "建筑"
+  },
+  "FragGrenade": {
+    "zh": "破片手榴弹",
+    "en": "Frag Grenade",
+    "ja": "フラググレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade.webp",
+    "level": 25,
+    "label": "道具"
+  },
+  "SkillUnlock_Serpent_Ground": {
+    "zh": "流沙蛇的鞍具",
+    "en": "Surfent Terra Saddle",
+    "ja": "スナペントのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Serpent_Ground.webp",
+    "level": 25,
+    "label": "道具"
+  },
+  "SkillUnlock_HadesBird": {
+    "zh": "雷冥鸟的鞍具",
+    "en": "Helzephyr Saddle",
+    "ja": "ヘルガルダのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HadesBird.webp",
+    "level": 25,
+    "label": "道具"
+  },
+  "Unlock_Picking_Tier2": {
+    "zh": "高级开锁工具",
+    "en": "Lockpicking Tool v2",
+    "ja": "上質なピッキングツール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Unlock_Picking_Tier2.webp",
+    "level": 25,
+    "label": "道具"
+  },
+  "MakeshiftSubmachineGun": {
+    "zh": "破旧的冲锋枪",
+    "en": "Makeshift SMG",
+    "ja": "ボロいサブマシンガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MakeshiftSubmachineGun.webp",
+    "level": 26,
+    "label": "道具"
+  },
+  "Infra_ElectricGenerator_Grade_01": {
+    "zh": "发电机",
+    "en": "Power Generator",
+    "ja": "発電機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricGenerator.webp",
+    "level": 26,
+    "label": "科技"
+  },
+  "Lamp": {
+    "zh": "固定式电灯",
+    "en": "Lamp",
+    "ja": "設置ランプ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Lamp.webp",
+    "level": 26,
+    "label": "建筑"
+  },
+  "ManualElectricGenerator": {
+    "zh": "人力发电机",
+    "en": "Human-Powered Generator",
+    "ja": "人力発電機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ManualElectricGenerator.webp",
+    "level": 26,
+    "label": "建筑"
+  },
+  "Battle_Defense_BowGun": {
+    "zh": "固定式十字弓",
+    "en": "Mounted Crossbow",
+    "ja": "設置型クロスボウ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseBowGun.webp",
+    "level": 26,
+    "label": "科技"
+  },
+  "SkillUnlock_FengyunDeeper": {
+    "zh": "云海鹿的鞍具",
+    "en": "Fenglope Saddle",
+    "ja": "ムラクモのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FengyunDeeper.webp",
+    "level": 26,
+    "label": "道具"
+  },
+  "SkillUnlock_IceSeal": {
+    "zh": "香草豹冰的鞍具",
+    "en": "Polapup Saddle",
+    "ja": "バニザラシのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceSeal.webp",
+    "level": 26,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_SphereLauncher_Once": {
+    "zh": "单发型帕鲁球发射器",
+    "en": "Single-Shot Sphere Launcher",
+    "ja": "単発型スフィアランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereLauncher_Once.webp",
+    "level": 26,
+    "label": "科技"
+  },
+  "Special_PalSphere_Grade_04": {
+    "zh": "特级帕鲁球",
+    "en": "Hyper Sphere",
+    "ja": "テラスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Tera.webp",
+    "level": 27,
+    "label": "科技"
+  },
+  "Special_SphereFactory_Black_Grade_02": {
+    "zh": "帕鲁球流水线工厂",
+    "en": "Sphere Assembly Line",
+    "ja": "スフィアライン工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereFactory_Black_02.webp",
+    "level": 27,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_03_Copper_Cold": {
+    "zh": "耐寒金属盔甲",
+    "en": "Cold Resistant Metal Armor",
+    "ja": "耐寒金属アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CopperArmorCold.webp",
+    "level": 27,
+    "label": "科技"
+  },
+  "AdditionalInventory_001": {
+    "zh": "小型扩展背包",
+    "en": "Small Pouch",
+    "ja": "小さな拡張ポーチ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AdditionalInventory_001.webp",
+    "level": 27,
+    "label": "道具"
+  },
+  "CeilingLamp": {
+    "zh": "天花板吊灯",
+    "en": "Ceiling Lamp",
+    "ja": "天井ランプ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CeilingLamp.webp",
+    "level": 27,
+    "label": "建筑"
+  },
+  "FragGrenade_Elec": {
+    "zh": "电击手榴弹",
+    "en": "Shock Grenade",
+    "ja": "電撃グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Elec.webp",
+    "level": 27,
+    "label": "道具"
+  },
+  "UnlockEquipmentSlot_Weapon_01": {
+    "zh": "额外武器套",
+    "en": "Extra Weapon Holster",
+    "ja": "武器の追加ホルダー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/UnlockEquipmentSlot_Weapon_01.webp",
+    "level": 27,
+    "label": "道具"
+  },
+  "SkillUnlock_BlueDragon_Ice": {
+    "zh": "碧月龙的鞍具",
+    "en": "Azurobe Cryst Saddle",
+    "ja": "アズルーナのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlueDragon_Ice.webp",
+    "level": 27,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_HandGun": {
+    "zh": "手枪",
+    "en": "Handgun",
+    "ja": "ハンドガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HandGun_Default.webp",
+    "level": 28,
+    "label": "科技"
+  },
+  "HandgunBullet": {
+    "zh": "手枪子弹",
+    "en": "Handgun Ammo",
+    "ja": "ハンドガンの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HandgunBullet.webp",
+    "level": 28,
+    "label": "道具"
+  },
+  "Infra_PlayerBed_Grade_02": {
+    "zh": "优质的床",
+    "en": "Fine Bed",
+    "ja": "上質なベッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlayerBed_03.webp",
+    "level": 28,
+    "label": "科技"
+  },
+  "BaseCampWorkHard02": {
+    "zh": "优质监控台",
+    "en": "High Quality Monitoring Stand",
+    "ja": "上質な監視台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BaseCampWorkHard02.webp",
+    "level": 28,
+    "label": "建筑"
+  },
+  "Stump": {
+    "zh": "树桩和斧头",
+    "en": "Stump and Axe",
+    "ja": "切り株と斧",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stump.webp",
+    "level": 28,
+    "label": "建筑"
+  },
+  "FireCultFlagSet": {
+    "zh": "永炎同心会旗帜套组",
+    "en": "Brothers of the Eternal Pyre Flag Set",
+    "ja": "永炎の同志の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FireCult_Flag.webp",
+    "level": 28,
+    "label": "科技"
+  },
+  "SkillUnlock_FeatherOstrich": {
+    "zh": "战冠雀的鞍具",
+    "en": "Dazemu Saddle",
+    "ja": "トリステップのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FeatherOstrich.webp",
+    "level": 28,
+    "label": "道具"
+  },
+  "SkillUnlock_GrassMammoth": {
+    "zh": "森猛犸的鞍具",
+    "en": "Mammorest Saddle",
+    "ja": "グランモスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrassMammoth.webp",
+    "level": 28,
+    "label": "道具"
+  },
+  "Accessory_JumpPower_Increase": {
+    "zh": "反重力腰带",
+    "en": "Anti-Gravity Belt",
+    "ja": "反重力ベルト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_JumpPower_Increase.webp",
+    "level": 28,
+    "label": "道具"
+  },
+  "Shield_03": {
+    "zh": "优质护盾",
+    "en": "Giga Shield",
+    "ja": "ギガシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_03.webp",
+    "level": 29,
+    "label": "道具"
+  },
+  "Battle_MeleeWeapon_Sword": {
+    "zh": "剑",
+    "en": "Sword",
+    "ja": "剣",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Sword.webp",
+    "level": 29,
+    "label": "科技"
+  },
+  "FishingRod_02_1": {
+    "zh": "中级钓竿（捣蛋猫）",
+    "en": "Intermediate Fishing Rod (Cattiva)",
+    "ja": "中級釣り竿（ツッパニャン）",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingRod_3.webp",
+    "level": 29,
+    "label": "道具"
+  },
+  "Product_Factory_Hard_Grade_02": {
+    "zh": "作业流水线工厂",
+    "en": "Production Assembly Line",
+    "ja": "作業ライン工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Factory_Hard_02.webp",
+    "level": 29,
+    "label": "科技"
+  },
+  "Product_Farm_Potato": {
+    "zh": "土豆园",
+    "en": "Potato Plantation",
+    "ja": "じゃがいも農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_Potato.webp",
+    "level": 29,
+    "label": "科技"
+  },
+  "FragGrenade_Ice": {
+    "zh": "冷冻手榴弹",
+    "en": "Ice Grenade",
+    "ja": "氷結グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Ice.webp",
+    "level": 29,
+    "label": "道具"
+  },
+  "SkillUnlock_FireKirin": {
+    "zh": "火麒麟的鞍具",
+    "en": "Pyrin Saddle",
+    "ja": "サラブレイズのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FireKirin.webp",
+    "level": 29,
+    "label": "道具"
+  },
+  "SkillUnlock_ThunderBird": {
+    "zh": "迅雷鸟的鞍具",
+    "en": "Beakon Saddle",
+    "ja": "ライバードのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ThunderBird.webp",
+    "level": 29,
+    "label": "道具"
+  },
+  "Lantern_High": {
+    "zh": "强化腰挂提灯",
+    "en": "Enhanced Hip Lantern",
+    "ja": "強化腰付けランタン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Lantern_High.webp",
+    "level": 29,
+    "label": "道具"
+  },
+  "MakeshiftShotgun": {
+    "zh": "破旧的霰弹枪",
+    "en": "Makeshift Shotgun",
+    "ja": "ボロいショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MakeshiftShotgun.webp",
+    "level": 30,
+    "label": "道具"
+  },
+  "Trap_MineAttack": {
+    "zh": "地雷",
+    "en": "Mine",
+    "ja": "地雷",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Trap_MineAttack.webp",
+    "level": 30,
+    "label": "建筑"
+  },
+  "Metal_houseset": {
+    "zh": "金属建筑套组",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stone.webp",
+    "level": 30,
+    "label": "科技"
+  },
+  "DefenseWall_Metal": {
+    "zh": "金属防御墙",
+    "en": "Metal Defensive Wall",
+    "ja": "金属の防壁",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseWall_Metal.webp",
+    "level": 30,
+    "label": "建筑"
+  },
+  "Metal_Gate": {
+    "zh": "金属大门",
+    "en": "Iron Gate",
+    "ja": "金属の門",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Metal_Gate.webp",
+    "level": 30,
+    "label": "建筑"
+  },
+  "MiningTool": {
+    "zh": "矿车",
+    "en": "Mining Cart",
+    "ja": "採掘ワゴン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MiningTool.webp",
+    "level": 30,
+    "label": "建筑"
+  },
+  "Cake02": {
+    "zh": "蘑菇蛋糕",
+    "en": "Mushroom Cake",
+    "ja": "キノコケーキ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cake02.webp",
+    "level": 30,
+    "label": "道具"
+  },
+  "SkillUnlock_ThunderDog": {
+    "zh": "霹雳犬的鞍具",
+    "en": "Rayhound Saddle",
+    "ja": "イヌズマのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ThunderDog.webp",
+    "level": 30,
+    "label": "道具"
+  },
+  "YakushimaBlade": {
+    "zh": "彩虹猫之刃",
+    "en": "Meowmere",
+    "ja": "ミャオメア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/YakushimaBlade.webp",
+    "level": 30,
+    "label": "道具"
+  },
+  "MakeshiftAssaultRifle": {
+    "zh": "破旧的突击步枪",
+    "en": "Makeshift Assault Rifle",
+    "ja": "ボロいアサルトライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MakeshiftAssaultRifle.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "SphereModule_Sniper": {
+    "zh": "狙击模块",
+    "en": "Sniper Module",
+    "ja": "スナイパーモジュール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereModule_Sniper.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "Bio_Coolant": {
+    "zh": "极低温冷却介质",
+    "en": "Cryogenic Coolant",
+    "ja": "極低温冷却媒体",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bio_Coolant.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "FishingPond1": {
+    "zh": "垂钓池",
+    "en": "Fishing Pond",
+    "ja": "釣り堀",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingPond1.webp",
+    "level": 31,
+    "label": "建筑"
+  },
+  "Spa2": {
+    "zh": "优质温泉",
+    "en": "High Quality Hot Spring",
+    "ja": "上質な温泉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spa2.webp",
+    "level": 31,
+    "label": "建筑"
+  },
+  "GrapplingGun3": {
+    "zh": "优质爪钩枪",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrapplingGun.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "FragGrenade_Fire": {
+    "zh": "烧夷手榴弹",
+    "en": "Incendiary Grenade",
+    "ja": "焼夷グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Fire.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "SkillUnlock_GhostAnglerfish": {
+    "zh": "冥灯鱼的鞍具",
+    "en": "Ghangler Saddle",
+    "ja": "アンドーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GhostAnglerfish.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "SkillUnlock_IceDeer": {
+    "zh": "严冬鹿的鞍具",
+    "en": "Reindrix Saddle",
+    "ja": "ツララジカのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceDeer.webp",
+    "level": 31,
+    "label": "道具"
+  },
+  "OctaviaSet01": {
+    "zh": "ULTRAKILL 联动套组1",
+    "en": "ULTRAKILL Collab Set 1",
+    "ja": "ULTRAKILL コラボセット1",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Octavia001_Armor.webp",
+    "level": 32,
+    "label": "科技"
+  },
+  "Product_WeaponFactory_Dirty_Grade_02": {
+    "zh": "武器流水线工厂",
+    "en": "Weapon Assembly Line",
+    "ja": "武器ライン工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WeaponFactory_Dirty_02.webp",
+    "level": 32,
+    "label": "科技"
+  },
+  "PalHealingGrenade": {
+    "zh": "帕鲁恢复手榴弹",
+    "en": "Pal Recovery Grenade",
+    "ja": "パル回復グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalHealingGrenade.webp",
+    "level": 32,
+    "label": "道具"
+  },
+  "Product_Farm_Carrot": {
+    "zh": "胡萝卜园",
+    "en": "Carrot Plantation",
+    "ja": "にんじん農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_Carrot.webp",
+    "level": 32,
+    "label": "科技"
+  },
+  "Cauldron": {
+    "zh": "魔女之釜",
+    "en": "Witch Cauldron",
+    "ja": "魔女の鍋",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cauldron.webp",
+    "level": 32,
+    "label": "建筑"
+  },
+  "BaseCampWorkerExtraStation": {
+    "zh": "帕鲁终端控制台",
+    "en": "Palbox Control Device",
+    "ja": "パルボックス操作端末",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BaseCampWorkerExtraStation.webp",
+    "level": 32,
+    "label": "建筑"
+  },
+  "SkillUnlock_FairyDragon_Water": {
+    "zh": "水灵龙的鞍具",
+    "en": "Elphidran Aqua Saddle",
+    "ja": "シルティアのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FairyDragon_Water.webp",
+    "level": 32,
+    "label": "道具"
+  },
+  "SkillUnlock_GrassPanda": {
+    "zh": "叶胖达的榴弹发射器",
+    "en": "Mossanda&#x27;s Grenade Launcher",
+    "ja": "ササゾーのグレネードランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrassPanda.webp",
+    "level": 32,
+    "label": "道具"
+  },
+  "Altar": {
+    "zh": "召唤的祭坛",
+    "en": "Summoning Altar",
+    "ja": "召喚の祭壇",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Altar.webp",
+    "level": 33,
+    "label": "建筑"
+  },
+  "Battle_RangeWeapon_OldRevolver": {
+    "zh": "古旧左轮手枪",
+    "en": "Old Revolver",
+    "ja": "古びたリボルバー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OldRevolver.webp",
+    "level": 33,
+    "label": "科技"
+  },
+  "Polymer": {
+    "zh": "聚合物",
+    "en": "Polymer",
+    "ja": "ポリマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Polymer.webp",
+    "level": 33,
+    "label": "道具"
+  },
+  "Trap_MineElecShock": {
+    "zh": "电击地雷",
+    "en": "Electric Mine",
+    "ja": "感電地雷",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Trap_MineElecShock.webp",
+    "level": 33,
+    "label": "建筑"
+  },
+  "FragGrenade_Water": {
+    "zh": "水流手榴弹",
+    "en": "Water Grenade",
+    "ja": "水流グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Water.webp",
+    "level": 33,
+    "label": "道具"
+  },
+  "Snowman": {
+    "zh": "雪人",
+    "en": "Snowman",
+    "ja": "雪だるま",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Snowman.webp",
+    "level": 33,
+    "label": "建筑"
+  },
+  "SkillUnlock_Manticore": {
+    "zh": "狱焰王的鞍具",
+    "en": "Blazehowl Saddle",
+    "ja": "ゴクエンオのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Manticore.webp",
+    "level": 33,
+    "label": "道具"
+  },
+  "SkillUnlock_RedArmorBird": {
+    "zh": "燧火鸟的鞍具",
+    "en": "Ragnahawk Saddle",
+    "ja": "イグニクスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/RedArmorBird.webp",
+    "level": 33,
+    "label": "道具"
+  },
+  "SkillUnlock_SakuraSaurus": {
+    "zh": "连理龙的鞍具",
+    "en": "Broncherry Saddle",
+    "ja": "ラブラドンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SakuraSaurus.webp",
+    "level": 33,
+    "label": "道具"
+  },
+  "Accessory_TalentChecker": {
+    "zh": "伯乐眼镜",
+    "en": "Ability Glasses",
+    "ja": "才能メガネ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_TalentChecker.webp",
+    "level": 34,
+    "label": "道具"
+  },
+  "Product_Ingot_Grade_02_Iron": {
+    "zh": "改善后的炉子",
+    "en": "Improved Furnace",
+    "ja": "改善された炉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlastFurnace2.webp",
+    "level": 34,
+    "label": "科技"
+  },
+  "Product_Axe_Grade_03": {
+    "zh": "精炼金属斧头",
+    "en": "Refined Metal Axe",
+    "ja": "精錬金属の斧",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Axe_Default.webp",
+    "level": 34,
+    "label": "科技"
+  },
+  "Product_Pickaxe_Grade_03": {
+    "zh": "精炼金属十字镐",
+    "en": "Refined Metal Pickaxe",
+    "ja": "精錬金属のつるはし",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Pickaxe_Default.webp",
+    "level": 34,
+    "label": "科技"
+  },
+  "Spear_3": {
+    "zh": "精炼金属长矛",
+    "en": "Refined Metal Spear",
+    "ja": "精錬金属の槍",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spear.webp",
+    "level": 34,
+    "label": "道具"
+  },
+  "SkillUnlock_FireKirin_Dark": {
+    "zh": "邪麒麟的鞍具",
+    "en": "Pyrin Noct Saddle",
+    "ja": "サラブラックのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FireKirin_Dark.webp",
+    "level": 34,
+    "label": "道具"
+  },
+  "SkillUnlock_GrassPanda_Electric": {
+    "zh": "雷胖达的榴弹发射器",
+    "en": "Mossanda Lux&#x27;s Grenade Launcher",
+    "ja": "ライゾーのグレネードランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrassPanda_Electric.webp",
+    "level": 34,
+    "label": "道具"
+  },
+  "SkillUnlock_FlowerDinosaur_Electric": {
+    "zh": "雷冠龙的鞍具",
+    "en": "Dinossom Lux Saddle",
+    "ja": "ビリビリューのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlowerDinosaur_Electric.webp",
+    "level": 34,
+    "label": "道具"
+  },
+  "Accessory_AirDash1": {
+    "zh": "空中冲刺靴",
+    "en": "Air Dash Boots",
+    "ja": "エアダッシュブーツ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_AirDash1.webp",
+    "level": 35,
+    "label": "道具"
+  },
+  "Special_PalSphere_Grade_05": {
+    "zh": "大师帕鲁球",
+    "en": "Ultra Sphere",
+    "ja": "ウルトラスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Master.webp",
+    "level": 35,
+    "label": "科技"
+  },
+  "Special_SphereFactory_Black_Grade_03": {
+    "zh": "帕鲁球流水线工厂II",
+    "en": "Sphere Assembly Line II",
+    "ja": "スフィアライン工場Ⅱ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereFactory_Black_03.webp",
+    "level": 35,
+    "label": "科技"
+  },
+  "Infra_ElectronicCircuit": {
+    "zh": "电路板",
+    "en": "Circuit Board",
+    "ja": "電子基板",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectronicCircuit.webp",
+    "level": 35,
+    "label": "科技"
+  },
+  "CarbonFiber": {
+    "zh": "碳纤维",
+    "en": "Carbon Fiber",
+    "ja": "カーボン繊維",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CarbonFiber.webp",
+    "level": 35,
+    "label": "道具"
+  },
+  "FragGrenade_Leaf": {
+    "zh": "草木手榴弹",
+    "en": "Grass Grenade",
+    "ja": "草木グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Leaf.webp",
+    "level": 35,
+    "label": "道具"
+  },
+  "SkillUnlock_Manticore_Dark": {
+    "zh": "狱阎王的鞍具",
+    "en": "Blazehowl Noct Saddle",
+    "ja": "シンエンオのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Manticore_Dark.webp",
+    "level": 35,
+    "label": "道具"
+  },
+  "SkillUnlock_TropicalOstrich": {
+    "zh": "咕咕桑葩的鞍具",
+    "en": "Palumba Saddle",
+    "ja": "ココヤンバのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TropicalOstrich.webp",
+    "level": 35,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_Rifle": {
+    "zh": "单发步枪",
+    "en": "Single-Shot Rifle",
+    "ja": "シングルショットライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SingleShotRifle.webp",
+    "level": 36,
+    "label": "科技"
+  },
+  "RifleBullet": {
+    "zh": "步枪子弹",
+    "en": "Rifle Ammo",
+    "ja": "ライフルの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/RifleBullet.webp",
+    "level": 36,
+    "label": "道具"
+  },
+  "Product_Farm_Onion": {
+    "zh": "洋葱园",
+    "en": "Onion Plantation",
+    "ja": "たまねぎ農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FarmBlockV2_Onion.webp",
+    "level": 36,
+    "label": "科技"
+  },
+  "Cloth2": {
+    "zh": "优质的布",
+    "en": "High Quality Cloth",
+    "ja": "上質な布",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cloth.webp",
+    "level": 36,
+    "label": "道具"
+  },
+  "MedicalPalBed_04": {
+    "zh": "大型帕鲁床",
+    "en": "Large Pal Bed",
+    "ja": "大きなパルベッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicalPalBed_04.webp",
+    "level": 36,
+    "label": "建筑"
+  },
+  "AutoMealPouch_Tier4": {
+    "zh": "巨大饲料袋",
+    "en": "Huge Feed Bag",
+    "ja": "巨大なエサぶくろ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AutoMealPouch_Tier4.webp",
+    "level": 36,
+    "label": "道具"
+  },
+  "SkillUnlock_Plesiosaur": {
+    "zh": "梁叶龙的鞍具",
+    "en": "Braloha Saddle",
+    "ja": "トコナッツのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Plesiosaur.webp",
+    "level": 36,
+    "label": "道具"
+  },
+  "Special_ElectricHatchingPalEgg": {
+    "zh": "电能帕鲁蛋孵化器",
+    "en": "Electric Egg Incubator",
+    "ja": "電動タマゴ孵化器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricHatchingPalEgg.webp",
+    "level": 36,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_SubmachineGun": {
+    "zh": "冲锋枪",
+    "en": "SMG",
+    "ja": "サブマシンガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SubmachineGun.webp",
+    "level": 37,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_03_Iron": {
+    "zh": "精炼金属盔甲",
+    "en": "Refined Metal Armor",
+    "ja": "精錬金属アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IronArmor.webp",
+    "level": 37,
+    "label": "科技"
+  },
+  "Battle_Helm_Grade_04_Iron": {
+    "zh": "精炼金属头盔",
+    "en": "Refined Metal Helm",
+    "ja": "精錬金属ヘルム",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IronHelmet.webp",
+    "level": 37,
+    "label": "科技"
+  },
+  "Corrosive_Solvent": {
+    "zh": "腐蚀溶剂",
+    "en": "Corrosive Solvent",
+    "ja": "腐食溶剤",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Corrosive_Solvent.webp",
+    "level": 37,
+    "label": "道具"
+  },
+  "EnergyStorage_Electric": {
+    "zh": "蓄电器",
+    "en": "Accumulator",
+    "ja": "蓄電器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/EnergyStorage_Electric.webp",
+    "level": 37,
+    "label": "建筑"
+  },
+  "SkillUnlock_GhostBeast": {
+    "zh": "噬魂兽的鞍具",
+    "en": "Maraith Saddle",
+    "ja": "ソルレイスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GhostBeast.webp",
+    "level": 37,
+    "label": "道具"
+  },
+  "OperatingTable": {
+    "zh": "帕鲁手术台",
+    "en": "Pal Surgery Table",
+    "ja": "パル手術台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OperatingTable.webp",
+    "level": 38,
+    "label": "建筑"
+  },
+  "Battle_RangeWeapon_SphereLauncher": {
+    "zh": "扩散型帕鲁球发射器",
+    "en": "Scatter Sphere Launcher",
+    "ja": "拡散型スフィアランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereLauncher.webp",
+    "level": 38,
+    "label": "科技"
+  },
+  "Launcher_Meteor": {
+    "zh": "陨石发射器",
+    "en": "Meteor Launcher",
+    "ja": "メテオランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Launcher_Meteor.webp",
+    "level": 38,
+    "label": "道具"
+  },
+  "FishingBait_3": {
+    "zh": "奢华钓饵",
+    "en": "Deluxe Bait",
+    "ja": "贅沢な釣りエサ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingBait_3.webp",
+    "level": 38,
+    "label": "道具"
+  },
+  "Refrigerator": {
+    "zh": "冰箱",
+    "en": "Refrigerator",
+    "ja": "冷蔵庫",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Refrigerator.webp",
+    "level": 38,
+    "label": "建筑"
+  },
+  "Trap_MineFreeze": {
+    "zh": "结冰地雷",
+    "en": "Ice Mine",
+    "ja": "氷結地雷",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Trap_MineFreeze.webp",
+    "level": 38,
+    "label": "建筑"
+  },
+  "FragGrenade_Ground": {
+    "zh": "大地手榴弹",
+    "en": "Ground Grenade",
+    "ja": "大地グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Ground.webp",
+    "level": 38,
+    "label": "道具"
+  },
+  "PoliceFlagSet": {
+    "zh": "自卫队旗帜套组",
+    "en": "PIDF Flag Set",
+    "ja": "自警団の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Police_Flag.webp",
+    "level": 39,
+    "label": "科技"
+  },
+  "SkillUnlock_SkyDragon": {
+    "zh": "天羽龙的鞍具",
+    "en": "Quivern Saddle",
+    "ja": "フェスキーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyDragon.webp",
+    "level": 38,
+    "label": "道具"
+  },
+  "Product_CopperPit_2": {
+    "zh": "金属采矿场Ⅱ",
+    "en": "Ore Mining Site II",
+    "ja": "金属採掘場Ⅱ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CopperPit_2.webp",
+    "level": 39,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_ShotGun": {
+    "zh": "双管霰弹枪",
+    "en": "Double-Barreled Shotgun",
+    "ja": "ダブルバレルショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DoubleBarrelShotgun.webp",
+    "level": 39,
+    "label": "科技"
+  },
+  "ShotGunBullet": {
+    "zh": "霰弹枪子弹",
+    "en": "Shotgun Shell",
+    "ja": "ショットガンの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stone.webp",
+    "level": 39,
+    "label": "道具"
+  },
+  "SphereModule_Curve2": {
+    "zh": "滑球模块",
+    "en": "Slider Module",
+    "ja": "スライダーモジュール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereModule_Curve2.webp",
+    "level": 39,
+    "label": "道具"
+  },
+  "Glass_houseset": {
+    "zh": "玻璃建筑套组",
+    "en": "Glass Structure Set",
+    "ja": "ガラスの建築セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Glass_foundation.webp",
+    "level": 45,
+    "label": "科技"
+  },
+  "Infra_ItemChest_Grade_03": {
+    "zh": "精炼金属箱",
+    "en": "Refined Metal Chest",
+    "ja": "精錬金属のチェスト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Chest3.webp",
+    "level": 39,
+    "label": "科技"
+  },
+  "SkillUnlock_BlackMetalDragon": {
+    "zh": "魔渊龙的鞍具",
+    "en": "Astegon Saddle",
+    "ja": "ジオラーヴァのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlackMetalDragon.webp",
+    "level": 39,
+    "label": "道具"
+  },
+  "SkillUnlock_MushroomDragon": {
+    "zh": "菇咚的鞍具",
+    "en": "Shroomer Saddle",
+    "ja": "キノッポのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MushroomDragon.webp",
+    "level": 39,
+    "label": "道具"
+  },
+  "SkillUnlock_MushroomDragon_Dark": {
+    "zh": "菇波的鞍具",
+    "en": "Shroomer Noct Saddle",
+    "ja": "ベノッポのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MushroomDragon_Dark.webp",
+    "level": 39,
+    "label": "道具"
+  },
+  "Bat3": {
+    "zh": "金属球棒",
+    "en": "Metal Bat",
+    "ja": "金属バット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bat3.webp",
+    "level": 40,
+    "label": "道具"
+  },
+  "Accessory_JumpCount_Increase1": {
+    "zh": "二段跳靴",
+    "en": "Double Jump Boots",
+    "ja": "ダブルジャンプブーツ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_JumpCount_Increase1.webp",
+    "level": 40,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_03_Iron_Heat": {
+    "zh": "耐热精炼金属盔甲",
+    "en": "Heat Resistant Refined Metal Armor",
+    "ja": "耐熱精錬金属アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IronArmorHeat.webp",
+    "level": 40,
+    "label": "科技"
+  },
+  "Battle_Glider_Grade_03": {
+    "zh": "优质滑翔伞",
+    "en": "Giga Glider",
+    "ja": "ギガグライダー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Glider_Super.webp",
+    "level": 40,
+    "label": "科技"
+  },
+  "Battle_Defense_MachineGun": {
+    "zh": "固定式机关枪",
+    "en": "Mounted Machine Gun",
+    "ja": "設置型マシンガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseMachinegun.webp",
+    "level": 40,
+    "label": "科技"
+  },
+  "FragGrenade_Dark": {
+    "zh": "暗黑手榴弹",
+    "en": "Dark Grenade",
+    "ja": "暗黒グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Dark.webp",
+    "level": 40,
+    "label": "道具"
+  },
+  "SkillUnlock_Umihebi": {
+    "zh": "覆海龙的鞍具",
+    "en": "Jormuntide Saddle",
+    "ja": "レヴィドラのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Umihebi.webp",
+    "level": 40,
+    "label": "道具"
+  },
+  "SkillUnlock_ElecPanda": {
+    "zh": "暴电熊的机关枪",
+    "en": "Grizzbolt&#x27;s Minigun",
+    "ja": "エレパンダのミニガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElecPanda.webp",
+    "level": 40,
+    "label": "道具"
+  },
+  "SkillUnlock_WeaselDragon_Fire": {
+    "zh": "桃旋鼬的鞍具",
+    "en": "Chillet Ignis Saddle",
+    "ja": "モモチョのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WeaselDragon_Fire.webp",
+    "level": 40,
+    "label": "道具"
+  },
+  "GuildChest": {
+    "zh": "公会箱子",
+    "en": "Guild Chest",
+    "ja": "ギルドチェスト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GuildChest.webp",
+    "level": 41,
+    "label": "建筑"
+  },
+  "Battle_RangeWeapon_SemiAutoRifle": {
+    "zh": "半自动步枪",
+    "en": "Semi-Auto Rifle",
+    "ja": "セミオートライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SemiAutoRifle.webp",
+    "level": 41,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_03_Iron_Cold": {
+    "zh": "耐寒精炼金属盔甲",
+    "en": "Cold Resistant Refined Metal Armor",
+    "ja": "耐寒精錬金属アーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IronArmorCold.webp",
+    "level": 41,
+    "label": "科技"
+  },
+  "Product_Cooking_Grade_03": {
+    "zh": "电气厨房",
+    "en": "Electric Kitchen",
+    "ja": "電気キッチン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricKitchen.webp",
+    "level": 41,
+    "label": "科技"
+  },
+  "SanityDecrease1": {
+    "zh": "α波发生器",
+    "en": "Alpha Wave Generator",
+    "ja": "α波発生装置",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SanityDecrease1.webp",
+    "level": 41,
+    "label": "建筑"
+  },
+  "ElectricHeater": {
+    "zh": "电气取暖器",
+    "en": "Electric Heater",
+    "ja": "電気ヒーター",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricHeater.webp",
+    "level": 41,
+    "label": "建筑"
+  },
+  "SkillUnlock_WhiteAlienDragon": {
+    "zh": "杰诺路达的鞍具",
+    "en": "Xenogard Saddle",
+    "ja": "ゼノルーダのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WhiteAlienDragon.webp",
+    "level": 41,
+    "label": "道具"
+  },
+  "SkillUnlock_GuardianDog": {
+    "zh": "八云犬的鞍具",
+    "en": "Yakumo Saddle",
+    "ja": "ヤクモマルのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GuardianDog.webp",
+    "level": 41,
+    "label": "道具"
+  },
+  "SkillUnlock_GrassMammoth_Ice": {
+    "zh": "雪猛犸的鞍具",
+    "en": "Mammorest Cryst Saddle",
+    "ja": "ブリザモスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrassMammoth_Ice.webp",
+    "level": 41,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_CompoundBow": {
+    "zh": "复合弓",
+    "en": "Compound Bow",
+    "ja": "コンパウンドボウ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CompoundBow.webp",
+    "level": 42,
+    "label": "科技"
+  },
+  "ReinforcedArrow": {
+    "zh": "强化箭矢",
+    "en": "Reinforced Arrow",
+    "ja": "強化矢",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ReinforcedArrow.webp",
+    "level": 42,
+    "label": "道具"
+  },
+  "Product_Factory_Hard_Grade_03": {
+    "zh": "作业流水线工厂 II",
+    "en": "Production Assembly Line II",
+    "ja": "作業ライン工場Ⅱ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Factory_Hard_03.webp",
+    "level": 42,
+    "label": "科技"
+  },
+  "ElectricCooler": {
+    "zh": "电气降温器",
+    "en": "Electric Cooler",
+    "ja": "電気クーラー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricCooler.webp",
+    "level": 42,
+    "label": "建筑"
+  },
+  "FragGrenade_Dragon": {
+    "zh": "龙击手榴弹",
+    "en": "Dragon Grenade",
+    "ja": "竜撃グレネード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Dragon.webp",
+    "level": 42,
+    "label": "道具"
+  },
+  "SkillUnlock_IceNarwhal": {
+    "zh": "凉晶鲸的鞍具",
+    "en": "Whalaska Saddle",
+    "ja": "コゴエールのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceNarwhal.webp",
+    "level": 42,
+    "label": "道具"
+  },
+  "SkillUnlock_GhostAnglerfish_Fire": {
+    "zh": "炙灯鱼的鞍具",
+    "en": "Ghangler Ignis Saddle",
+    "ja": "メラドーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GhostAnglerfish_Fire.webp",
+    "level": 42,
+    "label": "道具"
+  },
+  "SkillUnlock_VolcanicMonster": {
+    "zh": "熔岩兽的鞍具",
+    "en": "Reptyro Saddle",
+    "ja": "ボルカノンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/VolcanicMonster.webp",
+    "level": 42,
+    "label": "道具"
+  },
+  "Product_CoalPit": {
+    "zh": "石炭采矿场",
+    "en": "Coal Quarry",
+    "ja": "石炭採掘場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CoalPit.webp",
+    "level": 37,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_ShotGun_Multi": {
+    "zh": "泵动式霰弹枪",
+    "en": "Pump-Action Shotgun",
+    "ja": "ポンプ式ショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ShotGun_Default.webp",
+    "level": 43,
+    "label": "科技"
+  },
+  "Shield_04": {
+    "zh": "特级护盾",
+    "en": "Hyper Shield",
+    "ja": "テラシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_04.webp",
+    "level": 43,
+    "label": "道具"
+  },
+  "AdditionalInventory_002": {
+    "zh": "中型扩展背包",
+    "en": "Medium Pouch",
+    "ja": "それなりの拡張ポーチ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AdditionalInventory_002.webp",
+    "level": 43,
+    "label": "道具"
+  },
+  "HighGrade_Processed_Wood": {
+    "zh": "优质木板",
+    "en": "High Quality Wooden Board",
+    "ja": "上質な木板",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HighGrade_Processed_Wood.webp",
+    "level": 43,
+    "label": "道具"
+  },
+  "Product_Medicine_Grade_02": {
+    "zh": "电气制药台",
+    "en": "Electric Medicine Workbench",
+    "ja": "電気製薬台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicineFacility_02.webp",
+    "level": 43,
+    "label": "科技"
+  },
+  "SkillUnlock_Suzaku": {
+    "zh": "朱雀的鞍具",
+    "en": "Suzaku Saddle",
+    "ja": "スザクのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Suzaku.webp",
+    "level": 43,
+    "label": "道具"
+  },
+  "SkillUnlock_VolcanicMonster_Ice": {
+    "zh": "寒霜兽的鞍具",
+    "en": "Reptyro Cryst Saddle",
+    "ja": "フロスカノンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/VolcanicMonster_Ice.webp",
+    "level": 43,
+    "label": "道具"
+  },
+  "Product_StationDeforest2": {
+    "zh": "伐木场Ⅱ",
+    "en": "Logging Site II",
+    "ja": "伐採場Ⅱ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StationDeforest3.webp",
+    "level": 43,
+    "label": "科技"
+  },
+  "Special_PalSphere_Grade_06": {
+    "zh": "传奇帕鲁球",
+    "en": "Legendary Sphere",
+    "ja": "レジェンドスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Legend.webp",
+    "level": 44,
+    "label": "科技"
+  },
+  "Product_Ingot_Grade_03_Steal": {
+    "zh": "电气炉",
+    "en": "Electric Furnace",
+    "ja": "電気炉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlastFurnace3.webp",
+    "level": 44,
+    "label": "科技"
+  },
+  "Bio_Battery": {
+    "zh": "生化电池",
+    "en": "Bio Battery",
+    "ja": "バイオバッテリー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Bio_Battery.webp",
+    "level": 44,
+    "label": "道具"
+  },
+  "Katana": {
+    "zh": "太刀",
+    "en": "Katana",
+    "ja": "刀",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Katana.webp",
+    "level": 44,
+    "label": "道具"
+  },
+  "Battle_MeleeWeapon_Pickaxe_Steal": {
+    "zh": "帕鲁金属十字镐",
+    "en": "Pal Metal Pickaxe",
+    "ja": "パルメタルのつるはし",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Pickaxe_Steal.webp",
+    "level": 44,
+    "label": "科技"
+  },
+  "Battle_MeleeWeapon_Axe_Steal": {
+    "zh": "帕鲁金属斧",
+    "en": "Pal Metal Axe",
+    "ja": "パルメタルの斧",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Axe_Steal.webp",
+    "level": 44,
+    "label": "科技"
+  },
+  "SkillUnlock_Suzaku_Water": {
+    "zh": "清雀的鞍具",
+    "en": "Suzaku Aqua Saddle",
+    "ja": "シヴァのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Suzaku_Water.webp",
+    "level": 44,
+    "label": "道具"
+  },
+  "SkillUnlock_SakuraSaurus_Water": {
+    "zh": "海誓龙的鞍具",
+    "en": "Broncherry Aqua Saddle",
+    "ja": "スプラドンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SakuraSaurus_Water.webp",
+    "level": 44,
+    "label": "道具"
+  },
+  "DecalGunSet": {
+    "zh": "印花枪套装",
+    "en": "Decal Gun Set",
+    "ja": "デカール銃セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/InkBullet.webp",
+    "level": 45,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_AssaultRifle": {
+    "zh": "突击步枪",
+    "en": "Assault Rifle",
+    "ja": "アサルトライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AssaultRifle_Default.webp",
+    "level": 45,
+    "label": "科技"
+  },
+  "AssaultRifleBullet": {
+    "zh": "突击步枪子弹",
+    "en": "Assault Rifle Ammo",
+    "ja": "アサルトライフルの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AssaultRifleBullet.webp",
+    "level": 45,
+    "label": "道具"
+  },
+  "FishingRod_03_1": {
+    "zh": "高级钓竿（企丸丸）",
+    "en": "Advanced Fishing Rod (Pengullet)",
+    "ja": "上級釣り竿（ペンタマ）",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingRod_5.webp",
+    "level": 45,
+    "label": "道具"
+  },
+  "CompositeDesk": {
+    "zh": "制图桌",
+    "en": "Drafting Table",
+    "ja": "製図台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CompositeDesk.webp",
+    "level": 45,
+    "label": "建筑"
+  },
+  "SkillUnlock_SkyDragon_Grass": {
+    "zh": "翠羽龙的鞍具",
+    "en": "Quivern Botan Saddle",
+    "ja": "フォレスキーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyDragon_Grass.webp",
+    "level": 45,
+    "label": "道具"
+  },
+  "SkillUnlock_LazyDragon": {
+    "zh": "佩克龙的导弹发射器",
+    "en": "Relaxaurus&#x27; Missile Launcher",
+    "ja": "ペコドンのミサイルランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LazyDragon.webp",
+    "level": 45,
+    "label": "道具"
+  },
+  "SkillUnlock_Yeti": {
+    "zh": "白绒雪怪的鞍具",
+    "en": "Wumpo Saddle",
+    "ja": "ヒエティのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Yeti.webp",
+    "level": 45,
+    "label": "道具"
+  },
+  "Product_SulfurPit": {
+    "zh": "硫磺采矿场",
+    "en": "Sulfur Quarry",
+    "ja": "硫黄採掘場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SulfurPit.webp",
+    "level": 46,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_04_Steal": {
+    "zh": "帕鲁金属盔甲",
+    "en": "Pal Metal Armor",
+    "ja": "パルメタルアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StealArmor.webp",
+    "level": 46,
+    "label": "科技"
+  },
+  "Battle_Helm_Grade_05_Steal": {
+    "zh": "帕鲁金属头盔",
+    "en": "Pal Metal Helm",
+    "ja": "パルメタルヘルム",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StealHelmet.webp",
+    "level": 46,
+    "label": "科技"
+  },
+  "WorkSpeedIncrease1": {
+    "zh": "β波发生器",
+    "en": "Beta Wave Generator",
+    "ja": "β波発生装置",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WorkSpeedIncrease1.webp",
+    "level": 46,
+    "label": "建筑"
+  },
+  "LargeLamp": {
+    "zh": "大型固定式灯具",
+    "en": "Large Mounted Lamp",
+    "ja": "設置大型ランプ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LargeLamp.webp",
+    "level": 46,
+    "label": "建筑"
+  },
+  "SkillUnlock_KingBahamut": {
+    "zh": "焰煌的鞍具",
+    "en": "Blazamut Saddle",
+    "ja": "ボルカイザーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/KingBahamut.webp",
+    "level": 46,
+    "label": "道具"
+  },
+  "SkillUnlock_KingAlpaca_Ice": {
+    "zh": "冰帝美露帕的鞍具",
+    "en": "Kingpaca Cryst Saddle",
+    "ja": "アオパオーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/KingAlpaca_Ice.webp",
+    "level": 46,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_SemiAutoShotgun": {
+    "zh": "半自动霰弹枪",
+    "en": "Semi-Auto Shotgun",
+    "ja": "セミオートショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SemiAutoShotgun.webp",
+    "level": 47,
+    "label": "科技"
+  },
+  "Product_WeaponFactory_Dirty_Grade_03": {
+    "zh": "武器流水线工厂II",
+    "en": "Weapon Assembly Line II",
+    "ja": "武器ライン工場Ⅱ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WeaponFactory_Dirty_03.webp",
+    "level": 47,
+    "label": "科技"
+  },
+  "Cake03": {
+    "zh": "蔬菜蛋糕",
+    "en": "Vegetable Cake",
+    "ja": "野菜ケーキ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cake03.webp",
+    "level": 47,
+    "label": "道具"
+  },
+  "AutoMealPouch_Tier5": {
+    "zh": "特大饲料袋",
+    "en": "Giant Feed Bag",
+    "ja": "極大エサぶくろ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AutoMealPouch_Tier5.webp",
+    "level": 47,
+    "label": "道具"
+  },
+  "LargeCeilingLamp": {
+    "zh": "大型天花板吊灯",
+    "en": "Large Ceiling Lamp",
+    "ja": "大型天井ランプ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LargeCeilingLamp.webp",
+    "level": 47,
+    "label": "建筑"
+  },
+  "SkillUnlock_HadesBird_Electric": {
+    "zh": "雷鸣鸟的鞍具",
+    "en": "Helzephyr Lux Saddle",
+    "ja": "ライガルダのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HadesBird_Electric.webp",
+    "level": 47,
+    "label": "道具"
+  },
+  "SkillUnlock_BlackGriffon": {
+    "zh": "异构格里芬的鞍具",
+    "en": "Shadowbeak Saddle",
+    "ja": "ゼノグリフのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlackGriffon.webp",
+    "level": 47,
+    "label": "道具"
+  },
+  "MultiHatchingPalEgg": {
+    "zh": "大型帕鲁蛋孵化器",
+    "en": "Large Incubator",
+    "ja": "大型タマゴ孵化器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MultiHatchingPalEgg.webp",
+    "level": 48,
+    "label": "建筑"
+  },
+  "Battle_Armor_Grade_04_Steal_Heat": {
+    "zh": "耐热帕鲁金属盔甲",
+    "en": "Heat Resistant Pal Metal Armor",
+    "ja": "耐熱パルメタルアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StealArmorHeat.webp",
+    "level": 48,
+    "label": "科技"
+  },
+  "SphereModule_Sniper2": {
+    "zh": "狙击模块Ⅱ",
+    "en": "Sniper Module II",
+    "ja": "スナイパーモジュールⅡ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereModule_Sniper2.webp",
+    "level": 48,
+    "label": "道具"
+  },
+  "TransmissionTower": {
+    "zh": "输电塔",
+    "en": "Electric Pylon",
+    "ja": "送電塔",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TransmissionTower.webp",
+    "level": 48,
+    "label": "建筑"
+  },
+  "SkillUnlock_LazyDragon_Electric": {
+    "zh": "派克龙的导弹发射器",
+    "en": "Relaxaurus Lux&#x27;s Missile Launcher",
+    "ja": "パリピドンのミサイルランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LazyDragon_Electric.webp",
+    "level": 48,
+    "label": "道具"
+  },
+  "SkillUnlock_GrassGolem": {
+    "zh": "双心岩傀的鞍具",
+    "en": "Dualith Saddle",
+    "ja": "ウゴクゾーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrassGolem.webp",
+    "level": 48,
+    "label": "道具"
+  },
+  "GrapplingGun4": {
+    "zh": "特级爪钩枪",
+    "en": "",
+    "ja": "",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrapplingGun.webp",
+    "level": 49,
+    "label": "道具"
+  },
+  "BaseCampItemDispenser": {
+    "zh": "道具存取机",
+    "en": "Item Retrieval Machine",
+    "ja": "アイテム取り出し機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BaseCampItemDispenser.webp",
+    "level": 49,
+    "label": "建筑"
+  },
+  "HugeKitchen": {
+    "zh": "大型厨房",
+    "en": "Large-Scale Stone Oven",
+    "ja": "大型キッチン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HugeKitchen.webp",
+    "level": 49,
+    "label": "建筑"
+  },
+  "JapaneseStyle_houseset": {
+    "zh": "和风建筑套组",
+    "en": "Japanese-Style Structure Set",
+    "ja": "和風建築セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/JapaneseStyle_foundation.webp",
+    "level": 49,
+    "label": "科技"
+  },
+  "ElectricGenerator_Large": {
+    "zh": "大型发电机",
+    "en": "Large Power Generator",
+    "ja": "大型発電機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricGenerator_Large.webp",
+    "level": 50,
+    "label": "建筑"
+  },
+  "Battle_Armor_Grade_04_Steal_Cold": {
+    "zh": "耐寒帕鲁金属盔甲",
+    "en": "Cold Resistant Pal Metal Armor",
+    "ja": "耐寒パルメタルアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StealArmorCold.webp",
+    "level": 50,
+    "label": "科技"
+  },
+  "OilPump": {
+    "zh": "原油提炼机",
+    "en": "Crude Oil Extractor",
+    "ja": "原油抽出機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OilPump.webp",
+    "level": 50,
+    "label": "建筑"
+  },
+  "Plastic": {
+    "zh": "塑钢",
+    "en": "Plasteel",
+    "ja": "プラスチール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Plastic.webp",
+    "level": 50,
+    "label": "道具"
+  },
+  "Computer": {
+    "zh": "电脑",
+    "en": "Computer",
+    "ja": "コンピューター",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Computer.webp",
+    "level": 50,
+    "label": "道具"
+  },
+  "Battle_Defense_Missile": {
+    "zh": "固定式导弹发射器",
+    "en": "Mounted Missile Launcher",
+    "ja": "設置型ミサイルランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DefenseMissile.webp",
+    "level": 50,
+    "label": "科技"
+  },
+  "ScientistFlagSet": {
+    "zh": "基因研究部队旗帜套组",
+    "en": "PAL Genetic Research Unit Flag Set",
+    "ja": "遺伝子研究部隊の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Scientist_Flag.webp",
+    "level": 50,
+    "label": "科技"
+  },
+  "OilPump02": {
+    "zh": "原油提炼机 高压型",
+    "en": "High-Pressure Crude Oil Extractor",
+    "ja": "原油抽出機・高圧型",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OilPump02.webp",
+    "level": 51,
+    "label": "建筑"
+  },
+  "Special_PalSphere_Grade_07": {
+    "zh": "究极帕鲁球",
+    "en": "Ultimate Sphere",
+    "ja": "アルティメットスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Ultimate.webp",
+    "level": 51,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_05_Plastic": {
+    "zh": "塑钢盔甲",
+    "en": "Plasteel Armor",
+    "ja": "プラスチールアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlasticArmor.webp",
+    "level": 51,
+    "label": "科技"
+  },
+  "Battle_Helm_Grade_06_Plastic": {
+    "zh": "塑钢头盔",
+    "en": "Plasteel Helmet",
+    "ja": "プラスチールヘルム",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlasticHelmet.webp",
+    "level": 51,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_LaserRifle": {
+    "zh": "激光步枪",
+    "en": "Laser Rifle",
+    "ja": "レーザーライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LaserRifle.webp",
+    "level": 51,
+    "label": "科技"
+  },
+  "LaserBullet": {
+    "zh": "能量盒",
+    "en": "Energy Cartridge",
+    "ja": "エネルギーカートリッジ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LaserBullet.webp",
+    "level": 51,
+    "label": "道具"
+  },
+  "CoolerPalFoodBox": {
+    "zh": "低温保鲜饲料箱",
+    "en": "Cold Food Box",
+    "ja": "保冷エサ箱",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CoolerPalFoodBox.webp",
+    "level": 51,
+    "label": "建筑"
+  },
+  "SkillUnlock_Yeti_Grass": {
+    "zh": "绿苔绒怪的鞍具",
+    "en": "Wumpo Botan Saddle",
+    "ja": "トロピティのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Yeti_Grass.webp",
+    "level": 51,
+    "label": "道具"
+  },
+  "Battle_Glider_Grade_04": {
+    "zh": "特级滑翔伞",
+    "en": "Hyper Glider",
+    "ja": "テラグライダー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Glider_Legendary.webp",
+    "level": 52,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_FlameThrower": {
+    "zh": "火焰喷射器",
+    "en": "Flamethrower",
+    "ja": "火炎放射器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlameThrower.webp",
+    "level": 52,
+    "label": "科技"
+  },
+  "FlamethrowerBullet": {
+    "zh": "火焰喷射器燃料",
+    "en": "Flamethrower Fuel",
+    "ja": "火炎放射器燃料",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FlamethrowerBullet.webp",
+    "level": 52,
+    "label": "道具"
+  },
+  "FishingBait_3_A": {
+    "zh": "魅惑钓饵",
+    "en": "Alluring Bait",
+    "ja": "魅惑の釣りエサ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingBait_3_A.webp",
+    "level": 52,
+    "label": "道具"
+  },
+  "SkillUnlock_BadCatgirl": {
+    "zh": "妮瞅莎的霰弹枪",
+    "en": "Nyafia&#x27;s Shotgun",
+    "ja": "ニャニミテのショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BadCatgirl.webp",
+    "level": 52,
+    "label": "道具"
+  },
+  "AdditionalInventory_003": {
+    "zh": "大型扩展背包",
+    "en": "Large Pouch",
+    "ja": "大きな拡張ポーチ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AdditionalInventory_003.webp",
+    "level": 53,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_05_Plastic_Heat": {
+    "zh": "耐热塑钢盔甲",
+    "en": "Heat Resistant Plasteel Armor",
+    "ja": "耐熱プラスチールアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlasticArmorHeat.webp",
+    "level": 53,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_GrenadeLauncher": {
+    "zh": "榴弹发射器",
+    "en": "Grenade Launcher",
+    "ja": "グレネードランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrenadeLauncher.webp",
+    "level": 53,
+    "label": "科技"
+  },
+  "GrenadeBullet": {
+    "zh": "榴弹",
+    "en": "Grenade Ammo",
+    "ja": "グレネード弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrenadeBullet.webp",
+    "level": 53,
+    "label": "道具"
+  },
+  "FragGrenade_Super": {
+    "zh": "破片手榴弹Mk2",
+    "en": "Frag Grenade Mk2",
+    "ja": "フラググレネード改",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FragGrenade_Super.webp",
+    "level": 53,
+    "label": "道具"
+  },
+  "SkillUnlock_MoonQueen": {
+    "zh": "辉月伊的鞍具",
+    "en": "Selyne Saddle",
+    "ja": "セレムーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MoonQueen.webp",
+    "level": 53,
+    "label": "道具"
+  },
+  "Product_QuartzPit": {
+    "zh": "纯水晶采矿场",
+    "en": "Pure Quartz Quarry",
+    "ja": "ピュアクォーツ採掘場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/QuartzPit.webp",
+    "level": 52,
+    "label": "科技"
+  },
+  "LaserMiningTool": {
+    "zh": "多功能等离子切割器",
+    "en": "Plasma Multicutter",
+    "ja": "マルチプラズマカッター",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LaserMiningTool.webp",
+    "level": 54,
+    "label": "道具"
+  },
+  "Battle_Armor_Grade_05_Plastic_Cold": {
+    "zh": "耐寒塑钢盔甲",
+    "en": "Cold Resistant Plasteel Armor",
+    "ja": "耐寒プラスチールアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlasticArmorCold.webp",
+    "level": 54,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_GatlingGun": {
+    "zh": "加特林机枪",
+    "en": "Gatling Gun",
+    "ja": "ガトリングガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GatlingGun.webp",
+    "level": 54,
+    "label": "科技"
+  },
+  "GatlingBullet": {
+    "zh": "加特林子弹",
+    "en": "Gatling Gun Ammo",
+    "ja": "ガトリング弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GatlingBullet.webp",
+    "level": 54,
+    "label": "道具"
+  },
+  "IceCrusher": {
+    "zh": "冷冻粉碎机",
+    "en": "Cryogenic Crusher",
+    "ja": "凍結粉砕機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceCrusher.webp",
+    "level": 54,
+    "label": "建筑"
+  },
+  "UnlockEquipmentSlot_Weapon_02": {
+    "zh": "额外武器套2",
+    "en": "Extra Weapon Holster 2",
+    "ja": "武器の追加ホルダー2",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/UnlockEquipmentSlot_Weapon_02.webp",
+    "level": 54,
+    "label": "道具"
+  },
+  "SkillUnlock_GoldenHorse": {
+    "zh": "金驰兽的鞍具",
+    "en": "Gildane Saddle",
+    "ja": "キンガゼルのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GoldenHorse.webp",
+    "level": 54,
+    "label": "道具"
+  },
+  "SkillUnlock_WhiteDeer": {
+    "zh": "净世鹿的鞍具",
+    "en": "Celesdir Saddle",
+    "ja": "セレスディアのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WhiteDeer.webp",
+    "level": 54,
+    "label": "道具"
+  },
+  "Unlock_Picking_Tier3": {
+    "zh": "专家开锁工具",
+    "en": "Lockpicking Tool v3",
+    "ja": "プロ仕様ピッキングツール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Unlock_Picking_Tier3.webp",
+    "level": 53,
+    "label": "道具"
+  },
+  "Spear_ForestBoss": {
+    "zh": "莉莉之矛",
+    "en": "Lily&#x27;s Spear",
+    "ja": "リリィの槍",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spear_ForestBoss.webp",
+    "level": 55,
+    "label": "道具"
+  },
+  "Shield_05": {
+    "zh": "超级护盾",
+    "en": "Ultra Shield",
+    "ja": "ウルトラシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_05.webp",
+    "level": 55,
+    "label": "科技"
+  },
+  "Battle_Armor_Grade_05_Plastic_Weight": {
+    "zh": "轻便塑钢盔甲",
+    "en": "Lightweight Plasteel Armor",
+    "ja": "軽量プラスチールアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PlasticArmorWeight.webp",
+    "level": 55,
+    "label": "科技"
+  },
+  "SkillUnlock_IceSeal_Ground": {
+    "zh": "巧克力豹冰的鞍具",
+    "en": "Polapup Terra Saddle",
+    "ja": "チョコザラシのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceSeal_Ground.webp",
+    "level": 55,
+    "label": "道具"
+  },
+  "SkillUnlock_KingBahamut_Dragon": {
+    "zh": "殁殃的鞍具",
+    "en": "Blazamut Ryu Saddle",
+    "ja": "ボルドラゴのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/KingBahamut_Dragon.webp",
+    "level": 55,
+    "label": "道具"
+  },
+  "FurnitureSet_Japanese": {
+    "zh": "和风家具套组",
+    "en": "Japanese-Style Furniture Set",
+    "ja": "和風家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Byobu.webp",
+    "level": 55,
+    "label": "科技"
+  },
+  "NinjaFlagSet": {
+    "zh": "月花众旗帜套组",
+    "en": "Moonflower Flag Set",
+    "ja": "月花衆の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Ninja_Flag.webp",
+    "level": 55,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_HomingSphereLauncher": {
+    "zh": "自动追踪帕鲁球发射器",
+    "en": "Homing Sphere Launcher",
+    "ja": "ホーミングスフィアランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/HomingSphereLauncher.webp",
+    "level": 55,
+    "label": "科技"
+  },
+  "Battle_RangeWeapon_GuidedMissileLauncher": {
+    "zh": "追踪导弹发射器",
+    "en": "Guided Missile Launcher",
+    "ja": "ミサイルランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GuidedMissileLauncher.webp",
+    "level": 56,
+    "label": "科技"
+  },
+  "MissileBullet": {
+    "zh": "导弹",
+    "en": "Missile Ammo",
+    "ja": "ミサイル弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MissileBullet.webp",
+    "level": 56,
+    "label": "道具"
+  },
+  "DismantlingConveyor": {
+    "zh": "帕鲁解体传送带",
+    "en": "Pal Disassembly Conveyor",
+    "ja": "パル解体コンベア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DismantlingConveyor.webp",
+    "level": 56,
+    "label": "建筑"
+  },
+  "MedicalPalBed_05": {
+    "zh": "高等文明帕鲁胶囊",
+    "en": "Pal Pod",
+    "ja": "高度文明のパルポッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicalPalBed_05.webp",
+    "level": 56,
+    "label": "建筑"
+  },
+  "OctaviaSet02": {
+    "zh": "ULTRAKILL 联动套组2",
+    "en": "ULTRAKILL Collab Set 2",
+    "ja": "ULTRAKILL コラボセット2",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Octavia002_Armor.webp",
+    "level": 56,
+    "label": "科技"
+  },
+  "SFBow": {
+    "zh": "卓越弓",
+    "en": "Advanced Bow",
+    "ja": "アドバンスボウ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFBow.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "SFArrow": {
+    "zh": "卓越箭矢",
+    "en": "Advanced Arrow",
+    "ja": "アドバンスアロー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFArrow.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "AdditionalInventory_004": {
+    "zh": "巨大扩展背包",
+    "en": "Giant Pouch",
+    "ja": "巨大な拡張ポーチ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AdditionalInventory_004.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "BeamSword": {
+    "zh": "光剑",
+    "en": "Beam Sword",
+    "ja": "ビームソード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BeamSword.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "SkillUnlock_NightBlueHorse": {
+    "zh": "夜冥驹的鞍具",
+    "en": "Starryon Saddle",
+    "ja": "ナイトロットのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/NightBlueHorse.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "SkillUnlock_FengyunDeeper_Electric": {
+    "zh": "雷隐鹿的鞍具",
+    "en": "Fenglope Lux Saddle",
+    "ja": "ムラサメのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FengyunDeeper_Electric.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "SkillUnlock_AmaterasuWolf": {
+    "zh": "苍焰狼的鞍具",
+    "en": "Kitsun Saddle",
+    "ja": "シラヌイのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AmaterasuWolf.webp",
+    "level": 57,
+    "label": "道具"
+  },
+  "PalSphere_Exotic": {
+    "zh": "超限帕鲁球",
+    "en": "Exotic Sphere",
+    "ja": "インフィニティスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Exotic.webp",
+    "level": 58,
+    "label": "道具"
+  },
+  "SphereFactory_Black_04": {
+    "zh": "高等文明帕鲁球工厂",
+    "en": "Advanced Sphere Assembly Line",
+    "ja": "高度文明のスフィア工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereFactory_Black_04.webp",
+    "level": 58,
+    "label": "建筑"
+  },
+  "StainlessSteel": {
+    "zh": "六棱晶锭",
+    "en": "Hexolite",
+    "ja": "ヘクソライト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/StainlessSteel.webp",
+    "level": 58,
+    "label": "道具"
+  },
+  "BlastFurnace4": {
+    "zh": "巨大熔炉",
+    "en": "Gigantic Furnace",
+    "ja": "巨大な炉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlastFurnace4.webp",
+    "level": 58,
+    "label": "建筑"
+  },
+  "MetalDetector": {
+    "zh": "金属探测器",
+    "en": "Metal Detector",
+    "ja": "金属探知機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MetalDetector.webp",
+    "level": 58,
+    "label": "道具"
+  },
+  "SkillUnlock_BlackPuppy": {
+    "zh": "墨丸的背带",
+    "en": "Smokie&#x27;s Harness",
+    "ja": "クロマルのハーネス",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlackPuppy.webp",
+    "level": 58,
+    "label": "道具"
+  },
+  "SkillUnlock_BlueThunderHorse": {
+    "zh": "驭雷马的鞍具",
+    "en": "Azurmane Saddle",
+    "ja": "オーマサンダのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlueThunderHorse.webp",
+    "level": 58,
+    "label": "道具"
+  },
+  "MultiElectricHatchingPalEgg": {
+    "zh": "大型电能帕鲁蛋孵化器",
+    "en": "Large-Scale Electric Egg Incubator",
+    "ja": "大型電動タマゴ孵化器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MultiElectricHatchingPalEgg.webp",
+    "level": 58,
+    "label": "建筑"
+  },
+  "ItemChest_04": {
+    "zh": "高等文明箱子",
+    "en": "Advanced Chest",
+    "ja": "高度文明のチェスト",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ItemChest_04.webp",
+    "level": 59,
+    "label": "建筑"
+  },
+  "LaserGatlingGun": {
+    "zh": "激光加特林",
+    "en": "Laser Gatling Gun",
+    "ja": "レーザーガトリングガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LaserGatlingGun.webp",
+    "level": 59,
+    "label": "道具"
+  },
+  "LaserGatlingBullet": {
+    "zh": "加特林激光能量盒",
+    "en": "Laser Gatling Cartridge",
+    "ja": "ガトリングレーザーカートリッジ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LaserGatlingBullet.webp",
+    "level": 59,
+    "label": "道具"
+  },
+  "SFArmor": {
+    "zh": "六棱晶盔甲",
+    "en": "Hexolite Armor",
+    "ja": "ヘクソライトアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFArmor.webp",
+    "level": 59,
+    "label": "道具"
+  },
+  "Thermal_Core": {
+    "zh": "超高热核心",
+    "en": "Thermal Core",
+    "ja": "超高熱コア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Thermal_Core.webp",
+    "level": 59,
+    "label": "道具"
+  },
+  "SkillUnlock_Umihebi_Fire": {
+    "zh": "腾炎龙的鞍具",
+    "en": "Jormuntide Ignis Saddle",
+    "ja": "アグニドラのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Umihebi_Fire.webp",
+    "level": 59,
+    "label": "道具"
+  },
+  "SkillUnlock_AmaterasuWolf_Dark": {
+    "zh": "幽焰狼的鞍具",
+    "en": "Kitsun Noct Saddle",
+    "ja": "カゲヌイのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AmaterasuWolf_Dark.webp",
+    "level": 59,
+    "label": "道具"
+  },
+  "Shield_SF": {
+    "zh": "卓越护盾",
+    "en": "Advanced Shield",
+    "ja": "アドバンスドシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_SF.webp",
+    "level": 60,
+    "label": "道具"
+  },
+  "SFHelmet": {
+    "zh": "六棱晶头盔",
+    "en": "Hexolite Helmet",
+    "ja": "ヘクソライトヘルム",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFHelmet.webp",
+    "level": 60,
+    "label": "道具"
+  },
+  "Cake04": {
+    "zh": "豪华蔬菜蛋糕",
+    "en": "Extravagant Vegetable Cake",
+    "ja": "豪華野菜ケーキ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cake04.webp",
+    "level": 60,
+    "label": "道具"
+  },
+  "DarkIslandFlagSet": {
+    "zh": "天坠之民旗帜套组",
+    "en": "Feybreak Flag Set",
+    "ja": "天落の民の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DarkIsland_Flag.webp",
+    "level": 60,
+    "label": "科技"
+  },
+  "SkillUnlock_Horus": {
+    "zh": "荷鲁斯的鞍具",
+    "en": "Faleris Saddle",
+    "ja": "ホルスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Horus.webp",
+    "level": 60,
+    "label": "道具"
+  },
+  "SkillUnlock_Horus_Water": {
+    "zh": "伊西斯的鞍具",
+    "en": "Faleris Aqua Saddle",
+    "ja": "イシスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Horus_Water.webp",
+    "level": 60,
+    "label": "道具"
+  },
+  "SkillUnlock_WhiteShieldDragon": {
+    "zh": "艾基鲁迦的鞍具",
+    "en": "Silvegis Saddle",
+    "ja": "アイギルガのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WhiteShieldDragon.webp",
+    "level": 60,
+    "label": "道具"
+  },
+  "EnergyRocketLauncher": {
+    "zh": "等离子炮",
+    "en": "Plasma Cannon",
+    "ja": "プラズマキャノン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/EnergyRocketLauncher.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "EnergyLauncherBullet": {
+    "zh": "电浆能量盒",
+    "en": "Plasma Cartridge",
+    "ja": "プラズマカートリッジ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/EnergyLauncherBullet.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "Potion_Extreme": {
+    "zh": "至高恢复药",
+    "en": "Advanced Recovery Meds",
+    "ja": "至高の回復薬",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Potion_Extreme.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "PalRevive": {
+    "zh": "复活药",
+    "en": "Revival Potion",
+    "ja": "復活薬",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalRevive.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "MedicineFacility_03": {
+    "zh": "高等文明制药台",
+    "en": "Advanced Medicine Workbench",
+    "ja": "高度文明の製薬台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MedicineFacility_03.webp",
+    "level": 61,
+    "label": "建筑"
+  },
+  "SkillUnlock_SaintCentaur": {
+    "zh": "圣光骑士的鞍具",
+    "en": "Paladius Saddle",
+    "ja": "セイントールのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SaintCentaur.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "SkillUnlock_BlackCentaur": {
+    "zh": "混沌骑士的鞍具",
+    "en": "Necromus Saddle",
+    "ja": "ベイントールのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlackCentaur.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "Accessory_AirDash2": {
+    "zh": "空中二段冲刺靴",
+    "en": "Double Air Dash Boots",
+    "ja": "ダブルエアダッシュブーツ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_AirDash2.webp",
+    "level": 61,
+    "label": "道具"
+  },
+  "Salvage_TreasureBoxKey02": {
+    "zh": "强力渔用磁铁",
+    "en": "Powerful Fishing Magnet",
+    "ja": "強力釣りマグネット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Salvage_TreasureBoxKey02.webp",
+    "level": 62,
+    "label": "道具"
+  },
+  "ManganeseIngot": {
+    "zh": "珊瑚锭",
+    "en": "Coralum Ingot",
+    "ja": "コラルムインゴット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ManganeseIngot.webp",
+    "level": 62,
+    "label": "道具"
+  },
+  "Factory_Hard_04": {
+    "zh": "高等文明作业工厂",
+    "en": "Advanced Workshop",
+    "ja": "高度文明の作業工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Factory_Hard_04.webp",
+    "level": 62,
+    "label": "建筑"
+  },
+  "SF_houseset": {
+    "zh": "未来风建筑套组",
+    "en": "Futuristic Structure Set",
+    "ja": "未来風建築セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SF_foundation.webp",
+    "level": 62,
+    "label": "科技"
+  },
+  "CrystalPit": {
+    "zh": "六棱晶矿采矿场",
+    "en": "Hexolite Quartz Mine",
+    "ja": "ヘクソクォーツ採掘場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CrystalPit.webp",
+    "level": 62,
+    "label": "建筑"
+  },
+  "SkillUnlock_IceHorse": {
+    "zh": "唤冬兽的鞍具",
+    "en": "Frostallion Saddle",
+    "ja": "グレイシャルのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceHorse.webp",
+    "level": 62,
+    "label": "道具"
+  },
+  "SkillUnlock_IceHorse_Dark": {
+    "zh": "唤夜兽的鞍具",
+    "en": "Frostallion Noct Saddle",
+    "ja": "グレイシャドウのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceHorse_Dark.webp",
+    "level": 62,
+    "label": "道具"
+  },
+  "EnergyShotgun": {
+    "zh": "能量霰弹枪",
+    "en": "Energy Shotgun",
+    "ja": "エネルギーショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/EnergyShotgun.webp",
+    "level": 63,
+    "label": "道具"
+  },
+  "EnergyShotgunBullet": {
+    "zh": "能量霰弹枪子弹",
+    "en": "Energy Shotgun Ammo",
+    "ja": "エネルギーショットガンの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/EnergyShotgunBullet.webp",
+    "level": 63,
+    "label": "道具"
+  },
+  "WeaponFactory_Dirty_04": {
+    "zh": "高等文明武器工厂",
+    "en": "Advanced Weapon Assembly Line",
+    "ja": "高度文明の武器工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WeaponFactory_Dirty_04.webp",
+    "level": 63,
+    "label": "建筑"
+  },
+  "SFArmorHeat": {
+    "zh": "耐热六棱晶盔甲",
+    "en": "Heat Resistant Hexolite Armor",
+    "ja": "耐熱ヘクソライトアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFArmorHeat.webp",
+    "level": 63,
+    "label": "道具"
+  },
+  "PalDopingShot_2": {
+    "zh": "高级强化枪",
+    "en": "Megaboost Gun",
+    "ja": "メガブーストガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalDopingShot_2.webp",
+    "level": 63,
+    "label": "道具"
+  },
+  "GrapplingGun5": {
+    "zh": "超级爪钩枪",
+    "en": "Ultra Grappling Gun",
+    "ja": "ウルトラグラップリングガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrapplingGun.webp",
+    "level": 63,
+    "label": "道具"
+  },
+  "OverHeatRifle": {
+    "zh": "过热步枪",
+    "en": "Overheat Rifle",
+    "ja": "オーバーヒートライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OverheatRifle.webp",
+    "level": 64,
+    "label": "道具"
+  },
+  "OverheatRifleBullet": {
+    "zh": "过热步枪子弹",
+    "en": "Overheat Rifle Ammo",
+    "ja": "オーバーヒートライフルの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/OverheatRifleBullet.webp",
+    "level": 64,
+    "label": "道具"
+  },
+  "SFArmorCold": {
+    "zh": "耐寒六棱晶盔甲",
+    "en": "Cold Resistant Hexolite Armor",
+    "ja": "耐寒ヘクソライトアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFArmorCold.webp",
+    "level": 64,
+    "label": "道具"
+  },
+  "Spa3": {
+    "zh": "和风温泉",
+    "en": "Japanese-Style Hot Spring",
+    "ja": "和風な温泉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spa3.webp",
+    "level": 64,
+    "label": "建筑"
+  },
+  "SkillUnlock_Kirin_Ice": {
+    "zh": "凌角马的鞍具",
+    "en": "Univolt Cryst Saddle",
+    "ja": "レイコーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Kirin_Ice.webp",
+    "level": 64,
+    "label": "道具"
+  },
+  "SkillUnlock_PoseidonOrca": {
+    "zh": "海皇鲸的鞍具",
+    "en": "Neptilius Saddle",
+    "ja": "ネプティオスのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PoseidonOrca.webp",
+    "level": 64,
+    "label": "道具"
+  },
+  "Battle_RangeWeapon_RocketLauncher": {
+    "zh": "火箭发射器",
+    "en": "Rocket Launcher",
+    "ja": "ロケットランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Launcher_Default.webp",
+    "level": 65,
+    "label": "科技"
+  },
+  "LauncherBullet": {
+    "zh": "火箭弹",
+    "en": "Rocket Ammo",
+    "ja": "ロケット弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ExplosiveBullet.webp",
+    "level": 65,
+    "label": "科技"
+  },
+  "ChargeLaserRifle": {
+    "zh": "充能步枪",
+    "en": "Charge Rifle",
+    "ja": "チャージライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ChargeLaserRifle.webp",
+    "level": 65,
+    "label": "道具"
+  },
+  "ChargeLaserRifleBullet": {
+    "zh": "充能步枪子弹",
+    "en": "Charge Rifle Ammo",
+    "ja": "チャージライフルの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ChargeLaserRifleBullet.webp",
+    "level": 65,
+    "label": "道具"
+  },
+  "SFArmorWeight": {
+    "zh": "轻便六棱晶盔甲",
+    "en": "Lightweight Hexolite Armor",
+    "ja": "軽量ヘクソライトアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SFArmorWeight.webp",
+    "level": 65,
+    "label": "道具"
+  },
+  "SkillUnlock_KingSunfish": {
+    "zh": "曼波王的鞍具",
+    "en": "Solmora Saddle",
+    "ja": "オーマンボのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/KingSunfish.webp",
+    "level": 65,
+    "label": "道具"
+  },
+  "Accessory_AirDash3": {
+    "zh": "空中三段冲刺靴",
+    "en": "Triple Air Dash Boots",
+    "ja": "トリプルエアダッシュブーツ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_AirDash3.webp",
+    "level": 65,
+    "label": "道具"
+  },
+  "AncientBlastFurnace": {
+    "zh": "古代文明炉",
+    "en": "Ancient Furnace",
+    "ja": "古代文明の炉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientBlastFurnace.webp",
+    "level": 66,
+    "label": "建筑"
+  },
+  "SkyislandIngot": {
+    "zh": "烈阳金属锭",
+    "en": "Soralite Ingot",
+    "ja": "ソルライトインゴット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyislandIngot.webp",
+    "level": 66,
+    "label": "道具"
+  },
+  "WaterBuildKit": {
+    "zh": "水上建造套装",
+    "en": "Aquatic Construction Kit",
+    "ja": "水上建築キット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WaterBuildKit.webp",
+    "level": 66,
+    "label": "道具"
+  },
+  "SkillUnlock_KingSunfish_Thunder": {
+    "zh": "曼波皇的鞍具",
+    "en": "Solmora Lux Saddle",
+    "ja": "トノサマンボのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/KingSunfish_Thunder.webp",
+    "level": 66,
+    "label": "道具"
+  },
+  "SkillUnlock_ThunderFluffyBird": {
+    "zh": "雷云鹫的鞍具",
+    "en": "Dynamoff Saddle",
+    "ja": "ダイナモフのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ThunderFluffyBird.webp",
+    "level": 66,
+    "label": "道具"
+  },
+  "SkillUnlock_DarkMechaDragon": {
+    "zh": "杰诺多兰的鞍具",
+    "en": "Xenolord Saddle",
+    "ja": "ゼノドランのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DarkMechaDragon.webp",
+    "level": 66,
+    "label": "道具"
+  },
+  "PalSphere_Ancient_1": {
+    "zh": "烈阳帕鲁球",
+    "en": "Sol Sphere",
+    "ja": "ソルスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Ancient_1.webp",
+    "level": 67,
+    "label": "道具"
+  },
+  "SkyBow": {
+    "zh": "机械弓",
+    "en": "Mechanical Bow",
+    "ja": "メカニカルボウ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyBow.webp",
+    "level": 67,
+    "label": "道具"
+  },
+  "SkyBowArrow": {
+    "zh": "机械弓箭矢",
+    "en": "Mechanical Bow Ammo",
+    "ja": "メカニカルボウの矢",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyBowArrow.webp",
+    "level": 67,
+    "label": "道具"
+  },
+  "AIcore": {
+    "zh": "AI核心",
+    "en": "AI Core",
+    "ja": "AIコア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AIcore.webp",
+    "level": 67,
+    "label": "道具"
+  },
+  "AncientWorkBench": {
+    "zh": "古代文明工作台",
+    "en": "Ancient Workbench",
+    "ja": "古代文明の作業台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientWorkBench.webp",
+    "level": 67,
+    "label": "建筑"
+  },
+  "Ancient_Houseset": {
+    "zh": "古代文明建筑套组",
+    "en": "Ancient Structure Set",
+    "ja": "古代文明の建築セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Ancient_foundation.webp",
+    "level": 67,
+    "label": "科技"
+  },
+  "Spear_ForestBoss2": {
+    "zh": "强化莉莉之矛",
+    "en": "Enhanced Lily&#x27;s Spear",
+    "ja": "強化リリィの槍",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Spear_ForestBoss2.webp",
+    "level": 68,
+    "label": "道具"
+  },
+  "SkySubmachineGun": {
+    "zh": "战斗冲锋枪",
+    "en": "Combat SMG",
+    "ja": "コンバットサブマシンガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkySubmachineGun.webp",
+    "level": 68,
+    "label": "道具"
+  },
+  "SkySubmachineGunBullet": {
+    "zh": "战斗冲锋枪子弹",
+    "en": "Combat SMG Ammo",
+    "ja": "コンバットサブマシンガンの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkySubmachineGunBullet.webp",
+    "level": 68,
+    "label": "道具"
+  },
+  "AncientArmor": {
+    "zh": "远古盔甲",
+    "en": "Ancient Armor",
+    "ja": "エンシェントアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientArmor.webp",
+    "level": 68,
+    "label": "道具"
+  },
+  "AncientHelmet": {
+    "zh": "远古头盔",
+    "en": "Ancient Helm",
+    "ja": "エンシェントヘルム",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientHelmet.webp",
+    "level": 68,
+    "label": "道具"
+  },
+  "SkillUnlock_GhostDragon": {
+    "zh": "灵曦龙的鞍具",
+    "en": "Eidrolon Saddle",
+    "ja": "レイバーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GhostDragon.webp",
+    "level": 68,
+    "label": "道具"
+  },
+  "SkyShotgun": {
+    "zh": "原型霰弹枪",
+    "en": "Prototype Shotgun",
+    "ja": "プロトタイプショットガン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyShotgun.webp",
+    "level": 69,
+    "label": "道具"
+  },
+  "SkyShotgunBullet": {
+    "zh": "原型霰弹枪子弹",
+    "en": "Prototype Shotgun Ammo",
+    "ja": "プロトタイプショットガンの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyShotgunBullet.webp",
+    "level": 69,
+    "label": "道具"
+  },
+  "SphereModule_Homing": {
+    "zh": "追踪模块",
+    "en": "Homing Module",
+    "ja": "ホーミングモジュール",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SphereModule_Homing.webp",
+    "level": 69,
+    "label": "道具"
+  },
+  "FishingPond2": {
+    "zh": "大型垂钓池",
+    "en": "Large Fishing Pond",
+    "ja": "大きな釣り堀",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FishingPond2.webp",
+    "level": 69,
+    "label": "建筑"
+  },
+  "SkillUnlock_GrassGolem_Dark": {
+    "zh": "咒心岩傀的鞍具",
+    "en": "Dualith Noct Saddle",
+    "ja": "ノロウゾーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GrassGolem_Dark.webp",
+    "level": 69,
+    "label": "道具"
+  },
+  "SkyAssaultRifle": {
+    "zh": "重型突击步枪",
+    "en": "Heavy Assault Rifle",
+    "ja": "ヘビーアサルトライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyAssaultRifle.webp",
+    "level": 70,
+    "label": "道具"
+  },
+  "SkyAssaultRifleBullet": {
+    "zh": "重型突击步枪子弹",
+    "en": "Heavy Assault Rifle Ammo",
+    "ja": "ヘビーアサルトライフルの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyAssaultRifleBullet.webp",
+    "level": 70,
+    "label": "道具"
+  },
+  "AncientCookingStove": {
+    "zh": "古代文明厨房",
+    "en": "Ancient Kitchen",
+    "ja": "古代文明のキッチン",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientCookingStove.webp",
+    "level": 70,
+    "label": "建筑"
+  },
+  "SkillUnlock_LegendDeer": {
+    "zh": "默世鹿的鞍具",
+    "en": "Hartalis Saddle",
+    "ja": "レジェンディアのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LegendDeer.webp",
+    "level": 70,
+    "label": "道具"
+  },
+  "Accessory_JumpCount_Increase2": {
+    "zh": "三段跳靴",
+    "en": "Triple Jump Boots",
+    "ja": "トリプルジャンプブーツ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_JumpCount_Increase2.webp",
+    "level": 70,
+    "label": "道具"
+  },
+  "Shield_07": {
+    "zh": "远古护盾",
+    "en": "Ancient Shield",
+    "ja": "エンシェントシールド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shield_07.webp",
+    "level": 71,
+    "label": "道具"
+  },
+  "BaseCampWorkHard03": {
+    "zh": "古代文明监控台",
+    "en": "Ancient Monitoring Stand",
+    "ja": "古代文明の監視台",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BaseCampWorkHard03.webp",
+    "level": 71,
+    "label": "建筑"
+  },
+  "Farm_SkillFruits": {
+    "zh": "技能果树园",
+    "en": "Skillfruit Orchard",
+    "ja": "技の実農園",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Farm_SkillFruits.webp",
+    "level": 71,
+    "label": "建筑"
+  },
+  "SkyIslandFlagSet": {
+    "zh": "苍天的盟约旗帜套组",
+    "en": "Azure Covenant Flag Set",
+    "ja": "蒼天の盟約の旗セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyIsland_Flag.webp",
+    "level": 71,
+    "label": "科技"
+  },
+  "SkillUnlock_ThunderBird_Ice": {
+    "zh": "疾霜鸟的鞍具",
+    "en": "Beakon Cryst Saddle",
+    "ja": "チルバードのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ThunderBird_Ice.webp",
+    "level": 71,
+    "label": "道具"
+  },
+  "SkillUnlock_IceNarwhal_Fire": {
+    "zh": "桃晶鲸的鞍具",
+    "en": "Whalaska Ignis Saddle",
+    "ja": "モモエールのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceNarwhal_Fire.webp",
+    "level": 71,
+    "label": "道具"
+  },
+  "SkyGrenadeLauncher": {
+    "zh": "战术榴弹发射器",
+    "en": "Tactical Grenade Launcher",
+    "ja": "タクティカルグレネードランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyGrenadeLauncher.webp",
+    "level": 72,
+    "label": "道具"
+  },
+  "SkyGrenadeLauncherBullet": {
+    "zh": "战术榴弹发射器子弹",
+    "en": "Tactical Grenade Launcher Ammo",
+    "ja": "タクティカルグレネードランチャーの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyGrenadeLauncherBullet.webp",
+    "level": 72,
+    "label": "道具"
+  },
+  "SkyIslandOrePit": {
+    "zh": "烈阳金属采矿场",
+    "en": "Soralite Quarry",
+    "ja": "ソルライト採掘場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyIslandOrePit.webp",
+    "level": 72,
+    "label": "建筑"
+  },
+  "SkyBeamSword": {
+    "zh": "高出力光剑",
+    "en": "Laser Sword",
+    "ja": "レーザーソード",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SkyBeamSword.webp",
+    "level": 73,
+    "label": "道具"
+  },
+  "Factory_Money": {
+    "zh": "金币制造工厂",
+    "en": "Gold Coin Assembly Line",
+    "ja": "金貨製造工場",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Factory_Money.webp",
+    "level": 73,
+    "label": "建筑"
+  },
+  "Ancient_Clinic": {
+    "zh": "古代文明诊疗所",
+    "en": "Ancient Clinic",
+    "ja": "古代文明の診療所",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Ancient_Clinic.webp",
+    "level": 73,
+    "label": "建筑"
+  },
+  "Ancient_MedicalPalBed": {
+    "zh": "古代文明帕鲁床",
+    "en": "Ancient Pal Bed",
+    "ja": "古代文明のパルベッド",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Ancient_MedicalPalBed.webp",
+    "level": 73,
+    "label": "建筑"
+  },
+  "SkillUnlock_SnowTigerBeastman": {
+    "zh": "霜牙王的巨锤",
+    "en": "Bastigor&#x27;s Hammer",
+    "ja": "ヒョウガオーのハンマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SnowTigerBeastman.webp",
+    "level": 73,
+    "label": "道具"
+  },
+  "WorldTreeIngot": {
+    "zh": "帕鲁树晶锭",
+    "en": "Paloxite Ingot",
+    "ja": "パルキサイトインゴット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WorldTreeIngot.webp",
+    "level": 74,
+    "label": "道具"
+  },
+  "PalSphere_Ancient_2": {
+    "zh": "远古帕鲁球",
+    "en": "Ancient Sphere",
+    "ja": "エンシェントスフィア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/PalSphere_Ancient_2.webp",
+    "level": 74,
+    "label": "道具"
+  },
+  "AncientRelicRecycler": {
+    "zh": "古代文明遗物转换器",
+    "en": "Ancient Relic Recycler",
+    "ja": "古代文明の遺物変換機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientRelicRecycler.webp",
+    "level": 74,
+    "label": "建筑"
+  },
+  "Cake05": {
+    "zh": "特制蛋糕",
+    "en": "Special Cake",
+    "ja": "スペシャルケーキ",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Cake05.webp",
+    "level": 74,
+    "label": "道具"
+  },
+  "WidePenetrateShotgun": {
+    "zh": "散射光束枪",
+    "en": "Beam Scatter",
+    "ja": "ビームスキャッター",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WidePenetrateShotgun.webp",
+    "level": 75,
+    "label": "道具"
+  },
+  "WidePenetrateShotgunBullet": {
+    "zh": "散射光束枪弹药",
+    "en": "Beam Scatter Ammo",
+    "ja": "ビームスキャッターの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WidePenetrateShotgunBullet.webp",
+    "level": 75,
+    "label": "道具"
+  },
+  "AncientArmorHeat": {
+    "zh": "耐热远古盔甲",
+    "en": "Heat-Resistant Ancient Armor",
+    "ja": "耐熱エンシェントアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientArmorHeat.webp",
+    "level": 75,
+    "label": "道具"
+  },
+  "AncientElectricGenerator": {
+    "zh": "古代文明发电机",
+    "en": "Ancient Power Generator",
+    "ja": "古代文明の発電機",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientElectricGenerator.webp",
+    "level": 75,
+    "label": "建筑"
+  },
+  "Ancient_Spa": {
+    "zh": "古代文明温泉",
+    "en": "Ancient Hot Spring",
+    "ja": "古代文明の温泉",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Ancient_Spa.webp",
+    "level": 76,
+    "label": "建筑"
+  },
+  "MultiElectricHatchingPalEggWithBreed": {
+    "zh": "古代文明配种器",
+    "en": "Ancient Hatchery",
+    "ja": "古代文明の配合器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/MultiElectricHatchingPalEggWithBreed.webp",
+    "level": 76,
+    "label": "建筑"
+  },
+  "GasMask": {
+    "zh": "防腐雾面具",
+    "en": "Corrosive Mist Mask",
+    "ja": "腐蝕霧マスク",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GasMask.webp",
+    "level": 76,
+    "label": "道具"
+  },
+  "Accessory_ExplosionResist": {
+    "zh": "防爆内衣",
+    "en": "Explosion-Resistant Undershirt",
+    "ja": "防爆アンダーウェア",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Accessory_ExplosionResist.webp",
+    "level": 76,
+    "label": "道具"
+  },
+  "SkillUnlock_GhostDragon_Fire": {
+    "zh": "狱熙龙的鞍具",
+    "en": "Eidrolon Ignis Saddle",
+    "ja": "ヘルバーンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GhostDragon_Fire.webp",
+    "level": 76,
+    "label": "道具"
+  },
+  "DroneLauncher": {
+    "zh": "无人机发射器",
+    "en": "Drone Launcher",
+    "ja": "ドローンランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DroneLauncher.webp",
+    "level": 77,
+    "label": "道具"
+  },
+  "AncientArmorCold": {
+    "zh": "耐寒远古盔甲",
+    "en": "Cold-Resistant Ancient Armor",
+    "ja": "耐寒エンシェントアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientArmorCold.webp",
+    "level": 77,
+    "label": "道具"
+  },
+  "SkillUnlock_NightBlueHorse_Neutral": {
+    "zh": "日耀驹的鞍具",
+    "en": "Starryon Primo Saddle",
+    "ja": "ライトロットのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/NightBlueHorse_Neutral.webp",
+    "level": 77,
+    "label": "道具"
+  },
+  "ElectricArcAssaultRifle": {
+    "zh": "等离子步枪",
+    "en": "Plasma Rifle",
+    "ja": "プラズマライフル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricArcAssaultRifle.webp",
+    "level": 78,
+    "label": "道具"
+  },
+  "ElectricArcAssaultRifleBullet": {
+    "zh": "等离子步枪弹药",
+    "en": "Plasma Rifle Ammo",
+    "ja": "プラズマライフルの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ElectricArcAssaultRifleBullet.webp",
+    "level": 78,
+    "label": "道具"
+  },
+  "AncientMultiProduct": {
+    "zh": "古代文明物质生成器",
+    "en": "Ancient Material Synthesizer",
+    "ja": "古代文明の物質生成器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientMultiProduct.webp",
+    "level": 78,
+    "label": "建筑"
+  },
+  "AncientFarmBlock": {
+    "zh": "古代文明栽培器",
+    "en": "Ancient Farm",
+    "ja": "古代文明の栽培器",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientFarmBlock.webp",
+    "level": 78,
+    "label": "建筑"
+  },
+  "SkillUnlock_WhiteDeer_Dark": {
+    "zh": "织夜鹿的鞍具",
+    "en": "Celesdir Noct Saddle",
+    "ja": "コスモディアのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WhiteDeer_Dark.webp",
+    "level": 78,
+    "label": "道具"
+  },
+  "AncientArmorWeight": {
+    "zh": "轻便远古盔甲",
+    "en": "Lightweight Ancient Armor",
+    "ja": "軽量エンシェントアーマー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/AncientArmorWeight.webp",
+    "level": 79,
+    "label": "道具"
+  },
+  "Supplement": {
+    "zh": "营养剂",
+    "en": "Nutrient Tonic",
+    "ja": "栄養剤",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Supplement.webp",
+    "level": 79,
+    "label": "道具"
+  },
+  "SkillUnlock_DomeArmorDragon": {
+    "zh": "磐甲龙的鞍具",
+    "en": "Aegidron Saddle",
+    "ja": "シェルガドラのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/DomeArmorDragon.webp",
+    "level": 79,
+    "label": "道具"
+  },
+  "SkillUnlock_JetDragon": {
+    "zh": "空涡龙的导弹发射器",
+    "en": "Jetragon&#x27;s Missile Launcher",
+    "ja": "ジェッドランのミサイルランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/JetDragon.webp",
+    "level": 79,
+    "label": "道具"
+  },
+  "BeamLauncher": {
+    "zh": "光束炮发射器",
+    "en": "Beam Launcher",
+    "ja": "ビームランチャー",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BeamLauncher.webp",
+    "level": 80,
+    "label": "道具"
+  },
+  "BeamLauncherBullet": {
+    "zh": "光束炮发射器弹药",
+    "en": "Beam Launcher Ammo",
+    "ja": "ビームランチャーの弾",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BeamLauncherBullet.webp",
+    "level": 80,
+    "label": "道具"
+  },
+  "WingGlider": {
+    "zh": "飞翼背包",
+    "en": "Wing Pack",
+    "ja": "ウィングパック",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WingGlider.webp",
+    "level": 80,
+    "label": "道具"
+  },
+  "WingGlider_Fuel": {
+    "zh": "飞翼能量单元",
+    "en": "Wing Cell",
+    "ja": "ウィングセル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/WingGlider_Fuel.webp",
+    "level": 80,
+    "label": "道具"
+  },
+  "SkillUnlock_CubeTurtle": {
+    "zh": "重岩龟的鞍具",
+    "en": "Tetroise Saddle",
+    "ja": "オモシガメのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CubeTurtle.webp",
+    "level": 48,
+    "label": "道具"
+  },
+  "SkillUnlock_CubeTurtle_Neutral": {
+    "zh": "净岩龟的鞍具",
+    "en": "Tetroise Primo Saddle",
+    "ja": "オシロガメのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CubeTurtle_Neutral.webp",
+    "level": 75,
+    "label": "道具"
+  },
+  "SkillUnlock_VolcanoDragon": {
+    "zh": "流焰龙的鞍具",
+    "en": "Moldron Saddle",
+    "ja": "マグマンダーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/VolcanoDragon.webp",
+    "level": 36,
+    "label": "道具"
+  },
+  "SkillUnlock_VolcanoDragon_Ice": {
+    "zh": "川霜龙的鞍具",
+    "en": "Moldron Cryst Saddle",
+    "ja": "ブリザンダーのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/VolcanoDragon_Ice.webp",
+    "level": 70,
+    "label": "道具"
+  },
+  "SkillUnlock_Thunderdog_Ice": {
+    "zh": "凛光犬的鞍具",
+    "en": "Rayhound Cryst Saddle",
+    "ja": "フリーズマのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Thunderdog_Ice.webp",
+    "level": 32,
+    "label": "道具"
+  },
+  "SkillUnlock_SumoDog": {
+    "zh": "力士獒的鞍具",
+    "en": "Bulldosu Saddle",
+    "ja": "ドスコイヌのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SumoDog.webp",
+    "level": 53,
+    "label": "道具"
+  },
+  "SkillUnlock_ThiefBird": {
+    "zh": "盗影鸦的鞍具",
+    "en": "Roujay Saddle",
+    "ja": "アルセーヴのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/ThiefBird.webp",
+    "level": 72,
+    "label": "道具"
+  },
+  "SkillUnlock_BlueSkyDragon": {
+    "zh": "霄龙的鞍具",
+    "en": "Shaolong Saddle",
+    "ja": "シャオロンのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BlueSkyDragon.webp",
+    "level": 77,
+    "label": "道具"
+  },
+  "SkillUnlock_LotusDragon": {
+    "zh": "沁莲龙的鞍具",
+    "en": "Ophydia Saddle",
+    "ja": "ハナミズチのサドル",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/LotusDragon.webp",
+    "level": 72,
+    "label": "道具"
+  },
+  "FurnitureTree_Green": {
+    "zh": "仿真树木套组",
+    "en": "Faux Greenery Set",
+    "ja": "模型の樹木セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Green.webp",
+    "level": 12,
+    "label": "科技"
+  },
+  "FurnitureTree_Red": {
+    "zh": "仿真红叶树套组",
+    "en": "Faux Crimson Foliage Set",
+    "ja": "模型の紅葉樹セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Red.webp",
+    "level": 14,
+    "label": "科技"
+  },
+  "FurnitureTree_Yellow": {
+    "zh": "仿真黄叶树套组",
+    "en": "Faux Golden Foliage Set",
+    "ja": "模型の黄葉樹セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Yellow.webp",
+    "level": 16,
+    "label": "科技"
+  },
+  "FurnitureTree_Cherry": {
+    "zh": "仿真樱花树套组",
+    "en": "Faux Cherry Blossoms Set",
+    "ja": "模型の桜セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Cherry.webp",
+    "level": 56,
+    "label": "科技"
+  },
+  "FurnitureTree_Tropical": {
+    "zh": "仿真热带树木套组",
+    "en": "Faux Tropical Greenery Set",
+    "ja": "模型の南国の樹木セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Tropical.webp",
+    "level": 27,
+    "label": "科技"
+  },
+  "FurnitureTree_Snow": {
+    "zh": "仿真积雪树木套组",
+    "en": "Faux Snowy Greenery Set",
+    "ja": "模型の雪の積もった樹木セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Snow.webp",
+    "level": 49,
+    "label": "科技"
+  },
+  "FurnitureTree_Desert": {
+    "zh": "仿真沙漠树木套组",
+    "en": "Faux Desert Greenery Set",
+    "ja": "模型の砂漠の樹木セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Desert.webp",
+    "level": 37,
+    "label": "科技"
+  },
+  "FurnitureTree_Bamboo": {
+    "zh": "仿真竹子套组",
+    "en": "Faux Bamboo Set",
+    "ja": "模型の竹セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/FurnitureTree01_Bamboo.webp",
+    "level": 23,
+    "label": "科技"
+  },
+  "TableCircular": {
+    "zh": "整洁的桌子套组",
+    "en": "Tidy Table Set",
+    "ja": "片付いたテーブルセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TableCircular_Wood_None.webp",
+    "level": 12,
+    "label": "科技"
+  },
+  "JetDragonStatue": {
+    "zh": "空涡龙雕像",
+    "en": "Jetragon Statue",
+    "ja": "ジェッドラン像",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/JetDragonStatue.webp",
+    "level": 79,
+    "label": "建筑"
+  },
+  "IceHorseStatue": {
+    "zh": "唤冬兽雕像",
+    "en": "Frostallion Statue",
+    "ja": "グレイシャル像",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/IceHorseStatue.webp",
+    "level": 64,
+    "label": "建筑"
+  },
+  "FurnitureSet_1": {
+    "zh": "木制客厅家具套装",
+    "en": "Wooden Living Room Furniture Set",
+    "ja": "木のリビング家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TableSquare_Wood.webp",
+    "level": 5,
+    "label": "科技"
+  },
+  "FurnitureSet_3": {
+    "zh": "木制酒吧家具套装",
+    "en": "Wooden Tavern Furniture Set",
+    "ja": "木の酒場家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Counter_Wood.webp",
+    "level": 5,
+    "label": "科技"
+  },
+  "FurnitureSet_2": {
+    "zh": "木制酒吧收纳家具套装",
+    "en": "Wooden Tavern Cabinet Furniture Set",
+    "ja": "木の酒場収納家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Barrel_Wood.webp",
+    "level": 5,
+    "label": "科技"
+  },
+  "FurnitureSet_9": {
+    "zh": "观叶植物套装",
+    "en": "Houseplant Set",
+    "ja": "観葉植物セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Plant01_Plant.webp",
+    "level": 6,
+    "label": "科技"
+  },
+  "FurnitureSet_4": {
+    "zh": "挂墙观叶植物套装",
+    "en": "Wall-Mounted Houseplant Set",
+    "ja": "壁掛け観葉植物セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Ivy01.webp",
+    "level": 7,
+    "label": "科技"
+  },
+  "FurnitureSet_28": {
+    "zh": "壁炉套装",
+    "en": "Fireplace Set",
+    "ja": "暖炉セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Light_FirePlace01.webp",
+    "level": 8,
+    "label": "科技"
+  },
+  "FurnitureSet_17": {
+    "zh": "地毯套装",
+    "en": "Carpet Set",
+    "ja": "カーペットセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Rug01_Stone.webp",
+    "level": 9,
+    "label": "科技"
+  },
+  "FurnitureSet_21": {
+    "zh": "古典收纳套装",
+    "en": "Antique Storage Set",
+    "ja": "アンティークな収納セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shelf01_Stone.webp",
+    "level": 10,
+    "label": "科技"
+  },
+  "FurnitureSet_19": {
+    "zh": "古典椅子套装",
+    "en": "Antique Chair Set",
+    "ja": "アンティークな椅子セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Chair01_Stone.webp",
+    "level": 11,
+    "label": "科技"
+  },
+  "FurnitureSet_22": {
+    "zh": "古典收纳柜套装",
+    "en": "Antique Storage Cabinet Set",
+    "ja": "アンティークな収納キャビネットセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shelf05_Stone.webp",
+    "level": 13,
+    "label": "科技"
+  },
+  "FurnitureSet_24": {
+    "zh": "古典书桌套装",
+    "en": "Antique Desk Set",
+    "ja": "アンティークな机セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Desk01_Stone.webp",
+    "level": 14,
+    "label": "科技"
+  },
+  "FurnitureSet_20": {
+    "zh": "古典浴室套装",
+    "en": "Antique Bath Set",
+    "ja": "アンティークなお風呂セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/BathTub_Stone.webp",
+    "level": 16,
+    "label": "科技"
+  },
+  "FurnitureSet_16": {
+    "zh": "古典镜子套装",
+    "en": "Antique Mirror Set",
+    "ja": "アンティークな鏡セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Mirror01_Stone.webp",
+    "level": 16,
+    "label": "科技"
+  },
+  "FurnitureSet_15": {
+    "zh": "钢琴家具套装",
+    "en": "Piano Furniture Set",
+    "ja": "ピアノ家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Piano01_Stone.webp",
+    "level": 17,
+    "label": "科技"
+  },
+  "FurnitureSet_30": {
+    "zh": "金属书架套装",
+    "en": "Metal Shelf Set",
+    "ja": "金属の棚セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Shelf01_Iron.webp",
+    "level": 17,
+    "label": "科技"
+  },
+  "FurnitureSet_25": {
+    "zh": "厕所套装",
+    "en": "Bathroom Set",
+    "ja": "トイレセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Toilet01_Stone.webp",
+    "level": 18,
+    "label": "科技"
+  },
+  "FurnitureSet_32": {
+    "zh": "古典高级家具套装",
+    "en": "Antique High Quality Furniture Set",
+    "ja": "アンティークな高級家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Curtain01_Wall_Stone.webp",
+    "level": 18,
+    "label": "科技"
+  },
+  "FurnitureSet_18": {
+    "zh": "古典沙发套装",
+    "en": "Antique Couch Set",
+    "ja": "アンティークなソファセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Sofa01_Stone.webp",
+    "level": 20,
+    "label": "科技"
+  },
+  "FurnitureSet_23": {
+    "zh": "时钟套装",
+    "en": "Clock Set",
+    "ja": "時計セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Clock01_Wall_Iron.webp",
+    "level": 22,
+    "label": "科技"
+  },
+  "FurnitureSet_6": {
+    "zh": "集装箱套組",
+    "en": "Storage Container Set",
+    "ja": "収納コンテナセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Container01_Iron.webp",
+    "level": 23,
+    "label": "科技"
+  },
+  "FurnitureSet_13": {
+    "zh": "金属桌椅套装",
+    "en": "Metal Chair and Desk Set",
+    "ja": "金属の椅子と机セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Stool01_Iron.webp",
+    "level": 22,
+    "label": "科技"
+  },
+  "FurnitureSet_29": {
+    "zh": "古典灯具套装",
+    "en": "Antique Lamp Set",
+    "ja": "アンティークなランプセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Light_FloorLamp01.webp",
+    "level": 26,
+    "label": "科技"
+  },
+  "FurnitureSet_14": {
+    "zh": "铁木桌椅套装",
+    "en": "Ironwood Table Set",
+    "ja": "アイアンウッドのテーブルセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TableSide01_Iron.webp",
+    "level": 35,
+    "label": "科技"
+  },
+  "FurnitureSet_31": {
+    "zh": "户外家具套装",
+    "en": "Outdoor Furniture Set",
+    "ja": "屋外家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/CableCoil01_Iron.webp",
+    "level": 37,
+    "label": "科技"
+  },
+  "FurnitureSet_5": {
+    "zh": "铁桶套装",
+    "en": "Metal Barrel Set",
+    "ja": "ドラム缶セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Barrel01_Iron.webp",
+    "level": 34,
+    "label": "科技"
+  },
+  "FurnitureSet_7": {
+    "zh": "皮质椅子套装",
+    "en": "Leather Chair Set",
+    "ja": "皮張りの椅子セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Sofa01_Iron.webp",
+    "level": 38,
+    "label": "科技"
+  },
+  "FurnitureSet_27": {
+    "zh": "街灯套装",
+    "en": "Street Lamp Set",
+    "ja": "街灯セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/Light_LightPole01.webp",
+    "level": 46,
+    "label": "科技"
+  },
+  "FurnitureSet_26": {
+    "zh": "娱乐家具套装",
+    "en": "Amusement Furniture Set",
+    "ja": "娯楽家具セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/GoalSoccer_Iron.webp",
+    "level": 46,
+    "label": "科技"
+  },
+  "FurnitureSet_8": {
+    "zh": "紧急出口标志套装",
+    "en": "Emergency Exit Sign Set",
+    "ja": "非常口サインセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/SignExit_Ceiling_Iron.webp",
+    "level": 47,
+    "label": "科技"
+  },
+  "FurnitureSet_11": {
+    "zh": "交通标志套装",
+    "en": "Traffic Control Set",
+    "ja": "交通整理セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TrafficCone01_Iron.webp",
+    "level": 48,
+    "label": "科技"
+  },
+  "FurnitureSet_12": {
+    "zh": "道路标志套装",
+    "en": "Road Sign Set",
+    "ja": "道路標識セット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TrafficSign01_Iron.webp",
+    "level": 49,
+    "label": "科技"
+  },
+  "FurnitureSet_10": {
+    "zh": "路障套装",
+    "en": "Barricade Set",
+    "ja": "バリケードセット",
+    "iconUrl": "https://s-stats-platform-cdn.op.gg/palworld/1.0.0.100427/images/icons/TrafficBarricade01_Iron.webp",
+    "level": 49,
+    "label": "科技"
+  }
+}

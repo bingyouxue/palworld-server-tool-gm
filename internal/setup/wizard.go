@@ -5,8 +5,8 @@ package setup
 import (
 	"archive/tar"
 	"archive/zip"
-	"compress/gzip"
 	"bufio"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,19 +14,19 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 )
 
 // ServerConfig holds the values parsed from an existing server installation.
 type ServerConfig struct {
-	ServerDir      string `json:"server_dir"`
-	RconPort       int    `json:"rcon_port"`
-	AdminPassword  string `json:"admin_password"`
-	RestPort       int    `json:"rest_port"`
-	SavePath       string `json:"save_path"`
+	ServerDir     string `json:"server_dir"`
+	RconPort      int    `json:"rcon_port"`
+	AdminPassword string `json:"admin_password"`
+	RestPort      int    `json:"rest_port"`
+	SavePath      string `json:"save_path"`
 	// Raw key=value pairs from PalWorldSettings for further processing
 	WorldSettings  map[string]string `json:"world_settings"`
 	HasPalDefender bool              `json:"has_paldefender"`
@@ -53,7 +53,11 @@ func ParseServerConfig(serverDir string) (ServerConfig, error) {
 	}
 
 	// PalWorldSettings.ini
-	settingsPath := filepath.Join(serverDir, "Pal", "Saved", "Config", "WindowsServer", "PalWorldSettings.ini")
+	platformConfigDir := "WindowsServer"
+	if runtime.GOOS != "windows" {
+		platformConfigDir = "LinuxServer"
+	}
+	settingsPath := filepath.Join(serverDir, "Pal", "Saved", "Config", platformConfigDir, "PalWorldSettings.ini")
 	if data, err := os.ReadFile(settingsPath); err == nil {
 		parseWorldSettings(string(data), &cfg)
 	}
@@ -76,15 +80,38 @@ func ParseServerConfig(serverDir string) (ServerConfig, error) {
 	return cfg, nil
 }
 
-var optionSettingsRe = regexp.MustCompile(`OptionSettings=\(([\s\S]*?)\)`)
-var kvRe = regexp.MustCompile(`(\w+)=("(?:[^"\\]|\\.)*"|[^,)]+)`)
+var kvRe = regexp.MustCompile(`(\w+)=("(?:[^"\\]|\\.)*"|\([^)]*\)|[^,)]+)`)
 
 func parseWorldSettings(ini string, cfg *ServerConfig) {
-	m := optionSettingsRe.FindStringSubmatch(ini)
-	if len(m) < 2 {
+	start := strings.Index(ini, "OptionSettings=(")
+	if start < 0 {
 		return
 	}
-	for _, kv := range kvRe.FindAllStringSubmatch(m[1], -1) {
+	innerStart := start + len("OptionSettings=(")
+	depth, end := 1, -1
+	inQuote := false
+	for i := innerStart; i < len(ini); i++ {
+		switch ini[i] {
+		case '"':
+			inQuote = !inQuote
+		case '(':
+			if !inQuote {
+				depth++
+			}
+		case ')':
+			if !inQuote {
+				depth--
+				if depth == 0 {
+					end = i
+					i = len(ini)
+				}
+			}
+		}
+	}
+	if end < innerStart {
+		return
+	}
+	for _, kv := range kvRe.FindAllStringSubmatch(ini[innerStart:end], -1) {
 		key := kv[1]
 		val := strings.Trim(kv[2], `"`)
 		cfg.WorldSettings[key] = val

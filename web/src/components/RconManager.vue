@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, nextTick, ref, watch } from "vue";
 import dayjs from "dayjs";
 import { useDialog, useMessage } from "naive-ui";
@@ -6,6 +6,7 @@ import { useI18n } from "vue-i18n";
 import ApiService from "@/service/api";
 import itemMap from "@/assets/items.json";
 import palMap from "@/assets/pal.json";
+import techI18n from "@/assets/gm/techI18n.json";
 import {
   RCON_PLACEHOLDERS,
   extractRconPlaceholders,
@@ -265,11 +266,19 @@ const itemZhMap = (() => {
   const map = {};
   const list = (itemMap['zh'] || itemMap['en'] || []);
   for (const item of list) {
-    if (item.key) map[item.key.toLowerCase()] = { zh: item.name, en: (itemMap['en'] || []).find(e => e.key === item.key)?.name || item.key };
+    if (item.key) map[item.key.toLowerCase()] = { zh: item.name, en: (itemMap['en'] || []).find(e => e.key === item.key)?.name || item.key, icon: item.iconUrl || '' };
   }
   return map;
 })();
 
+// Build a lookup: techId -> zhName from techI18n.json
+const techZhMap = (() => {
+  const map = {};
+  for (const [id, entry] of Object.entries(techI18n)) {
+    map[id.toLowerCase()] = { zh: entry.zh || id, en: entry.en || id, icon: entry.iconUrl || '' };
+  }
+  return map;
+})();
 function formatReply(text) {
   if (typeof text !== 'string') return text;
   const trimmed = text.trim();
@@ -279,8 +288,8 @@ function formatReply(text) {
       const arr = JSON.parse(trimmed);
       if (Array.isArray(arr) && arr.length > 0 && typeof arr[0] === 'string') {
         return arr.map(k => {
-          const info = itemZhMap[k.toLowerCase()];
-          return { key: k, zh: info?.zh || k, en: info?.en || k };
+          const key = k.toLowerCase(); const info = itemZhMap[key] || techZhMap[key];
+          return { key: k, zh: info?.zh || k, en: info?.en || k, icon: info?.icon || '' };
         });
       }
     } catch { /* not JSON, fall through */ }
@@ -555,7 +564,7 @@ const dailyTime       = ref("04:00");
 const weeklyDay       = ref(1);
 const weeklyTime      = ref("04:00");
 const customCron      = ref("0 4 * * *");
-const taskForm        = ref({ name: '', rcon_uuid: null, inlineCmd: '', content: '', cron: '', enabled: true });
+const taskForm        = ref({ name: '', rcon_uuid: null, inlineCmd: '', content: '', cron: '', start_mode: 'silent', enabled: true });
 const taskCmdMode     = ref('custom');  
 const scheduleTypeOptions = computed(() => [
   { label: t("rconManager.schedule.interval"), value: "interval" },
@@ -577,6 +586,13 @@ const buildCron = () => {
   if (scheduleType.value === "weekly") { const { hour, minute } = parseTime(weeklyTime.value); return `${minute} ${hour} * * ${weeklyDay.value}`; }
   return customCron.value.trim();
 };
+
+const isShutdownTask = computed(() => {
+  const command = taskCmdMode.value === 'inline'
+    ? taskForm.value.inlineCmd
+    : commands.value.find((item) => item.uuid === taskForm.value.rcon_uuid)?.command;
+  return /^\s*shutdown(?:\s|$)/i.test(command || '');
+});
 
 const selectTaskCommand = (uuid) => {
   const c = commands.value.find((x) => x.uuid === uuid);
@@ -601,16 +617,17 @@ const openTaskModal = (cmd = null, existing = null, preset = null) => {
     const hasCustom = !!existing.rcon_uuid;
     taskCmdMode.value = hasCustom ? 'custom' : 'inline';
     taskForm.value = { name: existing.name, rcon_uuid: existing.rcon_uuid || null,
-      inlineCmd: existing.inline_cmd || '', content: existing.content, cron: existing.cron, enabled: existing.enabled };
+      inlineCmd: existing.inline_cmd || '', content: existing.content, cron: existing.cron,
+      start_mode: existing.start_mode || 'silent', enabled: existing.enabled };
     parseCronIntoForm(existing.cron);
   } else if (preset) {
     taskCmdMode.value = 'inline';
-    taskForm.value = { name: preset.name, rcon_uuid: null, inlineCmd: preset.cmd, content: preset.content, cron: '', enabled: true };
+    taskForm.value = { name: preset.name, rcon_uuid: null, inlineCmd: preset.cmd, content: preset.content, cron: '', start_mode: 'silent', enabled: true };
     parseCronIntoForm(preset.cron);
   } else {
     taskCmdMode.value = commands.value.length ? 'custom' : 'inline';
     taskForm.value = { name: cmd?.remark || cmd?.command || '', rcon_uuid: cmd?.uuid || null,
-      inlineCmd: '', content: '', cron: '', enabled: true };
+      inlineCmd: '', content: '', cron: '', start_mode: 'silent', enabled: true };
     scheduleType.value = 'interval'; intervalMinutes.value = 15;
     if (cmd) selectTaskCommand(cmd.uuid);
   }
@@ -783,11 +800,13 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
                 <!-- Array reply: render as EN/CN two-column list -->
                 <div v-if="entry.isHtml && Array.isArray(entry.text)" class="terminal-item-list">
                   <div class="til-header">
+                    <span class="til-col til-icon"></span>
                     <span class="til-col til-en">英文 ID</span>
                     <span class="til-col til-zh">中文名称</span>
                   </div>
                   <div v-for="item in entry.text" :key="item.key" class="til-row"
                     @click="consoleInput += item.key + ' '" style="cursor:pointer">
+                    <span class="til-col til-icon"><img v-if="item.icon" :src="item.icon" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" @error="e=>e.target.style.display='none'" /></span>
                     <span class="til-col til-en">{{ item.key }}</span>
                     <span class="til-col til-zh">{{ item.zh !== item.key ? item.zh : '—' }}</span>
                   </div>
@@ -969,6 +988,7 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
               <n-descriptions label-placement="left" :column="1" size="small">
                 <n-descriptions-item :label="$t('rconManager.boundCommand')">{{ task.rcon_remark || task.rcon_uuid }}</n-descriptions-item>
                 <n-descriptions-item :label="$t('rconManager.argumentContent')"><n-code :code="task.content || '—'" inline /></n-descriptions-item>
+                <n-descriptions-item v-if="/^shutdown(?:\s|$)/i.test(task.rcon_command || task.rcon_remark || '')" label="自动重启方式">{{ task.start_mode === 'cmd' ? 'CMD 窗口启动' : '静默启动' }}</n-descriptions-item>
                 <n-descriptions-item :label="$t('rconManager.scheduleLabel')"><n-code :code="task.cron" inline /></n-descriptions-item>
                 <n-descriptions-item :label="$t('rconManager.nextRun')">{{ task.enabled ? formatTime(task.next_run_at) : $t("rconManager.paused") }}</n-descriptions-item>
                 <n-descriptions-item :label="$t('rconManager.lastRun')">{{ formatTime(task.last_run_at) }} · {{ $t("rconManager.runCount", { count: task.run_count }) }}</n-descriptions-item>
@@ -1040,6 +1060,15 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
           style="font-family:monospace" />
         <template #feedback>
           <n-text depth="3" style="font-size:11px">直接填写 RCON 命令，将自动存入命令库。可点击左侧指令台的命令名称参考格式。</n-text>
+        </template>
+      </n-form-item>
+      <n-form-item v-if="isShutdownTask" label="自动重启启动方式">
+        <n-radio-group v-model:value="taskForm.start_mode" size="small">
+          <n-radio-button value="silent">静默启动</n-radio-button>
+          <n-radio-button value="cmd">CMD 窗口启动</n-radio-button>
+        </n-radio-group>
+        <template #feedback>
+          <n-text depth="3" style="font-size:11px">仅用于 Shutdown 定时任务完成后的自动拉起。CMD 模式会显示服务端控制台窗口。</n-text>
         </template>
       </n-form-item>
       <n-form-item :label="$t('rconManager.argumentContent')">
@@ -1203,12 +1232,12 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
   margin-top: 2px;
 }
 .til-header {
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: grid; grid-template-columns: 32px 1fr 1fr;
   background: rgba(64,152,252,.12); font-weight: 700; font-size: 11px;
   padding: 4px 8px; border-bottom: 1px solid rgba(128,128,128,.15);
 }
 .til-row {
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: grid; grid-template-columns: 32px 1fr 1fr;
   padding: 3px 8px; border-bottom: 1px solid rgba(128,128,128,.08);
   transition: background .1s;
   &:last-child { border-bottom: none; }
@@ -1217,6 +1246,7 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
 .til-col { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .til-en { font-family: monospace; color: var(--n-primary-color); opacity: .85; }
 .til-zh { opacity: .8; }
+.til-icon { display:flex; align-items:center; justify-content:center; }
 
 
 @media (max-width: 560px) {

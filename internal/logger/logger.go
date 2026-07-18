@@ -1,7 +1,10 @@
 package logger
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/buffer"
@@ -9,6 +12,9 @@ import (
 )
 
 var logger *zap.SugaredLogger
+var logFile *os.File
+
+const DefaultDirectory = "logs"
 
 type customEncoder struct {
 	zapcore.Encoder
@@ -26,6 +32,7 @@ func (c *customEncoder) EncodeEntry(entry zapcore.Entry, fields []zapcore.Field)
 	}
 	buf.Reset()
 	buf.AppendString(formatted)
+	buf.AppendString("\n")
 	return buf, nil
 }
 
@@ -35,19 +42,48 @@ func newCustomEncoder(cfg zapcore.EncoderConfig) zapcore.Encoder {
 	}
 }
 
-func init() {
+func buildLogger(sink zapcore.WriteSyncer) *zap.SugaredLogger {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
 
-	core := zapcore.NewCore(
-		newCustomEncoder(encoderConfig),
-		zapcore.Lock(os.Stdout),
-		zap.DebugLevel,
-	)
+	core := zapcore.NewCore(newCustomEncoder(encoderConfig), sink, zap.DebugLevel)
+	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+}
 
-	logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Sugar()
+func init() {
+	logger = buildLogger(zapcore.Lock(os.Stdout))
+}
+
+// EnableFileOutput writes control-panel logs to a timestamped file while
+// preserving console output. It returns the absolute path for startup diagnostics.
+func EnableFileOutput(directory string) (string, error) {
+	if directory == "" {
+		directory = DefaultDirectory
+	}
+	absoluteDir, err := filepath.Abs(directory)
+	if err != nil {
+		return "", fmt.Errorf("resolve log directory: %w", err)
+	}
+	if err := os.MkdirAll(absoluteDir, 0755); err != nil {
+		return "", fmt.Errorf("create log directory %q: %w", absoluteDir, err)
+	}
+	path := filepath.Join(absoluteDir, "control-panel-"+time.Now().Format("20060102-150405")+".log")
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return "", fmt.Errorf("open log file %q: %w", path, err)
+	}
+	logFile = file
+	logger = buildLogger(zapcore.NewMultiWriteSyncer(zapcore.Lock(os.Stdout), zapcore.Lock(file)))
+	return path, nil
+}
+
+func Sync() {
+	_ = logger.Sync()
+	if logFile != nil {
+		_ = logFile.Close()
+	}
 }
 
 // Info logs a message at InfoLevel. The message includes any fields passed.

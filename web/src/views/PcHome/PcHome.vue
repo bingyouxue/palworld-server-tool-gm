@@ -1,5 +1,5 @@
 <script setup>
-import { computed, h, inject, onMounted, ref, watch } from "vue";
+import { computed, h, inject, onMounted, onUnmounted, ref, watch } from "vue";
 import {
   AdminPanelSettingsOutlined,
   SupervisedUserCircleRound,
@@ -50,6 +50,7 @@ const smallScreen = computed(() => pageWidth.value < 1024);
 const loading = ref(false);
 const serverInfo = ref({});
 const serverMetrics = ref({});
+const metricsHistory = ref([]);
 const currentDisplay = ref("players");
 const playerList = ref([]);
 const onlinePlayerList = ref([]);
@@ -144,8 +145,28 @@ const getServerInfo = async () => {
 };
 
 const getServerMetrics = async () => {
-  const { data } = await new ApiService().getServerMetrics();
+  const { data, statusCode } = await new ApiService().getServerMetrics();
+  if (statusCode.value !== 200 || !data.value) return;
   serverMetrics.value = data.value;
+  // 维护最近 60 个采样点（约 5 分钟，每 5s 一次）
+  if (data.value) {
+    const m = data.value;
+    const memPct = m.memory_bytes && m.memory_total_bytes
+      ? m.memory_bytes / m.memory_total_bytes
+      : null;
+    metricsHistory.value = [
+      ...metricsHistory.value,
+      {
+        fps: m.server_fps ?? null,
+        uptime: m.uptime ?? m.process_uptime ?? null,
+        cpu: m.cpu_percent ?? null,
+        cpuTotal: m.cpu_total_percent ?? null,
+        memPct,
+        perCore: Array.isArray(m.cpu_per_core) ? [...m.cpu_per_core] : [],
+        timestamp: Date.now(),
+      },
+    ].slice(-60);
+  }
 };
 
 const getPlayerList = async () => {
@@ -430,6 +451,9 @@ const handleBackupList = () => {
   }
 };
 
+let generalPollTimer = null;
+let metricsPollTimer = null;
+
 onMounted(async () => {
   locale.value = localStorage.getItem("locale");
   languageOptions.value = [
@@ -460,14 +484,19 @@ onMounted(async () => {
   await getWhiteList();
   if (isLogin.value) currentDisplay.value = "overview";
   loading.value = false;
-  setInterval(async () => {
+  generalPollTimer = setInterval(async () => {
     await getServerInfo();
     await getPlayerList();
-    await getServerMetrics();
+
   }, 10000);
+  metricsPollTimer = setInterval(getServerMetrics, 5000);
   // 调试用
   // currentDisplay.value = "map";
   // playerToGuildStore().setUpdateStatus("map");
+});
+onUnmounted(() => {
+  if (generalPollTimer) clearInterval(generalPollTimer);
+  if (metricsPollTimer) clearInterval(metricsPollTimer);
 });
 </script>
 
@@ -796,6 +825,7 @@ onMounted(async () => {
               v-if="currentDisplay === 'overview'"
               :server-info="serverInfo"
               :server-metrics="serverMetrics"
+              :metrics-history="metricsHistory"
               :players="playerList"
               @open-rcon="handleRconDrawer"
               @open-backup="handleBackupList"
