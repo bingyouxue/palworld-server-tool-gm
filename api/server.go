@@ -193,23 +193,26 @@ func getServerMetrics(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": resourceErr.Error()})
 		return
 	}
-	if resources == nil {
-		c.JSON(http.StatusOK, gin.H{"running": false})
-		return
+
+	response := &ServerMetrics{}
+	if resources != nil {
+		response.CpuPercent = resources.CPUPercent
+		response.CpuTotalPercent = resources.CPUTotalPercent
+		response.CpuPerCore = resources.CPUPerCore
+		response.MemoryBytes = resources.MemoryBytes
+		response.MemoryTotalBytes = resources.MemoryTotal
+		response.CpuCores = resources.CPUCores
+		response.ProcessCount = resources.ProcessCount
+		response.ProcessUptime = resources.UptimeSeconds
 	}
 
-	response := &ServerMetrics{
-		CpuPercent:       resources.CPUPercent,
-		CpuTotalPercent:  resources.CPUTotalPercent,
-		CpuPerCore:       resources.CPUPerCore,
-		MemoryBytes:      resources.MemoryBytes,
-		MemoryTotalBytes: resources.MemoryTotal,
-		CpuCores:         resources.CPUCores,
-		ProcessCount:     resources.ProcessCount,
-		ProcessUptime:    resources.UptimeSeconds,
-	}
 	metrics, err := tool.Metrics()
 	if err != nil {
+		if resources == nil {
+			// 本机无进程且 REST 也不可达，服务器未运行
+			c.JSON(http.StatusOK, gin.H{"running": false})
+			return
+		}
 		response.ManagementError = err.Error()
 		c.JSON(http.StatusOK, response)
 		return
