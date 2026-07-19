@@ -85,22 +85,35 @@ func queryCorePerformance() ([]processorPerformance, error) {
 }
 
 func processResource(pid uint32) (cpu uint64, memory uint64, created int64, ok bool) {
-	handle, err := windows.OpenProcess(windows.PROCESS_QUERY_LIMITED_INFORMATION|windows.PROCESS_VM_READ, false, pid)
+	fullAccess := uint32(windows.PROCESS_QUERY_INFORMATION | windows.PROCESS_VM_READ)
+	handle, err := windows.OpenProcess(fullAccess, false, pid)
+	canReadMemory := err == nil
 	if err != nil {
-		return 0, 0, 0, false
+		handle, err = windows.OpenProcess(windows.PROCESS_QUERY_LIMITED_INFORMATION, false, pid)
+		if err != nil {
+			return 0, 0, 0, false
+		}
 	}
 	defer windows.CloseHandle(handle)
+
 	var creation, exit, kernel, user windows.Filetime
 	if err := windows.GetProcessTimes(handle, &creation, &exit, &kernel, &user); err != nil {
 		return 0, 0, 0, false
 	}
-	var mc processMemoryCounters
-	mc.cb = uint32(unsafe.Sizeof(mc))
-	r, _, _ := procGetProcessMemoryInfo.Call(uintptr(handle), uintptr(unsafe.Pointer(&mc)), uintptr(mc.cb))
-	if r == 0 {
-		return 0, 0, 0, false
+
+	if canReadMemory {
+		var mc processMemoryCounters
+		mc.cb = uint32(unsafe.Sizeof(mc))
+		if r, _, _ := procGetProcessMemoryInfo.Call(
+			uintptr(handle),
+			uintptr(unsafe.Pointer(&mc)),
+			uintptr(mc.cb),
+		); r != 0 {
+			memory = uint64(mc.WorkingSetSize)
+		}
 	}
-	return uint64(filetime2int64(kernel) + filetime2int64(user)), uint64(mc.WorkingSetSize), filetime2int64(creation), true
+
+	return uint64(filetime2int64(kernel) + filetime2int64(user)), memory, filetime2int64(creation), true
 }
 
 // GetPalServerResourceSnapshot aggregates every PalServer image on the host.

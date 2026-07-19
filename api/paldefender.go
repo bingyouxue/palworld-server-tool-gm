@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,16 @@ func readPEFileVersion(dllPath string) string {
 //	@Produce		json
 //	@Router			/api/paldefender/version [get]
 func getPalDefenderVersion(c *gin.Context) {
+	if runtime.GOOS != "windows" {
+		c.JSON(http.StatusOK, gin.H{
+			"dll_version":    "unavailable",
+			"marker_version": "",
+			"latest_version": "",
+			"latest_error":   "PalDefender is a Windows-only mod",
+			"has_update":     false,
+		})
+		return
+	}
 	savePath := config.Current().Save.Path
 	serverRoot := serverRootFromSavePath(savePath)
 

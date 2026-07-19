@@ -218,6 +218,11 @@ const handleSubmit = async () => {
   if (!selectedPal.value) { message.warning("请先选择帕鲁种类"); return; }
   const userId = currentUserId.value;
   if (!userId) { message.warning("该玩家当前不在线，无法给予帕鲁"); return; }
+  const selectedPalId = selectedPal.value.id;
+  const palId =
+    selectedPal.value.type === "boss" && !/^(BOSS_|GYM_|RAID_)/i.test(selectedPalId)
+      ? `BOSS_${selectedPalId}`
+      : selectedPalId;
   submitting.value = true;
   try {
     if (hasAdvancedAttrs.value) {
@@ -229,7 +234,7 @@ const handleSubmit = async () => {
       }
       const res = await new ApiService().giveCustomPal({
         playerUid:           props.playerUid,
-        pal_id:              selectedPal.value.id,
+        pal_id:              palId,
         nickname:            nickname.value || undefined,
         gender:              gender.value || undefined,
         level:               level.value || 1,
@@ -256,19 +261,19 @@ const handleSubmit = async () => {
       const body = res.data?.value ?? res.data;
       if (code === 200) {
         message.success(`已给予自定义帕鲁: ${selectedPal.value.label}  ${body?.message || ""}`);
-        emit("done"); close();
+        emit("done");
       } else {
         message.error("给予失败: " + (body?.error || body?.message || "需要安装 PalDefender 并配置正确的存档路径"));
       }
     } else {
       // 基础给予：直接 RCON givepal
-      const cmd = `givepal ${userId} ${selectedPal.value.id} ${level.value || 1}`;
+      const cmd = `givepal ${userId} ${palId} ${level.value || 1}`;
       const res = await new ApiService().sendRconCommand({ command: cmd });
       const code = res.statusCode?.value ?? res.statusCode;
       const body = res.data?.value ?? res.data;
       if (code === 200) {
         message.success(`已给予帕鲁: ${selectedPal.value.label}  ${body?.message || ""}`);
-        emit("done"); close();
+        emit("done");
       } else {
         message.error("给予失败: " + (body?.error || body?.message || "需要安装 PalDefender 插件"));
       }

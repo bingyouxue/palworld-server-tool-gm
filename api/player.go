@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -39,6 +40,34 @@ func getPlayerActionUserId(player database.Player) string {
 }
 
 var palExportMu sync.Mutex
+
+// getPlayerPals godoc
+//
+//	@Summary		Get Player Pals from save archive
+//	@Description	Return pal list parsed from save file stored in DB
+//	@Tags			Player
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Param			player_uid	path		string	true	"Player UID"
+//	@Success		200			{object}	map[string]interface{}
+//	@Failure		404			{object}	ErrorResponse
+//	@Router			/api/player/{player_uid}/pals [get]
+func getPlayerPals(c *gin.Context) {
+	player, err := service.GetPlayer(database.GetDB(), c.Param("player_uid"))
+	if err != nil {
+		if err == service.ErrNoRecord {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	pals := player.Pals
+	if pals == nil {
+		pals = []*database.Pal{}
+	}
+	c.JSON(http.StatusOK, gin.H{"pals": pals, "count": len(pals)})
+}
 
 func exportPlayerPals(c *gin.Context) {
 	player, err := service.GetPlayer(database.GetDB(), c.Param("player_uid"))
@@ -961,14 +990,27 @@ func resolvePalDefenderTemplatesDir() (string, error) {
 	if !info.IsDir() {
 		dir = filepath.Dir(savePath)
 	}
+	binDirName := "Win64"
+	palDefenderFiles := []string{"PalDefender.dll"}
+	if runtime.GOOS != "windows" {
+		binDirName = "Linux"
+		palDefenderFiles = []string{"libPalDefender.so", "PalDefender.so"}
+	}
 	current := filepath.Clean(dir)
 	for i := 0; i < 12; i++ {
-		win64 := filepath.Join(current, "Pal", "Binaries", "Win64")
-		if fi, e := os.Stat(win64); e == nil && fi.IsDir() {
-			if _, e2 := os.Stat(filepath.Join(win64, "PalDefender.dll")); e2 != nil {
-				return "", fmt.Errorf("未在 %s 检测到 PalDefender.dll，请先安装 PalDefender", win64)
+		binDir := filepath.Join(current, "Pal", "Binaries", binDirName)
+		if fi, statErr := os.Stat(binDir); statErr == nil && fi.IsDir() {
+			installed := false
+			for _, filename := range palDefenderFiles {
+				if _, fileErr := os.Stat(filepath.Join(binDir, filename)); fileErr == nil {
+					installed = true
+					break
+				}
 			}
-			templatesDir := filepath.Join(win64, "PalDefender", "Pals", "Templates")
+			if !installed {
+				return "", fmt.Errorf("未在 %s 检测到 PalDefender，请先安装 PalDefender", binDir)
+			}
+			templatesDir := filepath.Join(binDir, "PalDefender", "Pals", "Templates")
 			if err := os.MkdirAll(templatesDir, 0755); err != nil {
 				return "", fmt.Errorf("创建模板目录失败: %w", err)
 			}
@@ -980,7 +1022,7 @@ func resolvePalDefenderTemplatesDir() (string, error) {
 		}
 		current = parent
 	}
-	return "", fmt.Errorf("从 %q 向上未找到服务器根目录（含 Pal/Binaries/Win64）", savePath)
+	return "", fmt.Errorf("从 %q 向上未找到服务器根目录（含 Pal/Binaries/%s）", savePath, binDirName)
 }
 
 func buildPalTemplatePayload(req GiveCustomPalRequest) []byte {

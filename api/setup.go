@@ -498,7 +498,19 @@ func mergeWorldSettings(ini string, kv map[string]string) string {
 	if start >= 0 && end >= 0 {
 		return ini[:start] + newBlock + ini[end+1:]
 	}
-	return strings.TrimRight(ini, "\r\n") + "\n" + newBlock + "\n"
+	lines := strings.Split(ini, "\n")
+	kept := make([]string, 0, len(lines))
+	for _, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "OptionSettings=") {
+			continue
+		}
+		kept = append(kept, line)
+	}
+	clean := strings.TrimRight(strings.Join(kept, "\n"), "\r\n")
+	if clean != "" {
+		clean += "\n"
+	}
+	return clean + newBlock + "\n"
 }
 
 func unquoteWorldSettingValue(value string) string {

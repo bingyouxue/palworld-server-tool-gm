@@ -68,9 +68,18 @@ func Decode(file string) error {
 		return errors.New("error generating token: " + err.Error())
 	}
 	execArgs := []string{"-f", levelFilePath, "--request", requestUrl, "--token", tokenString}
+
+	logger.Infof("[Decode] sav_cli=%s\n", savCli)
+	logger.Infof("[Decode] level_file=%s\n", levelFilePath)
+	logger.Infof("[Decode] request_url=%s\n", requestUrl)
+
 	cmd := exec.Command(savCli, execArgs...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+
+	// Pipe sav_cli stdout and stderr into the PST logger so they appear in the
+	// control-panel log file as well as the console.
+	cmd.Stdout = &logWriter{prefix: "[sav_cli] "}
+	cmd.Stderr = &logWriter{prefix: "[sav_cli|ERR] "}
+
 	err = cmd.Start()
 	if err != nil {
 		return fmt.Errorf("failed to start sav_cli: %w", err)
@@ -79,8 +88,33 @@ func Decode(file string) error {
 	if err != nil {
 		return fmt.Errorf("sav_cli exited with error: %w", err)
 	}
-
+	logger.Infof("[Decode] sav_cli completed successfully\n")
 	return nil
+}
+
+// logWriter adapts a byte-stream (subprocess stdout/stderr) into the PST
+// structured logger so sav_cli output is captured in the log file.
+type logWriter struct {
+	prefix string
+	buf    strings.Builder
+}
+
+func (w *logWriter) Write(p []byte) (int, error) {
+	w.buf.Write(p)
+	for {
+		s := w.buf.String()
+		idx := strings.IndexByte(s, '\n')
+		if idx < 0 {
+			break
+		}
+		line := s[:idx]
+		w.buf.Reset()
+		w.buf.WriteString(s[idx+1:])
+		if line != "" {
+			logger.Infof("%s%s\n", w.prefix, line)
+		}
+	}
+	return len(p), nil
 }
 
 func Backup() (string, error) {

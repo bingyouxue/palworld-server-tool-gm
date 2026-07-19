@@ -79,6 +79,7 @@ const showPdConfig = ref(false);
 const isServerRunning = (info) => info?.running === true || !!info?.name;
 const localServerRunning = ref(isServerRunning(props.serverInfo));
 const serverRunning = computed(() => localServerRunning.value);
+const serverPlatform = computed(() => props.serverInfo?.platform || "unknown");
 // Watch prop so opening the modal always shows the correct current state
 watch(() => props.serverInfo, (val) => {
   // Only sync if we're not in the middle of a poll (poll sets it independently)
@@ -551,7 +552,7 @@ const fmtBytes = (n) => {
                 @click="handleStartServer('silent')" size="small" round>
                 静默启动
               </n-button>
-              <n-button type="info" :loading="mgmtLoading.start"
+              <n-button v-if="serverPlatform === 'windows'" type="info" :loading="mgmtLoading.start"
                 @click="handleStartServer('cmd')" size="small" round>
                 Cmd 启动
               </n-button>

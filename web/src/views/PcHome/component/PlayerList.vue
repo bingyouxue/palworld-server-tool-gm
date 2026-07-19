@@ -75,9 +75,13 @@ const refreshPlayerPals = async ({ silent = false } = {}) => {
     const body = exported.data?.value ?? exported.data;
     if (code !== 200) throw new Error(body?.error || "PalDefender 帕鲁导出失败");
     if (requestVersion !== selectionVersion || playerInfo.value?.player_uid !== playerUid) return;
-    playerPalsList.value = Array.isArray(body?.pals) ? body.pals : [];
+    // 将 PalDefender 返回的背包帕鲁注入到 playerPalsList 的 backpack 通道
+    if (Array.isArray(body?.pals)) {
+      const savPals = playerPalsList.value.filter(p => p.in_palbox !== undefined);
+      playerPalsList.value = [...savPals, ...body.pals.map(p => ({ ...p, _backpack_live: true }))];
+    }
     palsLastUpdated.value = new Date();
-    if (!silent) message.success(`已刷新 ${playerPalsList.value.length} 只帕鲁`);
+    if (!silent) message.success(`PalDefender 导出 ${Array.isArray(body?.pals) ? body.pals.length : 0} 只帕鲁`);
   } catch (error) {
     if (requestVersion !== selectionVersion || playerInfo.value?.player_uid !== playerUid) return;
     palsRefreshError.value = error.message || "PalDefender 帕鲁导出失败";
@@ -97,6 +101,22 @@ const getPlayerInfo = async (player_uid) => {
   playerPalsList.value = [];
   palsLastUpdated.value = null;
   palsRefreshError.value = "";
+
+  // 先从存档 DB 加载帕鲁（终端帕鲁/据点帕鲁/背包帕鲁均依赖此数据）
+  try {
+    const savRes = await api.getPlayerPals({ playerUid: player_uid });
+    const savCode = savRes.statusCode?.value ?? savRes.statusCode;
+    const savBody = savRes.data?.value ?? savRes.data;
+    if (savCode === 200 && Array.isArray(savBody?.pals) && savBody.pals.length > 0) {
+      if (requestVersion === selectionVersion) {
+        playerPalsList.value = savBody.pals;
+      }
+    }
+  } catch (_) {
+    // 存档帕鲁加载失败不阻断后续流程
+  }
+
+  // 再用 PalDefender 刷新背包帕鲁（玩家在线时才有效）
   await refreshPlayerPals({ silent: true });
   if (requestVersion !== selectionVersion) return;
   nextTick(() => {

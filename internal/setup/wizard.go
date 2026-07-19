@@ -33,13 +33,18 @@ type ServerConfig struct {
 	HasUE4SS       bool              `json:"has_ue4ss"`
 }
 
-// ValidateServerDir checks that a directory contains PalServer.exe.
+// ValidateServerDir checks that a directory contains the PalServer executable.
 func ValidateServerDir(dir string) error {
-	exe := filepath.Join(dir, "PalServer.exe")
-	if _, err := os.Stat(exe); os.IsNotExist(err) {
-		return fmt.Errorf("PalServer.exe not found in %s", dir)
+	candidates := []string{"PalServer.exe", "PalServer.sh", "PalServer-Linux-Shipping", "PalServer"}
+	if runtime.GOOS != "windows" {
+		candidates = []string{"PalServer.sh", "PalServer-Linux-Shipping", "PalServer", "PalServer.exe"}
 	}
-	return nil
+	for _, name := range candidates {
+		if info, err := os.Stat(filepath.Join(dir, name)); err == nil && !info.IsDir() {
+			return nil
+		}
+	}
+	return fmt.Errorf("PalServer executable not found in %s (looked for: %v)", dir, candidates)
 }
 
 // ParseServerConfig reads configuration from an existing installation.
@@ -65,16 +70,34 @@ func ParseServerConfig(serverDir string) (ServerConfig, error) {
 	// Derive save path
 	cfg.SavePath = filepath.Join(serverDir, "Pal", "Saved", "SaveGames")
 
-	// Check plugins
-	win64 := filepath.Join(serverDir, "Pal", "Binaries", "Win64")
-	if _, err := os.Stat(filepath.Join(win64, "PalDefender.dll")); err == nil {
-		cfg.HasPalDefender = true
+	// Check plugins in the platform-specific binary directory.
+	binDir := filepath.Join(serverDir, "Pal", "Binaries", "Win64")
+	palDefenderFiles := []string{"PalDefender.dll", "d3d9.dll"}
+	ue4ssFiles := []string{"UE4SS.dll", "ue4ss.dll"}
+	if runtime.GOOS != "windows" {
+		binDir = filepath.Join(serverDir, "Pal", "Binaries", "Linux")
+		palDefenderFiles = []string{"libPalDefender.so", "PalDefender.so"}
+		ue4ssFiles = []string{"libUE4SS.so", "UE4SS.so"}
 	}
-	if _, err1 := os.Stat(filepath.Join(win64, "UE4SS.dll")); err1 == nil {
-		cfg.HasUE4SS = true
+	for _, filename := range palDefenderFiles {
+		if _, err := os.Stat(filepath.Join(binDir, filename)); err == nil {
+			cfg.HasPalDefender = true
+			break
+		}
 	}
-	if _, err2 := os.Stat(filepath.Join(win64, "ue4ss", "UE4SS.dll")); err2 == nil {
-		cfg.HasUE4SS = true
+	for _, filename := range ue4ssFiles {
+		if _, err := os.Stat(filepath.Join(binDir, filename)); err == nil {
+			cfg.HasUE4SS = true
+			break
+		}
+	}
+	if !cfg.HasUE4SS {
+		for _, filename := range ue4ssFiles {
+			if _, err := os.Stat(filepath.Join(binDir, "ue4ss", filename)); err == nil {
+				cfg.HasUE4SS = true
+				break
+			}
+		}
 	}
 
 	return cfg, nil
@@ -287,13 +310,18 @@ func runSteamCmd(steamcmdPath, installDir string, progressFn func(string), actio
 		}
 	}
 
+	steamPlatform := "windows"
+	if runtime.GOOS != "windows" {
+		steamPlatform = "linux"
+	}
+
 	// Pass 2: anonymous login to prime the platform/app manifest cache.
 	// Without this a fresh SteamCMD reports "Missing configuration" (exit 8)
 	// on the first real app_update because it hasn't downloaded the Steam
 	// app-info depot configuration yet.
 	progress("正在连接 Steam（匿名登录，用于获取应用配置）...")
 	if err := steamRun(steamcmdPath, progressFn,
-		"+@sSteamCmdForcePlatformType", "windows",
+		"+@sSteamCmdForcePlatformType", steamPlatform,
 		"+login", "anonymous",
 		"+quit",
 	); err != nil && !isSteamUpdateExit(err) {
@@ -304,7 +332,7 @@ func runSteamCmd(steamcmdPath, installDir string, progressFn func(string), actio
 	actionLabel := map[string]string{"install": "安装", "update": "更新"}[action]
 	progress(fmt.Sprintf("开始%s到 %s ...", actionLabel, installDir))
 	if err := steamRun(steamcmdPath, progressFn,
-		"+@sSteamCmdForcePlatformType", "windows",
+		"+@sSteamCmdForcePlatformType", steamPlatform,
 		"+login", "anonymous",
 		"+force_install_dir", installDir,
 		"+app_update", "2394010", "validate",

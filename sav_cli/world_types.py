@@ -114,9 +114,46 @@ class Player:
         return {attr: getattr(self, attr) for attr in self.__order}
 
 
+def _name_value(prop):
+    """Extract the name string from a NameProperty / EnumProperty value."""
+    if not prop:
+        return None
+    v = prop.get("value")
+    if isinstance(v, str):
+        return v
+    if isinstance(v, dict):
+        return v.get("value")
+    return None
+
+
+def _extract_name_array(prop):
+    """Extract a list of strings from an ArrayProperty of NameProperty entries."""
+    if not prop:
+        return []
+    values = prop.get("value", {})
+    if isinstance(values, dict):
+        values = values.get("values", [])
+    if not isinstance(values, list):
+        return []
+    result = []
+    for v in values:
+        if isinstance(v, str):
+            result.append(v)
+        elif isinstance(v, dict):
+            inner = v.get("value", v)
+            if isinstance(inner, str):
+                result.append(inner)
+            elif isinstance(inner, dict):
+                s = inner.get("value")
+                if isinstance(s, str):
+                    result.append(s)
+    return result
+
+
 class Pal:
-    def __init__(self, data, real_date_time_ticks, filetime):
-        self.owner = hexuid_to_decimal(data["OwnerPlayerUId"]["value"])
+    def __init__(self, data, real_date_time_ticks, filetime, in_palbox=False):
+        owner_ref = data.get("OwnerPlayerUId")
+        self.owner = hexuid_to_decimal(owner_ref["value"]) if owner_ref else ""
         self.nickname = data["NickName"]["value"] if data.get("NickName") else ""
         self.level = _byte_value(data.get("Level"), 1)
         self.exp = int(data["Exp"]["value"]) if data.get("Exp") else 0
@@ -142,19 +179,51 @@ class Pal:
             self.is_tower = False
             self.type = "Unknow"
 
+        # Work speed and rank enhancements
         self.workspeed = _byte_value(data.get("CraftSpeed"), 0)
-        self.melee = _byte_value(data.get("Talent_HP"), 0)
-        self.ranged = _byte_value(data.get("Talent_Shot"), 0)
-        self.defense = _byte_value(data.get("Talent_Defense"), 0)
         self.rank = _byte_value(data.get("Rank"), 1)
         self.rank_attack = _byte_value(data.get("Rank_Attack"), 0)
         self.rank_defence = _byte_value(data.get("Rank_Defence"), 0)
         self.rank_craftspeed = _byte_value(data.get("Rank_CraftSpeed"), 0)
-        self.skills = (
+
+        # IV / talent values — correct field names
+        # Talent_HP  = HP potential (was mistakenly stored as "melee")
+        # Talent_Shot = ranged attack potential
+        # Talent_Defense = defense potential
+        self.talent_hp = _byte_value(data.get("Talent_HP"), 0)
+        self.talent_shot = _byte_value(data.get("Talent_Shot"), 0)
+        self.talent_defense = _byte_value(data.get("Talent_Defense"), 0)
+
+        # Keep legacy aliases so existing DB records still render correctly
+        self.melee = self.talent_hp
+        self.ranged = self.talent_shot
+        self.defense = self.talent_defense
+
+        # Passive skills (被动词条)
+        self.passive_skills = (
             data["PassiveSkillList"]["value"]["values"]
             if data.get("PassiveSkillList")
             else []
         )
+        # Keep legacy alias
+        self.skills = self.passive_skills
+
+        # Active skills — EquipWaza holds equipped moves (up to 3)
+        # MasteredWaza holds all learned moves
+        equip_waza = data.get("EquipWaza")
+        self.active_skills = _extract_name_array(equip_waza)
+
+        mastered_waza = data.get("MasteredWaza")
+        self.mastered_skills = _extract_name_array(mastered_waza)
+
+        # Condensed / stars — Rank field is the condense count (0-based stars)
+        # Rank=1 is uncondensed; game UI shows stars = Rank - 1
+        self.stars = max(0, self.rank - 1)
+
+        # Location: True = in PalBox (storage), False = in player's party (backpack)
+        self.in_palbox = in_palbox
+        # Base-camp worker pal (no OwnerPlayerUId in save data)
+        self.is_base_pal = False
 
         self.__order = [
             "owner",
@@ -169,6 +238,9 @@ class Pal:
             "is_boss",
             "is_tower",
             "workspeed",
+            "talent_hp",
+            "talent_shot",
+            "talent_defense",
             "melee",
             "ranged",
             "defense",
@@ -176,7 +248,13 @@ class Pal:
             "rank_attack",
             "rank_defence",
             "rank_craftspeed",
+            "stars",
+            "passive_skills",
+            "active_skills",
+            "mastered_skills",
             "skills",
+            "in_palbox",
+            "is_base_pal",
         ]
 
     def to_dict(self):

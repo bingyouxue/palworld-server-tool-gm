@@ -65,12 +65,20 @@ const skillDescriptionFallback = {
 };
 const noSkillDescription = { zh: "暂无技能说明", en: "No skill description available", ja: "スキル説明はありません" };
 const palName = (id) => palMap?.[locale.value]?.[id] || palMap?.[lang.value]?.[id] || palMap?.zh?.[id] || id;
+const stripWazaPrefix = (id) => {
+  if (typeof id !== "string") return id;
+  const idx = id.lastIndexOf(":");
+  return idx !== -1 ? id.slice(idx + 1) : id;
+};
 const skillInfo = (id) => {
-  const meta = activeSkillById.get(id) || {};
-  const localized = skillMap?.[locale.value]?.[id] || skillMap?.[lang.value]?.[id] || {};
+  const bareId = stripWazaPrefix(id);
+  const meta = activeSkillById.get(bareId) || {};
+  const localized = skillMap?.[locale.value]?.[bareId] || skillMap?.[lang.value]?.[bareId] || {};
+  const langKey = lang.value === "zh" ? "zh" : lang.value;
+  const localizedName = localized.name || meta[langKey] || meta.name;
   return {
-    name: localized.name || meta[lang.value === "zh" ? "zh" : lang.value] || meta.name || id,
-    description: localized.desc || skillDescriptionFallback[id]?.[lang.value] || noSkillDescription[lang.value],
+    name: localizedName || bareId,
+    description: localized.desc || skillDescriptionFallback[bareId]?.[lang.value] || noSkillDescription[lang.value],
     element: meta.element || "Normal",
   };
 };

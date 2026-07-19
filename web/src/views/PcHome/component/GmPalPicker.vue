@@ -81,6 +81,13 @@ const filteredPals = computed(() => {
   return list.slice(0, 300);
 });
 
+const isBossType = (pal) =>
+  pal && pal.type === "boss" &&
+  !/^(BOSS_|GYM_|RAID_)/i.test(pal.id);
+
+const effectivePalId = (pal) =>
+  isBossType(pal) ? `BOSS_${pal.id}` : pal.id;
+
 // ── 选择与给予 ────────────────────────────────────────────
 const selectedPal = ref(null);
 const givePalLevel = ref(1);
@@ -103,11 +110,10 @@ const handleGivePal = async () => {
       giving.value = false;
       return;
     }
-    const cmd = `givepal ${userId} ${selectedPal.value.id} ${givePalLevel.value}`;
+    const cmd = `givepal ${userId} ${effectivePalId(selectedPal.value)} ${givePalLevel.value}`;
     const { data, statusCode } = await new ApiService().sendRconCommand({ command: cmd });
     if (statusCode.value === 200) {
       message.success(`已给予 ${selectedPal.value.label} Lv.${givePalLevel.value}`);
-      emit("done");
     } else {
       message.error("给予失败: " + (data.value?.error || ""));
     }
@@ -169,6 +175,7 @@ const handleGivePal = async () => {
         </div>
         <div class="gm-pal-name">{{ pal.label }}</div>
         <div class="gm-pal-id">{{ pal.id }}</div>
+        <div v-if="isBossType(pal)" class="gm-boss-badge">头目体型</div>
       </div>
       <div v-if="filteredPals.length === 0" class="gm-empty">
         <n-empty description="无匹配结果" />
@@ -286,6 +293,11 @@ const handleGivePal = async () => {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;
 }
 
+.gm-boss-badge {
+  font-size: 9px; font-weight: 700; color: #fff;
+  background: #d03050; border-radius: 4px; padding: 1px 5px;
+  line-height: 1.4; margin-top: 2px;
+}
 .gm-empty { grid-column: 1 / -1; padding: 20px 0; }
 
 .gm-give-bar {

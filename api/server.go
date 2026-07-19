@@ -78,6 +78,7 @@ func isPalServerRunning() bool {
 
 type ServerInfo struct {
 	Version             string `json:"version"`
+	Platform            string `json:"platform"`
 	Name                string `json:"name"`
 	Running             bool   `json:"running"`
 	ManagementAvailable bool   `json:"management_available"`
@@ -161,6 +162,7 @@ func getServer(c *gin.Context) {
 		if running {
 			c.JSON(http.StatusOK, &ServerInfo{
 				Running:             true,
+				Platform:            runtime.GOOS,
 				ManagementAvailable: false,
 				ManagementError:     err.Error(),
 			})
@@ -171,6 +173,7 @@ func getServer(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, &ServerInfo{
 		Version:             info["version"],
+		Platform:            runtime.GOOS,
 		Name:                info["name"],
 		Running:             true,
 		ManagementAvailable: true,
@@ -371,11 +374,17 @@ func getPluginStatus(c *gin.Context) {
 
 	palDefenderInstalled := false
 	ue4ssInstalled := false
+	palDefenderFiles := []string{"PalDefender.dll", "d3d9.dll"}
+	ue4ssFiles := []string{"UE4SS.dll", "UE4SS-settings.ini", "ue4ss.dll"}
+	if runtime.GOOS != "windows" {
+		palDefenderFiles = []string{"libPalDefender.so", "PalDefender.so"}
+		ue4ssFiles = []string{"libUE4SS.so", "UE4SS.so"}
+	}
 
 	for _, dir := range candidates {
 		if !palDefenderInstalled {
 			// PalDefender ships as d3d9.dll + PalDefender.dll (or winhttp.dll) in the binary dir
-			for _, fn := range []string{"PalDefender.dll", "d3d9.dll"} {
+			for _, fn := range palDefenderFiles {
 				if fileExists(filepath.Join(dir, fn)) {
 					palDefenderInstalled = true
 					break
@@ -384,7 +393,7 @@ func getPluginStatus(c *gin.Context) {
 		}
 		if !ue4ssInstalled {
 			// UE4SS ships as UE4SS.dll or dwmapi.dll (proxy) + UE4SS-settings.ini
-			for _, fn := range []string{"UE4SS.dll", "UE4SS-settings.ini", "ue4ss.dll"} {
+			for _, fn := range ue4ssFiles {
 				if fileExists(filepath.Join(dir, fn)) {
 					ue4ssInstalled = true
 					break
@@ -478,7 +487,7 @@ func startServer(c *gin.Context) {
 	}
 	// Best-effort bind; ignore errors (body may be empty)
 	_ = c.ShouldBindJSON(&req)
-	if req.Mode == "" {
+	if req.Mode == "" || runtime.GOOS != "windows" {
 		req.Mode = "silent"
 	}
 
@@ -490,11 +499,14 @@ func startServer(c *gin.Context) {
 	cfg := config.Current()
 	exePath := findServerExeByMode(cfg.Save.Path, req.Mode)
 	if exePath == "" {
-		exeName := "PalServer-Win64-Shipping.exe"
-		if req.Mode == "cmd" {
-			exeName = "PalServer-Win64-Shipping-Cmd.exe"
+		exeName := "PalServer.sh"
+		if runtime.GOOS == "windows" {
+			exeName = "PalServer-Win64-Shipping.exe"
+			if req.Mode == "cmd" {
+				exeName = "PalServer-Win64-Shipping-Cmd.exe"
+			}
 		}
-		errMessage := fmt.Sprintf("%s not found; configured save.path is %q", exeName, cfg.Save.Path)
+		errMessage := fmt.Sprintf("%s not found in server directory; configured save.path is %q", exeName, cfg.Save.Path)
 		logger.Errorf("[startServer] %s", errMessage)
 		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
 		return
@@ -630,7 +642,7 @@ func worldSettingsContainPatch(ini string, desired map[string]string) bool {
 // On Linux the mode is ignored and findServerExe is called directly.
 func findServerExeByMode(savePath, mode string) string {
 	if runtime.GOOS != "windows" {
-		return findServerExe(savePath)
+		return findServerExeLinux(savePath)
 	}
 	preferred := "PalServer-Win64-Shipping.exe"
 	if mode == "cmd" {
@@ -695,7 +707,56 @@ func findServerExeByMode(savePath, mode string) string {
 	return ""
 }
 
-// findServerExe locates PalServer.exe by:
+// findServerExeLinux prefers the root PalServer.sh launcher because it sets
+// the working directory and runtime library paths expected by the server.
+func findServerExeLinux(savePath string) string {
+	if savePath == "" {
+		return ""
+	}
+	candidates := []string{"PalServer.sh", "PalServer", "PalServer-Linux-Shipping", "PalServer.exe"}
+	findInDir := func(dir string) string {
+		for _, name := range candidates {
+			if full := filepath.Join(dir, name); fileExists(full) {
+				return full
+			}
+		}
+		for _, sub := range []string{filepath.Join(dir, "Pal", "Binaries", "Linux"), filepath.Join(dir, "Binaries", "Linux")} {
+			for _, name := range candidates {
+				if full := filepath.Join(sub, name); fileExists(full) {
+					return full
+				}
+			}
+		}
+		return ""
+	}
+	cur := filepath.Clean(savePath)
+	for i := 0; i < 10; i++ {
+		if hit := findInDir(cur); hit != "" {
+			return hit
+		}
+		parent := filepath.Dir(cur)
+		if parent == cur {
+			break
+		}
+		cur = parent
+	}
+	cur = filepath.Clean(savePath)
+	for i := 0; i < 10; i++ {
+		for _, probe := range []string{filepath.Join(cur, "steamcmd", "steamapps", "common", "PalServer"), filepath.Join(filepath.Dir(cur), "steamcmd", "steamapps", "common", "PalServer")} {
+			if hit := findInDir(probe); hit != "" {
+				return hit
+			}
+		}
+		parent := filepath.Dir(cur)
+		if parent == cur {
+			break
+		}
+		cur = parent
+	}
+	return ""
+}
+
+// findServerExe locates the PalServer executable by:
 //  1. Walking UP from savePath, checking each ancestor dir directly AND its
 //     Pal/Binaries/Win64 (or Linux) sub-tree — this is the standard Steam layout
 //     where the exe lives at <root>/Pal/Binaries/Win64/.
@@ -773,7 +834,7 @@ func findServerExe(savePath string) string {
 	return ""
 }
 
-// serverRootFromSavePath walks from savePath to find the dir containing PalServer.exe.
+// serverRootFromSavePath walks from savePath to find the directory containing the PalServer executable.
 func serverRootFromSavePath(savePath string) string {
 	exe := findServerExe(savePath)
 	if exe == "" {

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -58,16 +59,29 @@ type ModsMarker struct {
 	Files       map[string][]string `json:"files,omitempty"`
 }
 
-// Win64Dir accepts either the PalServer installation root or the directory
-// containing PalServer-Win64-Shipping.exe and returns the actual binary dir.
-func Win64Dir(serverRoot string) string {
+// BinaryDir returns the platform-specific PalServer binary directory.
+func BinaryDir(serverRoot string) string {
 	clean := filepath.Clean(serverRoot)
-	if strings.EqualFold(filepath.Base(clean), "Win64") ||
-		fileExists(filepath.Join(clean, "PalServer-Win64-Shipping.exe")) ||
-		fileExists(filepath.Join(clean, "PalServer-Win64-Shipping-Cmd.exe")) {
+	targetBase := "Win64"
+	targetExecutables := []string{"PalServer-Win64-Shipping.exe", "PalServer-Win64-Shipping-Cmd.exe"}
+	if runtime.GOOS != "windows" {
+		targetBase = "Linux"
+		targetExecutables = []string{"PalServer-Linux-Shipping", "PalServer.sh"}
+	}
+	if strings.EqualFold(filepath.Base(clean), targetBase) {
 		return clean
 	}
-	return filepath.Join(clean, "Pal", "Binaries", "Win64")
+	for _, executable := range targetExecutables {
+		if fileExists(filepath.Join(clean, executable)) {
+			return clean
+		}
+	}
+	return filepath.Join(clean, "Pal", "Binaries", targetBase)
+}
+
+// Win64Dir is retained for compatibility with existing callers.
+func Win64Dir(serverRoot string) string {
+	return BinaryDir(serverRoot)
 }
 
 func fileExists(path string) bool {
@@ -119,6 +133,9 @@ func InstalledVersion(serverRoot string, component Component) string {
 
 // IsInstalled checks the actual DLL files on disk.
 func IsInstalled(serverRoot string, component Component) bool {
+	if runtime.GOOS != "windows" {
+		return false
+	}
 	w64 := Win64Dir(serverRoot)
 	switch component {
 	case ComponentPalDefender:
@@ -244,9 +261,12 @@ type ProgressFunc func(msg string)
 // Install downloads and extracts a mod component into serverRoot's Win64 dir.
 // progressFn may be nil.
 func Install(serverRoot string, component Component, channel Channel, progressFn ProgressFunc) (version string, err error) {
+	if runtime.GOOS != "windows" {
+		return "", fmt.Errorf("%s installation is not supported on this platform", component)
+	}
 	w64 := Win64Dir(serverRoot)
 	if err := os.MkdirAll(w64, 0755); err != nil {
-		return "", fmt.Errorf("create Win64 dir: %w", err)
+		return "", fmt.Errorf("create binary dir: %w", err)
 	}
 
 	progress := func(msg string) {
@@ -407,6 +427,9 @@ func extractZip(zipPath, destDir string) ([]string, error) {
 
 // Remove uninstalls a component by deleting the files recorded in the marker.
 func Remove(serverRoot string, component Component) error {
+	if runtime.GOOS != "windows" {
+		return fmt.Errorf("%s is not available on this platform", component)
+	}
 	w64 := Win64Dir(serverRoot)
 	m := ReadMarker(serverRoot)
 

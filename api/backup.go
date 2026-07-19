@@ -223,10 +223,10 @@ func restoreBackup(c *gin.Context) {
 			return
 		}
 	} else {
-		logger.Warn("[restore] PalServer.exe not found, skipping relaunch")
+		logger.Warn("[restore] PalServer executable not found, skipping relaunch")
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
-			"message": "存档还原成功，未找到 PalServer.exe，请手动启动服务器",
+			"message": "存档还原成功，未找到 PalServer 可执行文件，请手动启动服务器",
 		})
 		return
 	}

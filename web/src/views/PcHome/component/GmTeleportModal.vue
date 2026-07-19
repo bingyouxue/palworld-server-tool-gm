@@ -51,7 +51,7 @@ const handleSubmit = async () => {
     const y = coordY.value.trim();
     const z = coordZ.value.trim() || "0";
     if (!x || !y) { message.warning("请输入 X 和 Y 坐标"); return; }
-    cmd = `teleport ${userId} ${x} ${y} ${z}`;
+    cmd = `tp ${userId} ${x} ${y} ${z}`;
   } else {
     if (!targetPlayerUserId.value) { message.warning("请选择目标玩家"); return; }
     cmd = `teleporttoplayer ${userId} ${targetPlayerUserId.value}`;

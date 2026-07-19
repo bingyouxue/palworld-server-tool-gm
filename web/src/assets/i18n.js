@@ -299,6 +299,8 @@ const messages = {
     },
     item: {
       palList: "Pal List",
+      backpackPals: "Backpack Pals",
+      boxPals: "Palbox Pals",
       itemList: "Item List",
       commonContainer: "Common Container",
       essentialContainer: "Essential Container",
@@ -858,6 +860,8 @@ const messages = {
     },
     item: {
       palList: "幻兽列表",
+      backpackPals: "背包帕鲁",
+      boxPals: "箱内帕鲁",
       itemList: "物品列表",
       commonContainer: "物品栏",
       essentialContainer: "重要物品",
@@ -1379,6 +1383,8 @@ const messages = {
     },
     item: {
       palList: "幻獣リスト",
+      backpackPals: "バックパックのパル",
+      boxPals: "パルボックスのパル",
       itemList: "アイテムリスト",
       commonContainer: "一般アイテム",
       essentialContainer: "重要アイテム",

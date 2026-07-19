@@ -96,7 +96,7 @@ func Default() Config {
 	value.Rest.Username = "admin"
 	value.Rest.Timeout = 5
 	value.Save.SourceMode = "directory"
-	value.Save.SyncInterval = 120
+	value.Save.SyncInterval = 20
 	value.Save.BackupInterval = 14400
 	value.Save.BackupKeepDays = 7
 	return value

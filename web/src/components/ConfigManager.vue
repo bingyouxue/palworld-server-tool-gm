@@ -62,7 +62,7 @@ const emptySettings = () => ({
     source_mode: "directory",
     path: "",
     decode_path: "",
-    sync_interval: 120,
+    sync_interval: 20,
     backup_interval: 14400,
     backup_keep_days: 7,
   },

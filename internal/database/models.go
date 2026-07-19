@@ -14,14 +14,30 @@ type Pal struct {
 	IsBoss         bool     `json:"is_boss"`
 	IsTower        bool     `json:"is_tower"`
 	Workspeed      int32    `json:"workspeed"`
+	// IV / talent fields with correct semantic names
+	TalentHp      int32 `json:"talent_hp"`
+	TalentShot    int32 `json:"talent_shot"`
+	TalentDefense int32 `json:"talent_defense"`
+	// Legacy aliases kept for backward compatibility
 	Melee          int32    `json:"melee"`
 	Ranged         int32    `json:"ranged"`
 	Defense        int32    `json:"defense"`
-	Rank           int32    `json:"rank"`
-	RankAttack     int32    `json:"rank_attack"`
-	RankDefence    int32    `json:"rank_defence"`
-	RankCraftspeed int32    `json:"rank_craftspeed"`
-	Skills         []string `json:"skills"`
+	// Rank / star enhancement
+	Rank           int32 `json:"rank"`
+	RankAttack     int32 `json:"rank_attack"`
+	RankDefence    int32 `json:"rank_defence"`
+	RankCraftspeed int32 `json:"rank_craftspeed"`
+	Stars          int32 `json:"stars"`
+	// Skills
+	PassiveSkills  []string `json:"passive_skills"`
+	ActiveSkills   []string `json:"active_skills"`
+	MasteredSkills []string `json:"mastered_skills"`
+	// Legacy alias
+	Skills []string `json:"skills"`
+	// Location: true = PalBox (箱内), false = party/backpack (背包)
+	InPalbox bool `json:"in_palbox"`
+	// Base-camp worker pal (no OwnerPlayerUId in save data)
+	IsBasePal bool `json:"is_base_pal"`
 }
 
 type OnlinePlayer struct {

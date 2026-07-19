@@ -1,5 +1,5 @@
-<script setup>
-import { computed, inject, onMounted, ref } from "vue";
+﻿<script setup>
+import { computed, h, inject, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { ContentCopyFilled, PersonSearchSharp } from "@vicons/material";
 import { LogOut, Ban, ShieldCheckmarkOutline } from "@vicons/ionicons5";
 import { CrownFilled } from "@vicons/antd";
@@ -100,7 +100,6 @@ const doGiveExp = async () => {
     console.log("[GM] doGiveExp response:", code, body);
     if (code === 200) {
       message.success(t("message.giveExpSuccess", { msg: body?.message || "OK" }));
-      showGiveExpModal.value = false;
     } else {
       message.error(t("message.giveExpFail", { err: body?.error || JSON.stringify(body) || "" }));
     }
@@ -118,7 +117,6 @@ const doGiveTech = async () => {
     console.log("[GM] doGiveTech response:", code, body);
     if (code === 200) {
       message.success(t("message.giveTechSuccess", { msg: body?.message || "OK" }));
-      showGiveTechModal.value = false;
     } else {
       message.error(t("message.giveExpFail", { err: body?.error || JSON.stringify(body) || "" }));
     }
@@ -136,7 +134,6 @@ const doGiveAncientTech = async () => {
     console.log("[GM] doGiveAncientTech response:", code, body);
     if (code === 200) {
       message.success(t("message.giveAncientTechSuccess", { msg: body?.message || "OK" }));
-      showGiveAncientTechModal.value = false;
     } else {
       message.error(t("message.giveExpFail", { err: body?.error || JSON.stringify(body) || "" }));
     }
@@ -170,6 +167,106 @@ const handleGmOp = async (key) => {
   }
 };
 
+// 帕鲁列表子选项卡: backpack / palbox / basecamp
+const palSubTab = ref("backpack");
+const backpackPalsList = ref([]);
+const backpackPalsLoading = ref(false);
+const backpackPalsLoaded = ref(false);
+
+// 从父组件 playerPalsList 中提取实时背包帕鲁（带 _backpack_live 标记）
+const getLivePalsFromProp = () => {
+  const all = playerPalsList.value || [];
+  return all.filter(p => p._backpack_live === true);
+};
+
+const loadBackpackPals = async () => {
+  // 如果父组件已经推送了实时数据，直接使用，不再重复调 API
+  const livePals = getLivePalsFromProp();
+  if (livePals.length > 0) {
+    backpackPalsList.value = livePals;
+    backpackPalsLoaded.value = true;
+    return;
+  }
+  if (backpackPalsLoading.value) return;
+  backpackPalsLoading.value = true;
+  try {
+    const res = await new ApiService().exportPlayerPals({ playerUid: playerInfo.value.player_uid });
+    const { code, body } = parseRes(res);
+    if (code === 200 && Array.isArray(body?.pals)) {
+      backpackPalsList.value = body.pals;
+    } else {
+      backpackPalsList.value = [];
+      if (code !== 200) message.error(body?.error || t("message.fail"));
+    }
+  } catch (e) {
+    backpackPalsList.value = [];
+    message.error(e.message);
+  } finally {
+    backpackPalsLoading.value = false;
+    backpackPalsLoaded.value = true;
+  }
+};
+
+const onPalSubTabChange = (tab) => {
+  palSubTab.value = tab;
+  searchValue.value = "";
+  getPagination(tab).page = 1;
+  if (tab === "backpack" && !backpackPalsLoaded.value) loadBackpackPals();
+  mergeCurrentPalsList();
+};
+
+// ── Three source lists ────────────────────────────────────────────────────────
+const getSavBackpackPalsList = () => {
+  const all = playerPalsList.value || [];
+  const hasFlag = all.some(p => p.in_palbox !== undefined);
+  if (!hasFlag) return [];
+  return all.filter(p => p.in_palbox === false);
+};
+
+const getPalboxList = () => {
+  const all = playerPalsList.value || [];
+  return all.filter(p => p.in_palbox === true && !p.is_base_pal);
+};
+
+const getBasecampList = () => {
+  const all = playerPalsList.value || [];
+  return all.filter(p => p.is_base_pal === true);
+};
+
+const mergeCurrentPalsList = () => {
+  if (palSubTab.value === "backpack") {
+    currentPalsList.value = backpackPalsLoaded.value
+      ? [...backpackPalsList.value]
+      : getSavBackpackPalsList();
+  } else if (palSubTab.value === "palbox") {
+    currentPalsList.value = getPalboxList();
+  } else {
+    currentPalsList.value = getBasecampList();
+  }
+};
+
+// ── Independent pagination per tab ───────────────────────────────────────────
+const makePagination = () => reactive({
+  page: 1,
+  pageSize: 25,
+  showSizePicker: true,
+  pageSizes: [25, 50, 100, 200],
+  onChange: (page) => { getPagination(palSubTab.value).page = page; },
+  onUpdatePageSize: (pageSize) => {
+    getPagination(palSubTab.value).pageSize = pageSize;
+    getPagination(palSubTab.value).page = 1;
+  },
+});
+const paginationBackpack  = makePagination();
+const paginationPalbox    = makePagination();
+const paginationBasecamp  = makePagination();
+const getPagination = (tab) =>
+  tab === "backpack" ? paginationBackpack :
+  tab === "palbox"   ? paginationPalbox   : paginationBasecamp;
+
+// Legacy alias used by item tables
+const paginationReactive = paginationBackpack;
+
 // 帕鲁列表
 const currentPalsList = ref([]);
 const activeSkillById = new Map(activeSkills.map((skill) => [skill.id, skill]));
@@ -196,24 +293,42 @@ const palActiveSkills = (row) => normalizeList(firstDefined(row, ["ActiveSkills"
 const renderTooltipTag = (label, description, tagProps = {}) => h(NTooltip, { trigger: "hover", placement: "top", style: "max-width:360px" }, {
   trigger: () => h(NTag, { size: "small", ...tagProps }, { default: () => label }), default: () => description || "暂无说明",
 });
+
+const stripWazaPrefix = (skillId) => {
+  if (typeof skillId !== "string") return skillId;
+  const colonIdx = skillId.lastIndexOf(":");
+  return colonIdx !== -1 ? skillId.slice(colonIdx + 1) : skillId;
+};
+
 const localizedActiveSkillName = (skillId) => {
-  const detail = activeSkillById.get(skillId);
+  const bareId = stripWazaPrefix(skillId);
+  const detail = activeSkillById.get(bareId);
   const language = String(locale.value || "zh").toLowerCase();
   const metadataName = language.startsWith("zh")
     ? detail?.zh
     : language.startsWith("ja")
       ? detail?.ja
       : detail?.name;
-  const localizedName = localizedSkillName(skillId, locale.value, skillMap);
-  return localizedName === skillId ? metadataName || skillId : localizedName;
+  const localizedName = localizedSkillName(bareId, locale.value, skillMap);
+  return localizedName === bareId ? metadataName || bareId : localizedName;
 };
 const renderActiveSkill = (skillId) => {
-  const detail = activeSkillById.get(skillId);
-  const localized = skillMap?.[locale.value]?.[skillId] || skillMap?.en?.[skillId];
+  const bareId = stripWazaPrefix(skillId);
+  const detail = activeSkillById.get(bareId);
   const [label, color] = elementMeta[detail?.element] || elementMeta.Normal;
+  const language = String(locale.value || "zh").toLowerCase();
+  const tooltipDesc = language.startsWith("zh")
+    ? detail?.zh
+      ? `${detail.zh}（${detail.name}）`
+      : bareId
+    : language.startsWith("ja")
+      ? detail?.ja
+        ? `${detail.ja}（${detail.name}）`
+        : bareId
+      : detail?.name || bareId;
   return h("span", { class: "pal-skill-wrap" }, [
     h("span", { class: "element-icon", style: { "--element-color": color }, title: detail?.element || "Normal" }, label),
-    renderTooltipTag(localizedActiveSkillName(skillId), localized?.desc || skillId, { bordered: true, style: { borderColor: color, color } }),
+    renderTooltipTag(localizedActiveSkillName(skillId), tooltipDesc, { bordered: true, style: { borderColor: color, color } }),
   ]);
 };
 const renderPassive = (passiveId) => {
@@ -357,35 +472,67 @@ const confirmDeletePal = (row) => {
 
 watch(
   () => playerPalsList.value,
-  (newVal) => {
-    currentPalsList.value = newVal;
-    paginationReactive.page = 1;
-    paginationReactive.pageSize = 30;
+  () => {
+    // 父组件通过 _backpack_live 标记推送了实时背包帕鲁，直接同步
+    const livePals = getLivePalsFromProp();
+    if (livePals.length > 0) {
+      backpackPalsList.value = livePals;
+      backpackPalsLoaded.value = true;
+    }
+    paginationBackpack.page = 1;
+    paginationPalbox.page = 1;
+    paginationBasecamp.page = 1;
     searchValue.value = "";
+    mergeCurrentPalsList();
     mergeItems();
   },
 );
 
-// 游戏用户的帕鲁列表分页，搜索
-const paginationReactive = reactive({
-  page: 1,
-  pageSize: 30,
-  showSizePicker: true,
-  pageSizes: [30, 50, 100, 200],
-  onChange: (page) => {
-    paginationReactive.page = page;
+// 切换玩家时重置背包帕鲁状态
+watch(
+  () => playerInfo.value?.player_uid,
+  () => {
+    backpackPalsList.value = [];
+    backpackPalsLoaded.value = false;
+    palSubTab.value = "backpack";
+    currentPalsList.value = [];
   },
-  onUpdatePageSize: (pageSize) => {
-    paginationReactive.pageSize = pageSize;
-    paginationReactive.page = 1;
+);
+
+// 切换到帕鲁列表主 tab 时自动加载背包帕鲁
+watch(
+  () => activeTab.value,
+  (val) => {
+    if (val && val === t("item.palList") && palSubTab.value === "backpack" && !backpackPalsLoaded.value) {
+      loadBackpackPals();
+    }
   },
-});
+);
+
+// 背包帕鲁加载完成后同步到当前列表
+watch(
+  () => backpackPalsList.value,
+  (newVal) => {
+    if (palSubTab.value === "backpack") {
+      currentPalsList.value = newVal || [];
+    }
+  },
+);
 
 const searchValue = ref("");
+const getActiveSourceList = () => {
+  if (palSubTab.value === "backpack") {
+    return backpackPalsLoaded.value ? backpackPalsList.value : getSavBackpackPalsList();
+  } else if (palSubTab.value === "palbox") {
+    return getPalboxList();
+  }
+  return getBasecampList();
+};
 const clickSearch = () => {
   const pattern = /^\s*$|(\s)\1/;
+  const source = getActiveSourceList();
   if (searchValue.value && !pattern.test(searchValue.value)) {
-    currentPalsList.value = playerPalsList.value.filter((item) => {
+    currentPalsList.value = source.filter((item) => {
       return (
         palPassives(item).some((skill) => {
           return localizedSkillName(skill, locale.value, skillMap).includes(
@@ -395,9 +542,9 @@ const clickSearch = () => {
       );
     });
   } else {
-    currentPalsList.value = [...playerPalsList.value];
+    currentPalsList.value = [...source];
   }
-  paginationReactive.page = 1;
+  getPagination(palSubTab.value).page = 1;
 };
 const clearSearch = () => {
   nextTick(() => {
@@ -409,8 +556,47 @@ const clearSearch = () => {
 const showPalDetailModal = ref(false);
 const palDetail = ref({});
 
+// 将存档格式（小写字段）规范化为 PalDetail.vue 期待的大写格式
+const normalizePalForDetail = (pal) => {
+  if (!pal) return pal;
+  // 如果已经是大写格式（背包帕鲁），直接返回
+  if (pal.PalID !== undefined || pal.Level !== undefined) return pal;
+  return {
+    PalID:          pal.type ?? pal.pal_id ?? "",
+    Nickname:       pal.nickname ?? "",
+    Gender:         pal.gender ?? "",
+    Level:          pal.level ?? 0,
+    Exp:            pal.exp ?? 0,
+    Shiny:          pal.is_lucky ?? false,
+    IsBoss:         pal.is_boss ?? false,
+    IsTower:        pal.is_tower ?? false,
+    HP:             pal.hp ?? 0,
+    CraftSpeed:     pal.workspeed ?? 0,
+    IVs: {
+      Health:       pal.talent_hp ?? 0,
+      Attack:       pal.talent_shot ?? 0,
+      Defense:      pal.talent_defense ?? 0,
+    },
+    PalSouls: (() => {
+      const s = {};
+      if (pal.rank       !== undefined) s.rank        = pal.rank;
+      if (pal.rank_attack !== undefined) s.AttackMelee = pal.rank_attack;
+      if (pal.rank_defence !== undefined) s.Defense    = pal.rank_defence;
+      if (pal.rank_craftspeed !== undefined) s.CraftSpeed = pal.rank_craftspeed;
+      if (pal.stars !== undefined) s.Stars = pal.stars;
+      return s;
+    })(),
+    ActiveSkills:   Array.isArray(pal.active_skills) ? pal.active_skills : [],
+    LearntSkills:   Array.isArray(pal.mastered_skills) ? pal.mastered_skills : [],
+    Passives:       Array.isArray(pal.passive_skills) ? pal.passive_skills
+                    : Array.isArray(pal.skills) ? pal.skills : [],
+    in_palbox:      pal.in_palbox,
+    is_base_pal:    pal.is_base_pal,
+  };
+};
+
 const showPalDetail = (pal) => {
-  palDetail.value = pal;
+  palDetail.value = normalizePalForDetail(pal);
   showPalDetailModal.value = true;
 };
 
@@ -1004,29 +1190,61 @@ const createPlayerItemsColumns = () => {
       <div v-if="isLogin" class="detail-tabs">
         <n-tabs v-model:value="activeTab" type="line" size="large" animated>
           <n-tab-pane :name="$t('item.palList')">
-            <div class="w-full mt-5">
-              <n-input-group class="w-full flex justify-end">
-                <n-input
-                  v-model:value="searchValue"
-                  clearable
-                  :placeholder="$t('input.searchPlaceholder')"
-                  :on-clear="clearSearch"
-                  @keydown.enter="clickSearch"
-                />
-                <n-button type="primary" class="w-20" @click="clickSearch">
-                  {{ $t("button.search") }}
-                </n-button>
-              </n-input-group>
-            </div>
-            <n-data-table
-              class="mt-2"
-              size="small"
-              :columns="createPlayerPalsColumns()"
-              :data="currentPalsList"
-              :bordered="false"
-              striped
-              :pagination="paginationReactive"
-            />
+            <n-tabs
+              v-model:value="palSubTab"
+              type="segment"
+              animated
+              class="mt-3"
+              @update:value="onPalSubTabChange"
+            >
+              <!-- 背包帕鲁 -->
+              <n-tab-pane name="backpack" tab="背包帕鲁">
+                <div class="w-full mt-3">
+                  <n-input-group class="w-full flex justify-end">
+                    <n-input v-model:value="searchValue" clearable
+                      :placeholder="$t('input.searchPlaceholder')"
+                      :on-clear="clearSearch" @keydown.enter="clickSearch" />
+                    <n-button type="primary" class="w-20" @click="clickSearch">{{ $t("button.search") }}</n-button>
+                  </n-input-group>
+                </div>
+                <n-spin :show="backpackPalsLoading">
+                  <n-data-table class="mt-2" size="small"
+                    :columns="createPlayerPalsColumns()"
+                    :data="currentPalsList" :bordered="false" striped
+                    :pagination="paginationBackpack" />
+                </n-spin>
+              </n-tab-pane>
+              <!-- 终端帕鲁 -->
+              <n-tab-pane name="palbox" tab="终端帕鲁">
+                <div class="w-full mt-3">
+                  <n-input-group class="w-full flex justify-end">
+                    <n-input v-model:value="searchValue" clearable
+                      :placeholder="$t('input.searchPlaceholder')"
+                      :on-clear="clearSearch" @keydown.enter="clickSearch" />
+                    <n-button type="primary" class="w-20" @click="clickSearch">{{ $t("button.search") }}</n-button>
+                  </n-input-group>
+                </div>
+                <n-data-table class="mt-2" size="small"
+                  :columns="createPlayerPalsColumns()"
+                  :data="currentPalsList" :bordered="false" striped
+                  :pagination="paginationPalbox" />
+              </n-tab-pane>
+              <!-- 据点帕鲁 -->
+              <n-tab-pane name="basecamp" tab="据点帕鲁">
+                <div class="w-full mt-3">
+                  <n-input-group class="w-full flex justify-end">
+                    <n-input v-model:value="searchValue" clearable
+                      :placeholder="$t('input.searchPlaceholder')"
+                      :on-clear="clearSearch" @keydown.enter="clickSearch" />
+                    <n-button type="primary" class="w-20" @click="clickSearch">{{ $t("button.search") }}</n-button>
+                  </n-input-group>
+                </div>
+                <n-data-table class="mt-2" size="small"
+                  :columns="createPlayerPalsColumns()"
+                  :data="currentPalsList" :bordered="false" striped
+                  :pagination="paginationBasecamp" />
+              </n-tab-pane>
+            </n-tabs>
           </n-tab-pane>
           <n-tab-pane :name="$t('item.itemList')">
             <n-tabs type="segment" animated>
@@ -1257,7 +1475,6 @@ const createPlayerItemsColumns = () => {
     <GmItemPicker
       v-if="showGiveItemModal && playerInfo?.player_uid"
       :player-uid="playerInfo.player_uid"
-      @done="showGiveItemModal = false"
     />
   </n-modal>
 
@@ -1275,7 +1492,6 @@ const createPlayerItemsColumns = () => {
       v-if="showGivePalModal && playerInfo?.player_uid"
       :player-uid="playerInfo.player_uid"
       :online-players="onlinePlayers"
-      @done="showGivePalModal = false"
     />
   </n-modal>
 
@@ -1292,7 +1508,6 @@ const createPlayerItemsColumns = () => {
     v-model:show="showCustomPalModal"
     :player-uid="playerInfo?.player_uid || ''"
     :online-players="onlinePlayers"
-    @done="showCustomPalModal = false"
   />
 
   <!-- 给予经验值 modal -->
@@ -1343,7 +1558,6 @@ const createPlayerItemsColumns = () => {
     <GmTechPicker
       v-if="showLearnTechModal && playerInfo?.player_uid"
       :player-uid="playerInfo.player_uid"
-      @done="showLearnTechModal = false"
     />
   </n-modal>
 

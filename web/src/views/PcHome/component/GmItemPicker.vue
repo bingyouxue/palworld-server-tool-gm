@@ -177,7 +177,6 @@ const handleGive = async () => {
     });
     if (statusCode.value === 200) {
       message.success("道具已发送");
-      emit("done");
     } else {
       message.error("给予失败: " + (data.value?.error || ""));
     }

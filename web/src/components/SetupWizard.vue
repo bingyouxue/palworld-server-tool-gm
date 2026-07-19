@@ -403,7 +403,7 @@ async function saveWorldSettings() {
   worldSaving.value = true;
   try {
     // For install mode, use the server root reported by the backend (installedServerDir).
-    // This is the directory where PalServer.exe actually lives, which may differ from
+    // This is the directory where PalServer actually lives, which may differ from
     // the user-chosen installDir (e.g. steamcmd places the game in a subdirectory).
     const serverDir = mode.value==="install"
       ? (installedServerDir.value || installDir.value.trim())
@@ -478,7 +478,7 @@ async function saveWorldSettings() {
           <n-button text type="primary" @click="step=1;adoptParsed=null">← 返回</n-button>
           <span style="font-weight:700;color:#1e3a8a">关联现有服务器</span>
         </n-flex>
-        <n-form-item label="服务器根目录（包含 PalServer.exe 的目录）" label-placement="top">
+        <n-form-item label="服务器根目录（包含 PalServer 可执行文件的目录）" label-placement="top">
           <n-input-group>
             <n-input v-model:value="adoptDir" placeholder="请选择或输入路径" />
             <n-button @click="openBrowser('adopt')">浏览</n-button>

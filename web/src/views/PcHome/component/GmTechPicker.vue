@@ -92,7 +92,6 @@ const doLearn = async () => {
           msg: body?.message || "OK",
         })
       );
-      emit("done");
     } else {
       message.error(
         t("techPicker.learnFail", { err: body?.error || JSON.stringify(body) || "" })

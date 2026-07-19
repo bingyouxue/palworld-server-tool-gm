@@ -114,6 +114,9 @@ onMounted(async () => {
     const currentUid = playerToGuildStore().getCurrentUid();
     const initialGuild =
       guildList.value.find((guild) => guild.admin_player_uid === currentUid) ||
+      guildList.value.find((guild) =>
+        guild.players?.some((player) => player.player_uid === currentUid),
+      ) ||
       guildList.value[0];
     await getGuildInfo(initialGuild.admin_player_uid);
     playerToGuildStore().setCurrentUid(null);

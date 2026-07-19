@@ -22,7 +22,12 @@ func launchServer(exePath, _ string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("open server log %q: %w", logPath, err)
 	}
-	cmd := exec.Command(exePath)
+	var cmd *exec.Cmd
+	if filepath.Ext(exePath) == ".sh" {
+		cmd = exec.Command("sh", exePath)
+	} else {
+		cmd = exec.Command(exePath)
+	}
 	cmd.Dir = filepath.Dir(exePath)
 	cmd.Stdout = logFile
 	cmd.Stderr = logFile
