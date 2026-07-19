@@ -58,7 +58,7 @@ jobs:
       - name: Resolve version
         id: ver
         shell: bash
-          echo "value=1.15.3" >> "$GITHUB_OUTPUT"
+        run: echo "value=1.15.3" >> "$GITHUB_OUTPUT"
 
       - name: Package Windows release
         shell: bash
