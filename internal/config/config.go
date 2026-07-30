@@ -91,6 +91,10 @@ func Default() Config {
 	value.Task.PlayerLoginMessage = "Player {username} has joined the server! Current online player count: {online_num}."
 	value.Task.PlayerLogoutMessage = "Player {username} has left the server! Current online player count: {online_num}."
 	value.Rcon.Address = "127.0.0.1:25575"
+	// Vanilla Palworld's RCON mangles non-ASCII payloads, so Chinese broadcasts
+	// come out garbled. PalDefender/PalGuard accept a base64-encoded command as
+	// a workaround, and this build ships with PalDefender, so default it on.
+	value.Rcon.UseBase64 = true
 	value.Rcon.Timeout = 5
 	value.Rest.Address = "http://127.0.0.1:8212"
 	value.Rest.Username = "admin"
@@ -116,7 +120,30 @@ func Open(path string) (*Store, error) {
 		_ = db.Close()
 		return nil, err
 	}
+	store.enableRconBase64Once()
 	return store, nil
+}
+
+// rconBase64MigrationKey marks that the one-time base64 opt-in already ran.
+const rconBase64MigrationKey = "migration_rcon_base64_default_on"
+
+// enableRconBase64Once flips rcon.use_base64 on for config databases created
+// before it became the default. Without base64 the server garbles non-ASCII
+// broadcasts. The marker means a user who deliberately turns it back off keeps
+// that choice across restarts.
+func (s *Store) enableRconBase64Once() {
+	if len(s.GetKV(rconBase64MigrationKey)) > 0 {
+		return
+	}
+	value := s.Config()
+	if !value.Rcon.UseBase64 {
+		value.Rcon.UseBase64 = true
+		if err := s.Update(value, ""); err != nil {
+			// Leave the marker unset so the migration retries next start.
+			return
+		}
+	}
+	_ = s.SetKV(rconBase64MigrationKey, []byte("1"))
 }
 
 func (s *Store) createBucketsAndDefaults() error {

@@ -71,6 +71,22 @@ PST 需要游戏服务器开启官方 REST API；自定义 RCON 功能还需要�
 
 1. 从 [GitHub Releases](https://github.com/zaigie/palworld-server-tool/releases) 下载对应系统和架构的压缩包并解压。
 2. Linux/macOS 给 `pst` 和 `sav_cli` 增加执行权限并运行 `./pst`；Windows 双击 `start.bat`，或在 PowerShell 中运行 `.\pst.exe`。
+
+> [!IMPORTANT]
+> **Linux 用户权限说明**：幻兽帕鲁 Linux 服务端**禁止以 root 用户身份运行**。如果你当前以 root 登录，请先创建专用用户再启动服务端和 PST：
+>
+> ```bash
+> # 创建专用用户（如果还没有）
+> useradd -m palworld
+>
+> # 切换到该用户
+> su - palworld
+>
+> # 在该用户下运行 PST
+> ./pst
+> ```
+>
+> 也可以通过 `sudo -u palworld ./pst` 以指定用户身份直接运行。PST 本身不强制限制 root，但存档目录和服务端进程需要与 PST 运行用户保持一致，否则可能出现存档读取失败或进程资源采集为空的情况。
 3. 浏览器访问 `http://127.0.0.1:8080` 或 `http://{服务器 IP}:8080`，创建管理员并在 Web 弹窗中完成配置。
 
 首次启动使用端口 `8080`。如果该端口已被占用，可以通过命令行参数或环境变量覆盖监听端口：

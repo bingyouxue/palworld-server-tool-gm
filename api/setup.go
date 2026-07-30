@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zaigie/palworld-server-tool/internal/config"
 	"github.com/zaigie/palworld-server-tool/internal/setup"
+	"github.com/zaigie/palworld-server-tool/internal/tool"
 )
 
 // setupDone is stored in config.db as a flag key in the config bucket.
@@ -241,6 +242,54 @@ func postSetupComplete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
+// serverVersionRequest is the optional body for POST /api/setup/server-version.
+type serverVersionRequest struct {
+	ServerDir  string `json:"server_dir"`
+	SteamCMDir string `json:"steamcmd_dir"`
+}
+
+// postSetupServerVersion returns the running game version plus local/latest
+// Steam Build IDs. SteamCMD is allowed to self-update, but game files are not
+// changed by this endpoint.
+func postSetupServerVersion(c *gin.Context) {
+	var req serverVersionRequest
+	if err := c.ShouldBindJSON(&req); err != nil && err.Error() != "EOF" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	serverDir := req.ServerDir
+	if serverDir == "" {
+		serverDir = serverRootFromSavePath(config.Current().Save.Path)
+	}
+	if serverDir == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无法确定服务器目录，请检查 save.path 配置"})
+		return
+	}
+
+	gameVersion := ""
+	if info, err := tool.Info(); err == nil {
+		gameVersion = info["version"]
+	}
+	versionInfo, err := setup.CheckPalServerVersion(serverDir, req.SteamCMDir, nil)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"error":              err.Error(),
+			"game_version":       gameVersion,
+			"installed_build_id": versionInfo.InstalledBuildID,
+			"manifest_found":     versionInfo.ManifestFound,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"game_version":       gameVersion,
+		"installed_build_id": versionInfo.InstalledBuildID,
+		"latest_build_id":    versionInfo.LatestBuildID,
+		"has_update":         versionInfo.HasUpdate,
+		"manifest_found":     versionInfo.ManifestFound,
+	})
+}
+
 // serverUpdateRequest is the body for POST /api/setup/server-update
 type serverUpdateRequest struct {
 	ServerDir  string `json:"server_dir"`   // optional, derived from save.path if empty
@@ -289,7 +338,7 @@ func postSetupServerUpdate(c *gin.Context) {
 
 		send := func(msg string) { ch <- msg }
 
-		if err := setup.UpdatePalServer(serverDir, send); err != nil {
+		if err := setup.UpdatePalServer(serverDir, req.SteamCMDir, send); err != nil {
 			ch <- "[错误] " + err.Error()
 			return
 		}

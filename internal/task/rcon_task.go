@@ -52,11 +52,17 @@ func shutdownSeconds(cmd string) int {
 	return 60
 }
 
+// normalizeStartMode keeps an explicit mode as-is and leaves an unset mode empty
+// so the restart callback can fall back to the last recorded launch mode.
 func normalizeStartMode(mode string) string {
-	if mode == "cmd" {
+	switch strings.ToLower(strings.TrimSpace(mode)) {
+	case "cmd":
 		return "cmd"
+	case "silent":
+		return "silent"
+	default:
+		return ""
 	}
-	return "silent"
 }
 
 // triggerAutoRestart waits for the server to stop, then calls the registered
@@ -67,7 +73,11 @@ func triggerAutoRestart(shutdownCmd, mode string) {
 		waitSecs = 20
 	}
 	mode = normalizeStartMode(mode)
-	logger.Infof("[AutoRestart] server shutting down, will restart in %d seconds using %s mode…\n", waitSecs, mode)
+	modeLabel := mode
+	if modeLabel == "" {
+		modeLabel = "last recorded"
+	}
+	logger.Infof("[AutoRestart] server shutting down, will restart in %d seconds using %s mode…\n", waitSecs, modeLabel)
 	time.Sleep(time.Duration(waitSecs) * time.Second)
 
 	restartFuncMu.RLock()
@@ -82,7 +92,7 @@ func triggerAutoRestart(shutdownCmd, mode string) {
 		logger.Errorf("[AutoRestart] failed to restart server: %v\n", err)
 		return
 	}
-	logger.Infof("[AutoRestart] server process launched successfully using %s mode\n", mode)
+	logger.Infof("[AutoRestart] server process launched successfully using %s mode\n", modeLabel)
 }
 
 func ValidateCronExpression(expression string) error {

@@ -37,6 +37,37 @@ func palServerProcessNames() []string {
 	}
 }
 
+// lastStartModeKey stores the window mode ("silent" or "cmd") used for the most
+// recent successful launch, so restart/auto-restart can reuse it.
+const lastStartModeKey = "last_start_mode"
+
+func normalizeStartMode(mode string) string {
+	if mode == "cmd" && runtime.GOOS == "windows" {
+		return "cmd"
+	}
+	return "silent"
+}
+
+func saveLastStartMode(mode string) {
+	store := config.CurrentStore()
+	if store == nil {
+		return
+	}
+	if err := store.SetKV(lastStartModeKey, []byte(normalizeStartMode(mode))); err != nil {
+		logger.Warnf("[startMode] persist %q failed: %v", mode, err)
+	}
+}
+
+// loadLastStartMode returns the persisted launch mode, defaulting to "silent"
+// when nothing was recorded yet (fresh install or pre-upgrade config.db).
+func loadLastStartMode() string {
+	store := config.CurrentStore()
+	if store == nil {
+		return "silent"
+	}
+	return normalizeStartMode(string(store.GetKV(lastStartModeKey)))
+}
+
 func isPalServerProcessRunning(name string) bool {
 	if runtime.GOOS == "windows" {
 		out, err := exec.Command("tasklist", "/FI", "IMAGENAME eq "+name, "/NH", "/FO", "CSV").Output()
@@ -541,6 +572,7 @@ func startServer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "log_path": logPath})
 		return
 	}
+	saveLastStartMode(req.Mode)
 	logger.Infof("[startServer] process started mode=%s executable=%q server_log=%q", req.Mode, exePath, logPath)
 
 	// Keep watching briefly after launch because PalServer may rewrite its INI
@@ -550,6 +582,80 @@ func startServer(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "path": exePath, "log_path": logPath})
+}
+
+// restartServer stops the running server and relaunches it with the same window
+// mode that was used for the previous launch, so a Cmd-mode server does not come
+// back silently (and vice versa).
+//
+//	@Summary		Restart Server
+//	@Description	Shutdown PalServer and relaunch it using the previously recorded start mode
+//	@Tags			Server
+//	@Accept			json
+//	@Produce		json
+//	@Security		ApiKeyAuth
+//	@Success		200	{object}	SuccessResponse
+//	@Failure		400	{object}	ErrorResponse
+//	@Router			/api/server/restart [post]
+func restartServer(c *gin.Context) {
+	var req struct {
+		Mode    string `json:"mode"`
+		Seconds int    `json:"seconds"`
+		Message string `json:"message"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	mode := loadLastStartMode()
+	if req.Mode != "" {
+		mode = normalizeStartMode(req.Mode)
+	}
+	if req.Seconds <= 0 {
+		req.Seconds = 10
+	}
+	if req.Message == "" {
+		req.Message = "Server is restarting"
+	}
+
+	cfg := config.Current()
+	exePath := findServerExeByMode(cfg.Save.Path, mode)
+	if exePath == "" {
+		errMessage := fmt.Sprintf("PalServer executable for %s mode not found; configured save.path is %q", mode, cfg.Save.Path)
+		logger.Errorf("[restartServer] %s", errMessage)
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMessage})
+		return
+	}
+
+	logger.Infof("[restartServer] mode=%s executable=%q countdown=%ds", mode, exePath, req.Seconds)
+
+	graceful := true
+	if err := tool.Shutdown(req.Seconds, req.Message); err != nil {
+		graceful = false
+		logger.Warnf("[restartServer] graceful shutdown unavailable, will force-stop: %v", err)
+	}
+
+	go func() {
+		if graceful {
+			// Let the in-game countdown finish before force-clearing leftovers.
+			time.Sleep(time.Duration(req.Seconds+8) * time.Second)
+		}
+		killPalServerProcesses()
+		time.Sleep(3 * time.Second)
+
+		if _, err := launchServer(exePath, mode); err != nil {
+			logger.Errorf("[restartServer] relaunch failed: %v", err)
+			return
+		}
+		saveLastStartMode(mode)
+		logger.Infof("[restartServer] relaunched in %s mode executable=%q", mode, exePath)
+	}()
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":  true,
+		"mode":     mode,
+		"path":     exePath,
+		"graceful": graceful,
+		"seconds":  req.Seconds,
+	})
 }
 
 func applyWorldSettingsPatch(iniPath string, patchData []byte) error {
@@ -834,11 +940,23 @@ func findServerExe(savePath string) string {
 	return ""
 }
 
-// serverRootFromSavePath walks from savePath to find the directory containing the PalServer executable.
+// serverRootFromSavePath returns the Steam installation root, not the binary
+// directory. A shipping executable lives under <root>/Pal/Binaries/<platform>.
 func serverRootFromSavePath(savePath string) string {
 	exe := findServerExe(savePath)
 	if exe == "" {
 		return ""
+	}
+	current := filepath.Dir(exe)
+	for i := 0; i < 10; i++ {
+		if strings.EqualFold(filepath.Base(current), "Pal") {
+			return filepath.Dir(current)
+		}
+		parent := filepath.Dir(current)
+		if parent == current {
+			break
+		}
+		current = parent
 	}
 	return filepath.Dir(exe)
 }
@@ -848,6 +966,13 @@ func serverRootFromSavePath(savePath string) string {
 // after it stops.  Call this once during startup, after config is loaded.
 func InitAutoRestart() {
 	task.SetRestartFunc(func(mode string) error {
+		// A scheduled task may not pin a mode; fall back to whatever mode the
+		// server was last launched with instead of silently defaulting to silent.
+		if mode == "" {
+			mode = loadLastStartMode()
+		} else {
+			mode = normalizeStartMode(mode)
+		}
 		cfg := config.Current()
 		exePath := findServerExeByMode(cfg.Save.Path, mode)
 		if exePath == "" {
@@ -861,6 +986,7 @@ func InitAutoRestart() {
 		if !isPalServerRunning() {
 			return fmt.Errorf("PalServer process exited within 3 seconds after %s launch", mode)
 		}
+		saveLastStartMode(mode)
 		return nil
 	})
 }

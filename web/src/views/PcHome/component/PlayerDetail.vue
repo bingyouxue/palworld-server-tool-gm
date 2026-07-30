@@ -679,18 +679,20 @@ const handelPlayerAction = async (type) => {
     showLoginModal.value = true;
     return;
   }
+  const name = playerInfo?.value?.nickname || playerInfo?.value?.player_uid || "";
+  const id = playerInfo?.value?.user_id || (playerInfo?.value?.steam_id ? `steam_${playerInfo.value.steam_id}` : playerInfo?.value?.player_uid) || "";
   const param = {
     ban: {
       title: t("message.bantitle"),
-      content: t("message.banwarn"),
+      content: t("message.banwarn", { name, id }),
     },
     unban: {
       title: t("message.unbantitle"),
-      content: t("message.unbanwarn"),
+      content: t("message.unbanwarn", { name, id }),
     },
     kick: {
       title: t("message.kicktitle"),
-      content: t("message.kickwarn"),
+      content: t("message.kickwarn", { name, id }),
     },
   }[type];
   dialog.warning({
@@ -1499,6 +1501,7 @@ const createPlayerItemsColumns = () => {
   <GmTeleportModal
     v-model:show="showTpModal"
     :player-uid="playerInfo?.player_uid || ''"
+    :user-id="playerInfo?.user_id || (playerInfo?.steam_id ? 'steam_' + playerInfo.steam_id : '')"
     :online-players="onlinePlayers"
     @done="showTpModal = false"
   />

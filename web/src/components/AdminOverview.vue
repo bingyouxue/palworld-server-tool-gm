@@ -34,9 +34,9 @@ const latestBackup = computed(() =>
 );
 const activeTasks = computed(() => tasks.value.filter((task) => task.enabled));
 const nextTask = computed(() =>
-  activeTasks.value
-    .filter((task) => task.next_run_at)
-    .sort((a, b) => new Date(a.next_run_at) - new Date(b.next_run_at))[0],
+    activeTasks.value
+      .filter((task) => task.next_run_at)
+      .sort((a, b) => new Date(a.next_run_at) - new Date(b.next_run_at))[0],
 );
 const uptime = computed(() => {
   const seconds = Number(props.serverMetrics?.uptime || 0);
@@ -89,6 +89,42 @@ watch(() => props.serverInfo, (val) => {
 }, { deep: true, immediate: true });
 
 const mgmtLoading = ref({ stop: false, start: false, restart: false, paldefender: false, ue4ss: false, serverUpdate: false });
+const serverVersion = ref({
+  gameVersion: '',
+  installedBuildId: '',
+  latestBuildId: '',
+  hasUpdate: false,
+  loading: false,
+  error: '',
+});
+const displayedGameVersion = computed(() => serverVersion.value.gameVersion || props.serverInfo?.version || '无法读取（启动服务器后可获取）');
+
+const checkServerVersion = async () => {
+  if (serverVersion.value.loading) return;
+  serverVersion.value.loading = true;
+  serverVersion.value.error = '';
+  try {
+    const res = await fetch('/api/setup/server-version', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('palworld_token') || ''}` },
+      body: JSON.stringify({}),
+    });
+    const json = await res.json();
+    serverVersion.value.gameVersion = json.game_version || props.serverInfo?.version || '';
+    serverVersion.value.installedBuildId = json.installed_build_id || '';
+    serverVersion.value.latestBuildId = json.latest_build_id || '';
+    serverVersion.value.hasUpdate = !!json.has_update;
+    if (!res.ok) serverVersion.value.error = json.error || '版本检测失败';
+  } catch (e) {
+    serverVersion.value.error = e.message;
+  } finally {
+    serverVersion.value.loading = false;
+  }
+};
+
+watch(showServerMgmt, (visible) => {
+  if (visible) checkServerVersion();
+});
 
 // Plugin install status (checked via /api/server call — if server responds it's running,
 // and we detect paldefender via a test RCON command that only works when PD is installed)
@@ -235,17 +271,22 @@ const handleRestartServer = async () => {
   mgmtLoading.value.restart = true;
   try {
     const cmd = { seconds: 10, message: "Server is restarting" };
-    console.log("[ServerMgmt] restart (shutdown) →", cmd);
-    const { statusCode } = await api.shutdownServer(cmd);
-    console.log("[ServerMgmt] restart shutdown response:", statusCode.value);
+    console.log("[ServerMgmt] restart →", cmd);
+    const { data, statusCode } = await api.restartServer(cmd);
+    console.log("[ServerMgmt] restart response:", statusCode.value, data.value);
     if (statusCode.value === 200) {
-      message.success("重启命令已发送，服务器将在 10 秒后重启");
+      const modeLabel = data.value?.mode === "cmd" ? "Cmd 模式" : "静默模式";
+      if (data.value?.graceful === false) {
+        message.warning(`RCON 不可用，将强制停止后以${modeLabel}重新启动`, { duration: 8000 });
+      } else {
+        message.success(`重启命令已发送，服务器将在 10 秒后停止并以${modeLabel}重新启动`, { duration: 8000 });
+      }
       setTimeout(() => {
         startStatusPoll(true);
         setTimeout(() => emit("refresh-server"), 30000);
       }, 12000);
     } else {
-      message.error("重启失败");
+      message.error(data.value?.error || "重启失败");
     }
   } catch (e) {
     console.error("[ServerMgmt] restart error:", e);
@@ -263,12 +304,12 @@ const handleInstallUE4SS = async () => {
   await doInstallMod('ue4ss');
 };
 
-const modProgress = ref({ show: false, title: '', lines: [], done: false });
+const modProgress = ref({ show: false, title: '', lines: [], done: false, failed: false });
 
 const doInstallMod = async (component) => {
   const key = component === 'paldefender' ? 'paldefender' : 'ue4ss';
   mgmtLoading.value[key] = true;
-  modProgress.value = { show: true, title: component === 'paldefender' ? 'PalDefender' : 'UE4SS', lines: [], done: false };
+  modProgress.value = { show: true, title: component === 'paldefender' ? 'PalDefender' : 'UE4SS', lines: [], done: false, failed: false };
   try {
     const res = await fetch('/api/server/mods/install', {
       method: 'POST',
@@ -280,9 +321,13 @@ const doInstallMod = async (component) => {
     const installId = json.install_id;
     const token = localStorage.getItem('palworld_token') || '';
     const es = new EventSource(`/api/server/mods/install/progress/${installId}?token=${encodeURIComponent(token)}`);
-    es.addEventListener('log', (e) => { modProgress.value.lines.push(e.data); });
+    es.addEventListener('log', (e) => {
+      const line = e.data || '';
+      modProgress.value.lines.push(line);
+      if (line.startsWith('[错误]')) modProgress.value.failed = true;
+    });
     es.addEventListener('done', () => { modProgress.value.done = true; es.close(); checkPluginStatus(); checkPdVersion(); mgmtLoading.value[key] = false; });
-    es.addEventListener('error', (e) => { modProgress.value.lines.push('[错误] ' + (e.data || '连接断开')); modProgress.value.done = true; es.close(); mgmtLoading.value[key] = false; });
+    es.addEventListener('error', (e) => { modProgress.value.lines.push('[错误] ' + (e.data || '连接断开')); modProgress.value.failed = true; modProgress.value.done = true; es.close(); mgmtLoading.value[key] = false; });
   } catch (e) {
     message.error('请求失败: ' + e.message);
     mgmtLoading.value[key] = false;
@@ -291,7 +336,7 @@ const doInstallMod = async (component) => {
 
 const doServerUpdate = async () => {
   mgmtLoading.value.serverUpdate = true;
-  modProgress.value = { show: true, title: '幻兽帕鲁服务端更新', lines: [], done: false };
+  modProgress.value = { show: true, title: '幻兽帕鲁服务端更新', lines: [], done: false, failed: false };
   try {
     const res = await fetch('/api/setup/server-update', {
       method: 'POST',
@@ -302,9 +347,22 @@ const doServerUpdate = async () => {
     if (!res.ok) { message.error(json.error || '启动更新失败'); modProgress.value.done = true; return; }
     const installId = json.install_id;
     const es = new EventSource(`/api/setup/install/progress/${installId}`);
-    es.addEventListener('log', (e) => { modProgress.value.lines.push(e.data); });
-    es.addEventListener('done', () => { modProgress.value.done = true; es.close(); mgmtLoading.value.serverUpdate = false; });
-    es.addEventListener('error', (e) => { modProgress.value.lines.push('[错误] ' + (e.data || '连接断开')); modProgress.value.done = true; es.close(); mgmtLoading.value.serverUpdate = false; });
+    es.addEventListener('log', (e) => {
+      const line = e.data || '';
+      modProgress.value.lines.push(line);
+      if (line.startsWith('[错误]')) modProgress.value.failed = true;
+    });
+    es.addEventListener('done', () => {
+      modProgress.value.done = true;
+      es.close();
+      mgmtLoading.value.serverUpdate = false;
+      if (modProgress.value.failed) message.error('服务端更新失败，请查看更新日志');
+      else {
+        message.success('服务端已更新并通过最新 Build ID 校验');
+        checkServerVersion();
+      }
+    });
+    es.addEventListener('error', (e) => { modProgress.value.lines.push('[错误] ' + (e.data || '连接断开')); modProgress.value.failed = true; modProgress.value.done = true; es.close(); mgmtLoading.value.serverUpdate = false; });
   } catch (e) {
     message.error('请求失败: ' + e.message);
     modProgress.value.done = true;
@@ -415,18 +473,18 @@ const fmtBytes = (n) => {
 
       <n-grid cols="1 640:2 1050:4" :x-gap="16" :y-gap="16">
         <n-gi><n-card size="small">
-          <n-statistic :label="$t('overview.serverStatus')">
-            <n-flex align="center">
-              <n-badge dot :type="healthType" />
+            <n-statistic :label="$t('overview.serverStatus')">
+              <n-flex align="center">
+                <n-badge dot :type="healthType" />
               <n-text strong>{{ serverInfo?.name || (serverInfo?.running ? "服务端已运行（管理接口不可用）" : $t("status.serverUnavailable")) }}</n-text>
-            </n-flex>
-          </n-statistic>
-          <n-text depth="3">{{ serverInfo?.version || "—" }}</n-text>
+              </n-flex>
+            </n-statistic>
+            <n-text depth="3">{{ serverInfo?.version || "—" }}</n-text>
         </n-card></n-gi>
         <n-gi><n-card size="small">
           <n-statistic :label="$t('overview.onlinePlayers')" :value="serverMetrics?.current_player_num ?? onlinePlayers.length">
             <template #suffix>/ {{ serverMetrics?.max_player_num ?? "—" }}</template>
-          </n-statistic>
+            </n-statistic>
           <n-text depth="3">{{ $t("overview.totalPlayers", { count: players.length }) }}</n-text>
         </n-card></n-gi>
         <n-gi><n-card size="small" style="cursor:pointer" @click="showPerfModal = true">
@@ -434,7 +492,7 @@ const fmtBytes = (n) => {
           <n-text depth="3">{{ $t("item.serverFrameTime") }}: {{ serverMetrics?.server_frame_time ?? "—" }} ms</n-text>
         </n-card></n-gi>
         <n-gi><n-card size="small">
-          <n-statistic :label="$t('item.serverUptime')" :value="uptime" />
+            <n-statistic :label="$t('item.serverUptime')" :value="uptime" />
           <n-text depth="3">{{ $t("item.serverDays") }}: {{ serverMetrics?.days ?? "—" }}</n-text>
         </n-card></n-gi>
       </n-grid>
@@ -552,7 +610,7 @@ const fmtBytes = (n) => {
                 @click="handleStartServer('silent')" size="small" round>
                 静默启动
               </n-button>
-              <n-button v-if="serverPlatform === 'windows'" type="info" :loading="mgmtLoading.start"
+              <n-button type="info" :loading="mgmtLoading.start"
                 @click="handleStartServer('cmd')" size="small" round>
                 Cmd 启动
               </n-button>
@@ -579,13 +637,38 @@ const fmtBytes = (n) => {
             <span>幻兽帕鲁服务端</span>
           </n-flex>
         </template>
-        <n-space vertical :size="6">
+        <n-space vertical :size="8">
+          <div class="server-version-panel">
+            <n-flex align="center" :size="8" wrap>
+              <n-text strong>Game version is {{ displayedGameVersion }}</n-text>
+              <n-tag v-if="!serverVersion.loading && !serverVersion.error && !serverVersion.hasUpdate && serverVersion.latestBuildId" type="success" size="small" round>
+                已是最新版本
+              </n-tag>
+              <n-tag v-else-if="serverVersion.hasUpdate" type="warning" size="small" round>
+                检测到新版本
+              </n-tag>
+              <n-spin v-if="serverVersion.loading" size="small" />
+            </n-flex>
+            <n-text depth="3" class="build-id-line">
+              当前 Build ID：{{ serverVersion.installedBuildId || '未找到本地 appmanifest' }}
+            </n-text>
+            <n-alert v-if="serverVersion.hasUpdate && serverVersion.latestBuildId" type="warning" :show-icon="true" size="small" style="margin-top:8px">
+              Steam public 分支最新 Build ID：<strong>{{ serverVersion.latestBuildId }}</strong>，当前服务端需要更新。
+            </n-alert>
+            <n-text v-else-if="serverVersion.error" type="error" class="version-error">
+              最新版本检测失败：{{ serverVersion.error }}
+            </n-text>
+          </div>
           <n-text depth="3" style="font-size:12px">通过 SteamCMD 自动下载最新版本并更新到服务器目录（等同于 app_update 2394010 validate）。更新前请先停止服务器。</n-text>
           <n-flex :size="6">
-            <n-button size="tiny" type="warning"
-              :disabled="serverRunning" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
+            <n-button size="tiny" :type="serverVersion.hasUpdate ? 'error' : 'warning'"
+              :class="{ 'update-button-highlight': serverVersion.hasUpdate }"
+              :disabled="serverRunning || serverVersion.loading" :title="serverRunning ? $t('serverMgmt.stopServerFirst') : ''"
               :loading="mgmtLoading.serverUpdate" @click="doServerUpdate">
-              更新服务端
+              {{ serverVersion.hasUpdate ? '立即更新服务端' : '更新服务端' }}
+            </n-button>
+            <n-button size="tiny" secondary :loading="serverVersion.loading" @click="checkServerVersion">
+              重新检测版本
             </n-button>
           </n-flex>
         </n-space>
@@ -706,15 +789,16 @@ const fmtBytes = (n) => {
     </template>
   </n-modal>
 
-  <n-modal v-model:show="modProgress.show" preset="card" :title="'正在安装 ' + modProgress.title"
+  <n-modal v-model:show="modProgress.show" preset="card" :title="modProgress.done ? modProgress.title : '正在处理 ' + modProgress.title"
     style="width:90%;max-width:500px" :bordered="false" :closable="modProgress.done"
     :mask-closable="modProgress.done">
     <div class="mod-progress-log" ref="modLogEl">
       <div v-for="(line, i) in modProgress.lines" :key="i" class="mod-log-line">{{ line }}</div>
       <div v-if="!modProgress.done" class="mod-log-spinner">
-        <n-spin size="small" /> 安装中，请稍候...
+        <n-spin size="small" /> 处理中，请稍候...
       </div>
-      <div v-else class="mod-log-done">✓ ✓ 完成，可以关闭此窗口</div>
+      <div v-else-if="modProgress.failed" class="mod-log-failed">操作失败，请根据上方错误信息检查 SteamCMD、网络和安装目录。</div>
+      <div v-else class="mod-log-done">操作完成，可以关闭此窗口</div>
     </div>
     <template #footer>
       <div style="text-align:right">
@@ -891,6 +975,11 @@ const fmtBytes = (n) => {
 @media (max-width:560px) { .core-summary { align-items:flex-start; flex-direction:column; } .core-summary-stats { width:100%; justify-content:flex-end; } .core-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 
 .server-mgmt { display: flex; flex-direction: column; gap: 0; }
+.server-version-panel { padding: 9px 10px; border-radius: 8px; background: rgba(64,152,252,.07); border: 1px solid rgba(64,152,252,.16); }
+.build-id-line { display: block; margin-top: 4px; font-family: monospace; font-size: 11px; }
+.version-error { display: block; margin-top: 6px; font-size: 11px; word-break: break-word; }
+.update-button-highlight { animation: update-pulse 1.5s ease-in-out infinite; box-shadow: 0 0 0 0 rgba(208,48,80,.35); }
+@keyframes update-pulse { 50% { box-shadow: 0 0 0 5px rgba(208,48,80,.08); transform: translateY(-1px); } }
 .mgmt-label { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
 .mgmt-desc { font-size: 11px; }
 
@@ -1001,6 +1090,11 @@ const fmtBytes = (n) => {
 .mod-log-done {
   margin-top: 8px;
   color: #18a058;
+  font-weight: 700;
+}
+.mod-log-failed {
+  margin-top: 8px;
+  color: #d03050;
   font-weight: 700;
 }
 </style>

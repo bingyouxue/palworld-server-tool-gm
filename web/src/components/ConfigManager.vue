@@ -56,7 +56,7 @@ const emptySettings = () => ({
     player_login_message: "",
     player_logout_message: "",
   },
-  rcon: { address: "", password: "", use_base64: false, timeout: 5 },
+  rcon: { address: "", password: "", use_base64: true, timeout: 5 },
   rest: { address: "", username: "admin", password: "", timeout: 5 },
   save: {
     source_mode: "directory",

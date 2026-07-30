@@ -13,7 +13,9 @@ func executeCommand(command string) (*executor.Executor, string, error) {
 }
 
 func executeCommandWithSettings(command string, settings config.RconConfig) (*executor.Executor, string, error) {
-	useBase64 := settings.UseBase64
+	// base64 is only needed for PalDefender's Broadcast command; applying it
+	// globally breaks give, kick and every other native RCON command.
+	useBase64 := settings.UseBase64 && len(command) >= 9 && command[:9] == "Broadcast"
 
 	exec, err := executor.NewExecutor(
 		settings.Address,

@@ -80,6 +80,64 @@ func TestStoreUpdatesSettingsAndAdministratorPasswordTogether(t *testing.T) {
 	}
 }
 
+func TestNewStoreDefaultsRconBase64On(t *testing.T) {
+	store, err := Open(filepath.Join(t.TempDir(), "config.db"))
+	if err != nil {
+		t.Fatalf("open config store: %v", err)
+	}
+	defer store.Close()
+
+	if !store.Config().Rcon.UseBase64 {
+		t.Fatal("new config database must default rcon.use_base64 to true")
+	}
+}
+
+func TestStoreEnablesRconBase64ForLegacyDatabaseOnce(t *testing.T) {
+	dbPath := filepath.Join(t.TempDir(), "config.db")
+	store, err := Open(dbPath)
+	if err != nil {
+		t.Fatalf("open config store: %v", err)
+	}
+
+	// Simulate a config.db written before base64 became the default.
+	legacy := store.Config()
+	legacy.Rcon.UseBase64 = false
+	if err := store.Update(legacy, ""); err != nil {
+		t.Fatalf("write legacy settings: %v", err)
+	}
+	store.DeleteKV(rconBase64MigrationKey)
+	if err := store.Close(); err != nil {
+		t.Fatalf("close config store: %v", err)
+	}
+
+	migrated, err := Open(dbPath)
+	if err != nil {
+		t.Fatalf("reopen config store: %v", err)
+	}
+	if !migrated.Config().Rcon.UseBase64 {
+		t.Fatal("legacy config database must be migrated to rcon.use_base64 = true")
+	}
+
+	// An explicit opt-out afterwards must survive the next restart.
+	optOut := migrated.Config()
+	optOut.Rcon.UseBase64 = false
+	if err := migrated.Update(optOut, ""); err != nil {
+		t.Fatalf("opt out of base64: %v", err)
+	}
+	if err := migrated.Close(); err != nil {
+		t.Fatalf("close migrated store: %v", err)
+	}
+
+	reopened, err := Open(dbPath)
+	if err != nil {
+		t.Fatalf("reopen after opt-out: %v", err)
+	}
+	defer reopened.Close()
+	if reopened.Config().Rcon.UseBase64 {
+		t.Fatal("deliberate rcon.use_base64 = false must not be re-enabled")
+	}
+}
+
 func TestStorePreservesLegacyWebPortWithoutPortSource(t *testing.T) {
 	store, err := Open(filepath.Join(t.TempDir(), "config.db"))
 	if err != nil {

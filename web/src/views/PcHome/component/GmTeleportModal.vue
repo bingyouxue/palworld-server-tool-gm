@@ -6,6 +6,7 @@ import ApiService from "@/service/api";
 const props = defineProps({
   show: { type: Boolean, default: false },
   playerUid: { type: String, required: true },
+  userId: { type: String, default: "" },
   onlinePlayers: { type: Array, default: () => [] },
 });
 const emit = defineEmits(["update:show", "done"]);
@@ -23,6 +24,9 @@ const close = () => emit("update:show", false);
 
 // 当前玩家的 userId（需要在线才能传送）
 const currentUserIdComputed = computed(() => {
+  // 优先使用父组件直接传入的 user_id（来自 playerInfo，最准确）
+  if (props.userId) return props.userId;
+  // 兜底：从在线列表里用 player_uid 匹配
   const online = props.onlinePlayers.find(
     (p) => (p.player_uid || p.PlayerUid) === props.playerUid,
   );

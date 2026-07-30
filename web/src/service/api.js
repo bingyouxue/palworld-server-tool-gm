@@ -50,6 +50,9 @@ class ApiService extends Service {
   async startServer(mode = "silent") {
     return this.fetch(`/api/server/start`).post({ mode }).json();
   }
+  async restartServer(param = {}) {
+    return this.fetch(`/api/server/restart`).post(param).json();
+  }
   async execRconCommand(command) {
     return this.fetch(`/api/rcon/exec`).post({ command }).json();
   }

@@ -40,6 +40,9 @@ func TestValidateCronExpression(t *testing.T) {
 	}
 }
 
+// An unset or unrecognised mode must stay empty so the restart callback in the
+// api package can fall back to the mode the server was last launched with,
+// rather than silently forcing a Cmd-mode server back to silent.
 func TestNormalizeStartMode(t *testing.T) {
 	for _, test := range []struct {
 		input string
@@ -47,8 +50,10 @@ func TestNormalizeStartMode(t *testing.T) {
 	}{
 		{input: "cmd", want: "cmd"},
 		{input: "silent", want: "silent"},
-		{input: "", want: "silent"},
-		{input: "invalid", want: "silent"},
+		{input: "CMD", want: "cmd"},
+		{input: "  silent  ", want: "silent"},
+		{input: "", want: ""},
+		{input: "invalid", want: ""},
 	} {
 		if got := normalizeStartMode(test.input); got != test.want {
 			t.Fatalf("normalizeStartMode(%q) = %q, want %q", test.input, got, test.want)

@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 // ServerConfig holds the values parsed from an existing server installation.
@@ -260,30 +262,238 @@ func untarGz(src, dest string) error {
 	return nil
 }
 
+// normalizePalServerInstallDir converts a binary/config subdirectory back to
+// the root SteamCMD must receive via +force_install_dir.
+func normalizePalServerInstallDir(dir string) string {
+	if dir == "" {
+		return ""
+	}
+	clean := filepath.Clean(dir)
+	current := clean
+	for i := 0; i < 10; i++ {
+		if strings.EqualFold(filepath.Base(current), "Pal") {
+			return filepath.Dir(current)
+		}
+		parent := filepath.Dir(current)
+		if parent == current {
+			break
+		}
+		current = parent
+	}
+	return clean
+}
+
+func defaultSteamCMDDir(installDir string) string {
+	return filepath.Join(filepath.Dir(normalizePalServerInstallDir(installDir)), "steamcmd")
+}
+
 // InstallPalServer runs SteamCMD to install Palworld Dedicated Server.
 // It streams output lines to progressFn.
 func InstallPalServer(steamcmdPath, installDir string, progressFn func(string)) error {
 	return runSteamCmd(steamcmdPath, installDir, progressFn, "install")
 }
 
+type PalServerVersionInfo struct {
+	InstalledBuildID string `json:"installed_build_id"`
+	LatestBuildID    string `json:"latest_build_id"`
+	HasUpdate        bool   `json:"has_update"`
+	ManifestFound    bool   `json:"manifest_found"`
+}
+
+// CheckPalServerVersion refreshes Steam app info and compares the installed
+// manifest with the latest public branch without modifying server files.
+func CheckPalServerVersion(installDir, steamCMDDir string, progressFn func(string)) (PalServerVersionInfo, error) {
+	info := PalServerVersionInfo{}
+	installDir = normalizePalServerInstallDir(installDir)
+	if steamCMDDir == "" {
+		steamCMDDir = defaultSteamCMDDir(installDir)
+	}
+	info.InstalledBuildID = readInstalledBuildID(installDir, steamCMDDir)
+	info.ManifestFound = info.InstalledBuildID != ""
+
+	steamcmdPath, err := DownloadSteamCMD(steamCMDDir, progressFn)
+	if err != nil {
+		return info, fmt.Errorf("prepare steamcmd: %w", err)
+	}
+	if err := initializeSteamCMD(steamcmdPath, progressFn); err != nil {
+		return info, err
+	}
+	info.LatestBuildID, err = queryLatestPalServerBuildID(steamcmdPath, progressFn)
+	if err != nil {
+		return info, fmt.Errorf("获取 Steam public 分支最新版本失败: %w", err)
+	}
+	info.HasUpdate = info.InstalledBuildID == "" || info.InstalledBuildID != info.LatestBuildID
+	return info, nil
+}
+
 // UpdatePalServer runs SteamCMD to update an existing Palworld Dedicated Server.
-// It finds steamcmd.exe by walking up from installDir/steamcmd, then falls back
-// to downloading it fresh.
-func UpdatePalServer(installDir string, progressFn func(string)) error {
+// Before and after app_update it refreshes Steam's app-info cache and verifies
+// the installed manifest against the public branch build ID.
+func UpdatePalServer(installDir, steamCMDDir string, progressFn func(string)) error {
 	progress := func(msg string) {
 		if progressFn != nil {
 			progressFn(msg)
 		}
 	}
-	// Try to locate an existing steamcmd alongside or above the server dir
-	steamDir := filepath.Join(filepath.Dir(installDir), "steamcmd")
+
+	installDir = normalizePalServerInstallDir(installDir)
+	if steamCMDDir == "" {
+		steamCMDDir = defaultSteamCMDDir(installDir)
+	}
+	progress(fmt.Sprintf("服务端安装根目录：%s", installDir))
 	progress("正在查找 SteamCMD...")
-	steamcmdPath, err := DownloadSteamCMD(steamDir, progressFn)
+	steamcmdPath, err := DownloadSteamCMD(steamCMDDir, progressFn)
 	if err != nil {
 		return fmt.Errorf("prepare steamcmd: %w", err)
 	}
+
+	if err := initializeSteamCMD(steamcmdPath, progressFn); err != nil {
+		return err
+	}
+
+	progress("正在刷新 Steam 应用信息并获取 public 分支最新版本...")
+	latestBuildID, err := queryLatestPalServerBuildID(steamcmdPath, progressFn)
+	if err != nil {
+		return fmt.Errorf("获取服务端最新版本失败: %w", err)
+	}
+	installedBuildID := readInstalledBuildID(installDir, steamCMDDir)
+	if installedBuildID == "" {
+		progress(fmt.Sprintf("Steam public 分支最新 Build ID: %s；未找到本地版本清单，将执行完整校验更新。", latestBuildID))
+	} else {
+		progress(fmt.Sprintf("版本检查：本地 Build ID %s，Steam 最新 Build ID %s。", installedBuildID, latestBuildID))
+		if installedBuildID == latestBuildID {
+			progress("当前服务端已经是最新版本，仍将执行文件完整性校验。")
+		}
+	}
+
 	progress("开始更新幻兽帕鲁服务端...")
-	return runSteamCmd(steamcmdPath, installDir, progress, "update")
+	updateErr := runPalServerAppUpdate(steamcmdPath, installDir, progressFn)
+
+	// The manifest is the source of truth. SteamCMD occasionally exits non-zero
+	// after successfully updating itself or the app, so verify before deciding.
+	updatedBuildID := readInstalledBuildID(installDir, steamCMDDir)
+	if updatedBuildID == "" {
+		if updateErr != nil {
+			return fmt.Errorf("steamcmd: %w (更新后未找到 appmanifest_2394010.acf)", updateErr)
+		}
+		return fmt.Errorf("更新后未找到 appmanifest_2394010.acf，无法确认服务端版本")
+	}
+	if updatedBuildID != latestBuildID {
+		if updateErr != nil {
+			return fmt.Errorf("steamcmd: %w；更新后 Build ID 为 %s，Steam 最新为 %s", updateErr, updatedBuildID, latestBuildID)
+		}
+		return fmt.Errorf("更新未完成：本地 Build ID %s，Steam 最新 Build ID %s", updatedBuildID, latestBuildID)
+	}
+
+	progress(fmt.Sprintf("版本校验成功：已更新至 Steam public 分支最新 Build ID %s。", updatedBuildID))
+	return nil
+}
+
+func initializeSteamCMD(steamcmdPath string, progressFn func(string)) error {
+	progress := func(msg string) {
+		if progressFn != nil {
+			progressFn(msg)
+		}
+	}
+	progress("正在初始化 SteamCMD（首次运行会先下载自身运行环境，约 43 MB）...")
+	if err := steamRun(steamcmdPath, progressFn, "+quit"); err != nil && !isSteamUpdateExit(err) {
+		return fmt.Errorf("初始化 SteamCMD: %w", err)
+	}
+	return nil
+}
+
+func steamPlatformType() string {
+	if runtime.GOOS == "windows" {
+		return "windows"
+	}
+	return "linux"
+}
+
+func queryLatestPalServerBuildID(steamcmdPath string, progressFn func(string)) (string, error) {
+	output, err := steamRunCapture(steamcmdPath, progressFn,
+		"+@sSteamCmdForcePlatformType", steamPlatformType(),
+		"+login", "anonymous",
+		"+app_info_update", "1",
+		"+app_info_print", "2394010",
+		"+quit",
+	)
+	if err != nil && !isSteamUpdateExit(err) {
+		return "", err
+	}
+	buildID := parsePublicBuildID(output)
+	if buildID == "" {
+		return "", errors.New("SteamCMD 返回的 app info 中没有 public 分支 buildid")
+	}
+	return buildID, nil
+}
+
+var (
+	publicBranchBuildIDRe = regexp.MustCompile(`(?s)"branches"\s*\{.*?"public"\s*\{.*?"buildid"\s*"(\d+)"`)
+	manifestBuildIDRe     = regexp.MustCompile(`(?i)"buildid"\s*"(\d+)"`)
+)
+
+func parsePublicBuildID(appInfo string) string {
+	match := publicBranchBuildIDRe.FindStringSubmatch(appInfo)
+	if len(match) == 2 {
+		return match[1]
+	}
+	return ""
+}
+
+func readInstalledBuildID(installDir, steamCMDDir string) string {
+	manifestName := "appmanifest_2394010.acf"
+	var candidates []string
+	addAncestorManifests := func(start string) {
+		if start == "" {
+			return
+		}
+		current := filepath.Clean(start)
+		for i := 0; i < 8; i++ {
+			candidates = append(candidates,
+				filepath.Join(current, manifestName),
+				filepath.Join(current, "steamapps", manifestName),
+			)
+			parent := filepath.Dir(current)
+			if parent == current {
+				break
+			}
+			current = parent
+		}
+	}
+	addAncestorManifests(installDir)
+	addAncestorManifests(steamCMDDir)
+
+	seen := make(map[string]bool, len(candidates))
+	for _, candidate := range candidates {
+		candidate = filepath.Clean(candidate)
+		if seen[candidate] {
+			continue
+		}
+		seen[candidate] = true
+		data, err := os.ReadFile(candidate)
+		if err != nil {
+			continue
+		}
+		match := manifestBuildIDRe.FindSubmatch(data)
+		if len(match) == 2 {
+			return string(match[1])
+		}
+	}
+	return ""
+}
+
+func palServerAppUpdateArgs(installDir string) []string {
+	return []string{
+		"+@sSteamCmdForcePlatformType", steamPlatformType(),
+		"+force_install_dir", normalizePalServerInstallDir(installDir),
+		"+login", "anonymous",
+		"+app_update", "2394010", "validate",
+		"+quit",
+	}
+}
+
+func runPalServerAppUpdate(steamcmdPath, installDir string, progressFn func(string)) error {
+	return steamRun(steamcmdPath, progressFn, palServerAppUpdateArgs(installDir)...)
 }
 
 func runSteamCmd(steamcmdPath, installDir string, progressFn func(string), action string) error {
@@ -333,8 +543,8 @@ func runSteamCmd(steamcmdPath, installDir string, progressFn func(string), actio
 	progress(fmt.Sprintf("开始%s到 %s ...", actionLabel, installDir))
 	if err := steamRun(steamcmdPath, progressFn,
 		"+@sSteamCmdForcePlatformType", steamPlatform,
-		"+login", "anonymous",
 		"+force_install_dir", installDir,
+		"+login", "anonymous",
 		"+app_update", "2394010", "validate",
 		"+quit",
 	); err != nil && !isSteamUpdateExit(err) {
@@ -344,9 +554,14 @@ func runSteamCmd(steamcmdPath, installDir string, progressFn func(string), actio
 	return nil
 }
 
-// steamRun executes steamcmd with the given args, streaming every output line
-// to progressFn.  Both stdout and stderr are captured independently.
+// steamRun executes steamcmd with the given args, streaming every output line.
 func steamRun(steamcmdPath string, progressFn func(string), args ...string) error {
+	_, err := steamRunCapture(steamcmdPath, progressFn, args...)
+	return err
+}
+
+// steamRunCapture streams SteamCMD output while also retaining it for parsing.
+func steamRunCapture(steamcmdPath string, progressFn func(string), args ...string) (string, error) {
 	progress := func(msg string) {
 		if progressFn != nil {
 			progressFn(msg)
@@ -358,31 +573,39 @@ func steamRun(steamcmdPath string, progressFn func(string), args ...string) erro
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return err
+		return "", err
 	}
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		return err
+		return "", err
 	}
-
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("start steamcmd: %w", err)
+		return "", fmt.Errorf("start steamcmd: %w", err)
 	}
 
-	// Drain stderr concurrently so it never blocks the process.
-	go func() {
-		sc := bufio.NewScanner(stderr)
-		for sc.Scan() {
-			progress(sc.Text())
+	var output strings.Builder
+	var outputMu sync.Mutex
+	drain := func(reader io.Reader) {
+		scanner := bufio.NewScanner(reader)
+		// app_info_print may contain long lines in future SteamCMD versions.
+		scanner.Buffer(make([]byte, 64*1024), 4*1024*1024)
+		for scanner.Scan() {
+			line := scanner.Text()
+			progress(line)
+			outputMu.Lock()
+			output.WriteString(line)
+			output.WriteByte('\n')
+			outputMu.Unlock()
 		}
-	}()
-
-	sc := bufio.NewScanner(stdout)
-	for sc.Scan() {
-		progress(sc.Text())
 	}
 
-	return cmd.Wait()
+	var drains sync.WaitGroup
+	drains.Add(2)
+	go func() { defer drains.Done(); drain(stdout) }()
+	go func() { defer drains.Done(); drain(stderr) }()
+	waitErr := cmd.Wait()
+	drains.Wait()
+	return output.String(), waitErr
 }
 
 // isSteamUpdateExit returns true for the exit codes SteamCMD uses when it has

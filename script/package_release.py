@@ -105,7 +105,11 @@ def package(version: str, goos: str, goarch: str, sav_cli: Path, output: Path) -
     output.mkdir(parents=True, exist_ok=True)
 
     if windows:
-        shutil.copy2(sav_cli, ROOT / "sav_cli.exe")
+        embedded = ROOT / "sav_cli.exe"
+        # The caller may already point at the embedded copy; copying it onto
+        # itself raises SameFileError.
+        if sav_cli.resolve() != embedded.resolve():
+            shutil.copy2(sav_cli, embedded)
 
     with tempfile.TemporaryDirectory(prefix=f"pst-{platform}-") as temp:
         stage = Path(temp)

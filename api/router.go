@@ -91,6 +91,7 @@ func RegisterRouter(r *gin.Engine, onConfigInitialized func()) {
 		authGroup.POST("/server/broadcast", publishBroadcast)
 		authGroup.POST("/server/shutdown", shutdownServer)
 		authGroup.POST("/server/start", startServer)
+		authGroup.POST("/server/restart", restartServer)
 		authGroup.PUT("/player", putPlayers)
 		authGroup.POST("/player/:player_uid/kick", kickPlayer)
 		authGroup.POST("/player/:player_uid/ban", banPlayer)
@@ -135,6 +136,8 @@ func RegisterRouter(r *gin.Engine, onConfigInitialized func()) {
 		authGroup.POST("/config/test/rcon", testRconConfig)
 		authGroup.GET("/gameconfig/:type", getGameConfig)
 		authGroup.PUT("/gameconfig/:type", putGameConfig)
+		authGroup.POST("/setup/server-version", postSetupServerVersion)
+		authGroup.POST("/setup/server-update", postSetupServerUpdate)
 
 		// Mods install/remove (PalDefender / UE4SS)
 		authGroup.POST("/server/mods/install", installMod)
@@ -162,6 +165,6 @@ func RegisterRouter(r *gin.Engine, onConfigInitialized func()) {
 	r.POST("/api/setup/install", postSetupInstall)
 	r.GET("/api/setup/install/progress/:id", getSetupInstallProgress)
 	r.POST("/api/setup/complete", postSetupComplete)
-	r.POST("/api/setup/server-update", postSetupServerUpdate)
+
 	r.PUT("/api/setup/world-settings", putSetupWorldSettings)
 }

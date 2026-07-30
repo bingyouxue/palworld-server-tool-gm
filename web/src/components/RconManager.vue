@@ -40,7 +40,9 @@ const selectedPlayer    = computed(() =>
   players.value.find((p) => p.player_uid === selectedPlayerUid.value)
 );
 const playerOptions = computed(() =>
-  players.value.map((p) => ({ label: `${p.nickname} (${p.player_uid})`, value: p.player_uid }))
+  players.value
+    .filter((p) => p.user_id)
+    .map((p) => ({ label: `${p.nickname} (${p.user_id})`, value: p.user_id }))
 );
 const itemOptions = computed(() =>
   (itemMap[locale.value] || itemMap.zh).map((i) => ({ label: `${i.name} · ${i.key}`, value: i.key }))
@@ -386,7 +388,15 @@ function buildAcList(input) {
   } else if (techCmds.some(x => cmd.startsWith(x))) {
     pool = ['all', ...Array.from(new Set(itemOptions.value.map(o => o.value)))];
   } else if (playerCmds.some(x => cmd.startsWith(x)) && tokens.length <= 2) {
-    pool = players.value.map(p => p.nickname);
+    const partialLower = partialLast.toLowerCase();
+    const matched = players.value
+      .filter(p => p.user_id)
+      .filter(p =>
+        !partialLower ||
+        (p.nickname || '').toLowerCase().includes(partialLower) ||
+        (p.user_id || '').toLowerCase().includes(partialLower)
+      );
+    return matched.slice(0, 18).map(p => ({ label: p.nickname || p.user_id, value: p.user_id }));
   }
 
   if (!pool.length) return [];
@@ -397,8 +407,9 @@ function buildAcList(input) {
 }
 
 function applyAcSuggestion(suggestion) {
+  const value = typeof suggestion === 'object' ? suggestion.value : suggestion;
   const tokens = consoleInput.value.split(/\s+/);
-  tokens[tokens.length - 1] = suggestion;
+  tokens[tokens.length - 1] = value;
   consoleInput.value = tokens.join(' ') + ' ';
   acShow.value = false;
   acList.value = [];
@@ -832,10 +843,11 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
             <div class="terminal-input-wrap">
               <!-- Autocomplete dropdown -->
               <div v-if="acShow && acList.length" class="ac-dropdown">
-                <div v-for="(sug, idx) in acList" :key="sug"
+                <div v-for="(sug, idx) in acList" :key="typeof sug === 'object' ? sug.value : sug"
                   :class="['ac-item', idx === acIndex ? 'ac-item--active' : '']"
                   @mousedown.prevent="applyAcSuggestion(sug)">
-                  {{ sug }}
+                  <span class="ac-label">{{ typeof sug === 'object' ? sug.label : sug }}</span>
+                  <span v-if="typeof sug === 'object'" class="ac-value">{{ sug.value }}</span>
                 </div>
               </div>
               <div class="terminal-input-bar">
@@ -1219,11 +1231,13 @@ const drawerWidth = computed(() => Math.min(900, window.innerWidth));
 .ac-item {
   padding: 5px 12px; cursor: pointer; line-height: 1.5;
   border-bottom: 1px solid rgba(128,128,128,.08);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: baseline; gap: 8px; overflow: hidden;
   &:last-child { border-bottom: none; }
   &:hover { background: rgba(64,152,252,.12); }
 }
 .ac-item--active { background: rgba(64,152,252,.22); color: var(--n-primary-color); font-weight: 600; }
+.ac-label { flex-shrink: 0; font-weight: 600; }
+.ac-value { font-size: 10px; opacity: 0.4; font-family: monospace; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 
 /* item list table */
 .terminal-item-list {
